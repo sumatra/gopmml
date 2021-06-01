@@ -1,14 +1,12 @@
-package treemodel_test
+package evaluation_test
 
 import (
 	"bytes"
 	"encoding/xml"
+	"pmml/evaluation"
+	"pmml/models"
 	"testing"
 
-	"github.com/gopredict/pmml/evaluation"
-
-	"github.com/gopredict/pmml/evaluation/treemodel"
-	"github.com/gopredict/pmml/models"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
@@ -440,7 +438,7 @@ func TestTreeModel(t *testing.T) {
 	assert.Equal(t, "golfing", m.ModelName)
 	assert.Equal(t, models.MiningFunctionClassification, m.FunctionName)
 
-	tm, err := treemodel.NewTreeModel(&doc.DataDictionary, doc.TransformationDictionary, m)
+	tm, err := evaluation.NewTreeModel(&doc.DataDictionary, doc.TransformationDictionary, m)
 	require.NoError(t, err)
 
 	err = tm.Validate()
@@ -479,7 +477,7 @@ func TestTreeMode_Confidence1(t *testing.T) {
 	assert.Equal(t, "golfing", m.ModelName)
 	assert.Equal(t, models.MiningFunctionClassification, m.FunctionName)
 
-	tm, err := treemodel.NewTreeModel(&doc.DataDictionary, doc.TransformationDictionary, m)
+	tm, err := evaluation.NewTreeModel(&doc.DataDictionary, doc.TransformationDictionary, m)
 	require.NoError(t, err)
 
 	err = tm.Validate()
@@ -516,7 +514,7 @@ func TestTreeMode_WeightedConfidence(t *testing.T) {
 	assert.Equal(t, "golfing", m.ModelName)
 	assert.Equal(t, models.MiningFunctionClassification, m.FunctionName)
 
-	tm, err := treemodel.NewTreeModel(&doc.DataDictionary, doc.TransformationDictionary, m)
+	tm, err := evaluation.NewTreeModel(&doc.DataDictionary, doc.TransformationDictionary, m)
 	require.NoError(t, err)
 
 	err = tm.Validate()
@@ -551,7 +549,7 @@ func TestTreeMode_DefaultChild(t *testing.T) {
 	assert.Equal(t, "golfing", m.ModelName)
 	assert.Equal(t, models.MiningFunctionClassification, m.FunctionName)
 
-	tm, err := treemodel.NewTreeModel(&doc.DataDictionary, doc.TransformationDictionary, m)
+	tm, err := evaluation.NewTreeModel(&doc.DataDictionary, doc.TransformationDictionary, m)
 	require.NoError(t, err)
 
 	err = tm.Validate()
@@ -586,7 +584,7 @@ func TestTreeMode_LastPrediction(t *testing.T) {
 	assert.Equal(t, "golfing", m.ModelName)
 	assert.Equal(t, models.MiningFunctionClassification, m.FunctionName)
 
-	tm, err := treemodel.NewTreeModel(&doc.DataDictionary, doc.TransformationDictionary, m)
+	tm, err := evaluation.NewTreeModel(&doc.DataDictionary, doc.TransformationDictionary, m)
 	require.NoError(t, err)
 
 	err = tm.Validate()
@@ -620,7 +618,7 @@ func TestTreeMode_AggregateNodes(t *testing.T) {
 	assert.Equal(t, "golfing", m.ModelName)
 	assert.Equal(t, models.MiningFunctionClassification, m.FunctionName)
 
-	tm, err := treemodel.NewTreeModel(&doc.DataDictionary, doc.TransformationDictionary, m)
+	tm, err := evaluation.NewTreeModel(&doc.DataDictionary, doc.TransformationDictionary, m)
 	require.NoError(t, err)
 
 	err = tm.Validate()
@@ -655,7 +653,7 @@ func TestTreeMode_NullPredictedValue(t *testing.T) {
 	assert.Equal(t, "golfing", m.ModelName)
 	assert.Equal(t, models.MiningFunctionClassification, m.FunctionName)
 
-	tm, err := treemodel.NewTreeModel(&doc.DataDictionary, doc.TransformationDictionary, m)
+	tm, err := evaluation.NewTreeModel(&doc.DataDictionary, doc.TransformationDictionary, m)
 	require.NoError(t, err)
 
 	err = tm.Validate()

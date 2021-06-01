@@ -2876,6 +2876,16 @@ type MiningField struct {
   </xs:element>
 */
 type MiningModel struct {
+	AlgorithmName *string `xml:"algorithmName,attr"`
+	FunctionName  string  `xml:"functionName,attr"`
+	IsScorable    bool    `xml:"isScorable,attr"`
+	ModelName     *string `xml:"modelName,attr"`
+
+	MiningSchema         MiningSchema         `xml:"MiningSchema"`
+	LocalTransformations LocalTransformations `xml:"LocalTransformations"`
+	Output               Output               `xml:"Output"`
+	Segmentation         Segmentation         `xml:"Segmentation"`
+
 	Extensions []Extension `xml:"Extension"`
 }
 
@@ -3695,6 +3705,11 @@ func (x *PMML) UnmarshalXML(decoder *xml.Decoder, start xml.StartElement) error 
 				if err != nil {
 					return err
 				}
+			case "MiningBuildTask":
+				err = decoder.DecodeElement(&x.MiningBuildTask, &tok)
+				if err != nil {
+					return err
+				}
 			default:
 				if model, ok := GetModelElement(tok.Name.Local); ok {
 					err = decoder.DecodeElement(model, &tok)
@@ -4387,7 +4402,56 @@ type SeasonalityExpoSmooth struct {
   </xs:element>
 */
 type Segment struct {
+	Id         string `xml:"id,attr"`
+	Predicates []Predicate
+	Models     []ModelElement
 	Extensions []Extension `xml:"Extension"`
+}
+
+func (x *Segment) UnmarshalXML(decoder *xml.Decoder, start xml.StartElement) error {
+	var err error
+	defaults.SetDefaults(x)
+
+	for _, attr := range start.Attr {
+		switch attr.Name.Local {
+		case "id":
+			x.Id = attr.Value
+		}
+	}
+
+	for {
+		var token xml.Token
+
+		token, err = decoder.Token()
+		if err != nil {
+			return err
+		}
+		switch tok := token.(type) {
+		case xml.StartElement:
+			pred, ok := GetPredicate(tok.Name.Local)
+			if ok {
+				err = decoder.DecodeElement(pred, &tok)
+				if err != nil {
+					return err
+				}
+
+				x.Predicates = append(x.Predicates, pred)
+				continue
+			}
+
+			model, ok := GetModelElement(tok.Name.Local)
+			if ok {
+				err = decoder.DecodeElement(model, &tok)
+				if err != nil {
+					return err
+				}
+
+				x.Models = append(x.Models, model)
+			}
+		case xml.EndElement:
+			return nil
+		}
+	}
 }
 
 /*
@@ -4402,7 +4466,9 @@ type Segment struct {
   </xs:element>
 */
 type Segmentation struct {
-	Extensions []Extension `xml:"Extension"`
+	MultipleModelMethod MultipleModelMethod `xml:"multipleModelMethod,attr"`
+	Segments            []Segment           `xml:"Segment"`
+	Extensions          []Extension         `xml:"Extension"`
 }
 
 /*

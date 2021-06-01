@@ -1,13 +1,9 @@
-package treemodel
+package evaluation
 
 import (
 	"errors"
-	"fmt"
-	"strconv"
-
-	"github.com/gopredict/pmml/evaluation"
-	"github.com/gopredict/pmml/evaluation/common"
 	"github.com/gopredict/pmml/models"
+	"strconv"
 )
 
 type TreeModel struct {
@@ -25,7 +21,7 @@ type TreeModel struct {
 	outputField models.FieldName
 }
 
-type test func(evaluation.DataRow) predicateResult
+type test func(DataRow) predicateResult
 
 type scoreDist struct {
 	value       string
@@ -52,7 +48,7 @@ const (
 	f
 )
 
-func (n node) evaluate(input evaluation.DataRow) (scoreDist, predicateResult, float64) {
+func (n node) evaluate(input DataRow) (scoreDist, predicateResult, float64) {
 	result := n.test(input)
 
 	if result == f {
@@ -74,28 +70,35 @@ func (n node) evaluate(input evaluation.DataRow) (scoreDist, predicateResult, fl
 		}
 	}
 
+
 	score := n.score
-	if score.value == "" {
-		selected := scoreDist{}
 
-		for _, sc := range n.scoreDist {
-			if sc.recordCount > selected.recordCount {
-				selected = sc
-			}
+	for _, sc := range n.scoreDist {
+		if n.score.value == sc.value {
+			return sc, result, 1.0
 		}
-
-		score = selected
 	}
 
 	return score, result, 1.0
 }
 
 func NewTreeModel(dd *models.DataDictionary, td *models.TransformationDictionary, model *models.TreeModel) (*TreeModel, error) {
-	return &TreeModel{
-		dd:    dd,
-		td:    td,
-		model: model,
-	}, nil
+	m := new(TreeModel)
+	m.dd = dd
+	m.td = td
+	m.model = model
+
+	err := m.Validate()
+	if err != nil {
+		return nil, err
+	}
+
+	err = m.Compile()
+	if err != nil {
+		return nil, err
+	}
+
+	return m, nil
 }
 
 func (m *TreeModel) Validate() error {
@@ -162,19 +165,19 @@ func newNode(m *TreeModel, modelNode models.Node) node {
 
 	switch p := modelNode.Predicate.(type) {
 	case *models.True:
-		n.test = func(evaluation.DataRow) predicateResult { return t }
+		n.test = func(DataRow) predicateResult { return t }
 	case *models.False:
-		n.test = func(evaluation.DataRow) predicateResult { return f }
+		n.test = func(DataRow) predicateResult { return f }
 	case *models.SimplePredicate:
-		n.test = func(input evaluation.DataRow) predicateResult {
+		n.test = func(input DataRow) predicateResult {
 			return evaluateSimplePredicate(p, input, m.fieldTypes)
 		}
 	case *models.CompoundPredicate:
-		n.test = func(input evaluation.DataRow) predicateResult {
+		n.test = func(input DataRow) predicateResult {
 			return evaluateCompoundPredicate(p, input, m.fieldTypes)
 		}
 	case *models.SimpleSetPredicate:
-		n.test = func(input evaluation.DataRow) predicateResult {
+		n.test = func(input DataRow) predicateResult {
 			return f
 		}
 	}
@@ -200,7 +203,7 @@ func getRawValue(dt models.DataType, val string) (interface{}, error) {
 }
 
 //nolint:gocyclo
-func evaluateSimplePredicate(p *models.SimplePredicate, input evaluation.DataRow, fieldTypes map[models.FieldName]models.DataType) predicateResult {
+func evaluateSimplePredicate(p *models.SimplePredicate, input DataRow, fieldTypes map[models.FieldName]models.DataType) predicateResult {
 	predicateValueType, ok := fieldTypes[p.Field]
 	if !ok {
 		return f
@@ -296,11 +299,11 @@ func evaluateSimplePredicate(p *models.SimplePredicate, input evaluation.DataRow
 	return f
 }
 
-func evaluateSimpleSetPredicate(p *models.SimpleSetPredicate, input evaluation.DataRow, fieldTypes map[models.FieldName]models.DataType) predicateResult {
+func evaluateSimpleSetPredicate(p *models.SimpleSetPredicate, input DataRow, fieldTypes map[models.FieldName]models.DataType) predicateResult {
 	return f
 }
 
-func evaluateCompoundPredicate(p *models.CompoundPredicate, input evaluation.DataRow, fieldTypes map[models.FieldName]models.DataType) predicateResult {
+func evaluateCompoundPredicate(p *models.CompoundPredicate, input DataRow, fieldTypes map[models.FieldName]models.DataType) predicateResult {
 	trueCount := 0
 	unknownCount := 0
 
@@ -386,33 +389,33 @@ func (m *TreeModel) Verify() error {
 		return nil
 	}
 
-	return evaluation.ErrNotImplemented
+	return ErrNotImplemented
 }
 
-func (m *TreeModel) Evaluate(input evaluation.DataRow) (evaluation.DataRow, error) {
+func (m *TreeModel) Evaluate(input DataRow) (DataRow, error) {
 	var err error
 
 	if !m.validated {
-		return nil, evaluation.ErrNotValidated
+		return nil, ErrNotValidated
 	}
 
 	if !m.compiled {
-		return nil, evaluation.ErrNotCompiled
+		return nil, ErrNotCompiled
 	}
 
-	input, err = common.HandleInput(input, m.dd, m.td, &m.model.LocalTransformations, &m.model.MiningSchema)
+	input, err = HandleInput(input, m.dd, m.td, &m.model.LocalTransformations, &m.model.MiningSchema)
 	if err != nil {
 		return nil, err
 	}
 
-	score, result, confidence := m.root.evaluate(input)
+	score, result, _ := m.root.evaluate(input)
 
-	println(fmt.Sprintf("%v", score))
+	//println(fmt.Sprintf("%v", score))
 
 	if result == t {
-		return evaluation.DataRow{
-			string(m.outputField): evaluation.NewValue(score.value),
-			"confidence":          evaluation.NewValue(confidence),
+		return DataRow{
+			string(m.outputField): NewValue(score.value),
+			"probability":		   NewValue(score.probability),
 		}, nil
 	}
 
