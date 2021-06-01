@@ -4,7 +4,7 @@ import (
 	"encoding/xml"
 	"testing"
 
-	"github.com/gopredict/pmml/models"
+	"github.com/flukeish/pmml/models"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )

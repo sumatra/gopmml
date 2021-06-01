@@ -2,7 +2,7 @@ package evaluation
 
 import (
 	"errors"
-	"github.com/gopredict/pmml/models"
+	"github.com/flukeish/pmml/models"
 	"strconv"
 )
 

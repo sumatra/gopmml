@@ -2,7 +2,7 @@ package evaluation
 
 import (
 	"errors"
-	"github.com/gopredict/pmml/models"
+	"github.com/flukeish/pmml/models"
 )
 
 func HandleInput(in DataRow, dd *models.DataDictionary, td *models.TransformationDictionary, lt *models.LocalTransformations, ms *models.MiningSchema) (DataRow, error) {

@@ -2,7 +2,7 @@ package evaluation
 
 import (
 	"fmt"
-	"github.com/gopredict/pmml/models"
+	"github.com/flukeish/pmml/models"
 )
 
 type MiningModel struct {

@@ -1,4 +1,4 @@
-module github.com/gopredict/pmml
+module github.com/flukeish/pmml
 
 go 1.16
 
