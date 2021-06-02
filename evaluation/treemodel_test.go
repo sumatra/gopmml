@@ -3,8 +3,8 @@ package evaluation_test
 import (
 	"bytes"
 	"encoding/xml"
-	"pmml/evaluation"
-	"pmml/models"
+	"github.com/flukeish/pmml/evaluation"
+	"github.com/flukeish/pmml/models"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -534,6 +534,7 @@ func TestTreeMode_WeightedConfidence(t *testing.T) {
 	assert.Len(t, out, 2)
 
 	assert.Equal(t, evaluation.NewValue("will play"), out["whatIdo"])
+	assert.Equal(t, evaluation.NewValue(0.8), out["confidence"])
 }
 
 func TestTreeMode_DefaultChild(t *testing.T) {
@@ -569,6 +570,7 @@ func TestTreeMode_DefaultChild(t *testing.T) {
 
 	require.Len(t, out, 2)
 	assert.Equal(t, evaluation.NewValue("no play"), out["whatIdo"])
+	assert.Equal(t, evaluation.NewValue(0.48), out["confidence"])
 }
 
 func TestTreeMode_LastPrediction(t *testing.T) {
@@ -603,6 +605,7 @@ func TestTreeMode_LastPrediction(t *testing.T) {
 
 	require.Len(t, out, 2)
 	assert.Equal(t, evaluation.NewValue("will play"), out["whatIdo"])
+	assert.Equal(t, evaluation.NewValue(0.8), out["confidence"])
 }
 
 func TestTreeMode_AggregateNodes(t *testing.T) {

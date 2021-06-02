@@ -31,6 +31,8 @@ type scoreDist struct {
 }
 
 type node struct {
+	id string
+	defaultChild string
 	children []node
 
 	scoreDist []scoreDist
@@ -48,38 +50,283 @@ const (
 	f
 )
 
-func (n node) evaluate(input DataRow) (scoreDist, predicateResult, float64) {
+/*
+const (
+	MissingValueStrategyAggregateNodes     = MissingValueStrategy("aggregateNodes")
+	MissingValueStrategyDefaultChild       = MissingValueStrategy("defaultChild")
+	MissingValueStrategyLastPrediction     = MissingValueStrategy("lastPrediction")
+	MissingValueStrategyNone               = MissingValueStrategy("none")
+	MissingValueStrategyNullPrediction     = MissingValueStrategy("nullPrediction")
+	MissingValueStrategyWeightedConfidence = MissingValueStrategy("weightedConfidence")
+)
+ */
+
+func pickBest(scores []scoreDist) scoreDist {
+	best := scoreDist{recordCount: 0.0}
+	for _, score := range scores {
+		if score.recordCount > best.recordCount {
+			best = score
+		}
+	}
+
+	return best
+}
+
+func (n node) evaluate(input DataRow) (scoreDist, predicateResult) {
+	switch n.m.model.MissingValueStrategy {
+	case models.MissingValueStrategyAggregateNodes:
+		return n.evaluateMissingValueStrategyAggregateNodes(input)
+	case models.MissingValueStrategyWeightedConfidence:
+		scores, result := n.evaluateMissingValueStrategyWeightedConfidence(input)
+		return pickBest(scores), result
+	case models.MissingValueStrategyDefaultChild:
+		return n.evaluateMissingValueStrategyDefaultChild(input)
+	case models.MissingValueStrategyLastPrediction:
+		return n.evaluateMissingValueStrategyLastPrediction(input)
+	default:
+		return n.evaluateMissingValueStrategyNullPrediction(input)
+	}
+}
+
+func (n node) evaluateMissingValueStrategyLastPrediction(input DataRow) (scoreDist, predicateResult) {
 	result := n.test(input)
 
 	if result == f {
-		return scoreDist{}, result, 1.0
+		return scoreDist{confidence: 1.0}, result
 	}
 
-	if result == u && n.m.model.MissingValueStrategy == models.MissingValueStrategyNullPrediction {
-		return scoreDist{}, result, 1.0
-	}
+	unknownValues := false
+	var trueValue *scoreDist
 
 	for _, c := range n.children {
-		score, childResult, confidence := c.evaluate(input)
-		if childResult == t {
-			return score, childResult, confidence
+		score, childResult := c.evaluateMissingValueStrategyLastPrediction(input)
+
+		if childResult == u {
+			unknownValues = true
 		}
 
-		if childResult == u && n.m.model.MissingValueStrategy == models.MissingValueStrategyNullPrediction {
-			return scoreDist{}, childResult, 1.0
+		if childResult == t {
+			trueValue = &score
 		}
 	}
 
+	if !unknownValues && trueValue != nil {
+		return *trueValue, t
+	}
 
 	score := n.score
 
 	for _, sc := range n.scoreDist {
-		if n.score.value == sc.value {
-			return sc, result, 1.0
+		if score.value == sc.value {
+			return sc, result
 		}
 	}
 
-	return score, result, 1.0
+	return score, result
+}
+
+func (n node) evaluateMissingValueStrategyDefaultChild(input DataRow) (scoreDist, predicateResult) {
+	result := n.test(input)
+
+	if result == f {
+		return scoreDist{confidence: 1.0}, result
+	}
+
+	childScores := make(map[string]scoreDist)
+	unknownValues := false
+	var trueValue *scoreDist
+
+	for _, c := range n.children {
+		score, childResult := c.evaluateMissingValueStrategyDefaultChild(input)
+		childScores[c.id] = score
+
+		if childResult == u {
+			unknownValues = true
+		}
+
+		if childResult == t {
+			trueValue = &score
+		}
+	}
+
+	if !unknownValues && trueValue != nil {
+		return *trueValue, t
+	}
+
+	if unknownValues {
+		score, ok := childScores[n.defaultChild]
+		if !ok {
+			return scoreDist{}, u
+		}
+
+		score.confidence = score.confidence * float64(n.m.model.MissingValuePenalty)
+		return score, t
+	}
+
+	score := n.score
+
+	for _, sc := range n.scoreDist {
+		if score.value == sc.value {
+			return sc, result
+		}
+	}
+
+	return score, result
+}
+
+func (n node) evaluateMissingValueStrategyNullPrediction(input DataRow) (scoreDist, predicateResult) {
+	result := n.test(input)
+
+	if result == f {
+		return scoreDist{confidence: 1.0}, result
+	}
+
+	if result == u  {
+		return scoreDist{confidence: 1.0}, result
+	}
+
+	for _, c := range n.children {
+		score, childResult := c.evaluateMissingValueStrategyNullPrediction(input)
+
+		if childResult == t {
+			return score, childResult
+		}
+
+		if childResult == u {
+			return scoreDist{confidence: 1.0}, childResult
+		}
+	}
+
+	score := n.score
+
+	for _, sc := range n.scoreDist {
+		if score.value == sc.value {
+			return sc, result
+		}
+	}
+
+	return score, result
+}
+
+func (n node) evaluateMissingValueStrategyWeightedConfidence(input DataRow) ([]scoreDist, predicateResult) {
+	result := n.test(input)
+
+	if result == f {
+		return n.scoreDist, result
+	}
+
+	childScores := make([]scoreDist, 0, 0)
+	unknownValues := false
+	var trueValue []scoreDist
+
+	for _, c := range n.children {
+		scores, childResult := c.evaluateMissingValueStrategyWeightedConfidence(input)
+
+		if childResult != f {
+			childScores = append(childScores, scores...)
+		}
+
+		if childResult == u {
+			unknownValues = true
+		} else if childResult == t {
+			trueValue = scores
+		}
+	}
+
+	if !unknownValues && len(trueValue) > 0 {
+		return trueValue, result
+	}
+
+	if unknownValues {
+		aggScore := scoreDist{confidence: 0.0, recordCount: 0.0}
+		recordCount := 0.0
+
+		scores := make(map[string][]scoreDist)
+
+		for _, sc := range childScores {
+			scores[sc.value] = append(scores[sc.value], sc)
+
+			if sc.recordCount > aggScore.recordCount {
+				aggScore = sc
+			}
+
+			recordCount = recordCount + sc.recordCount
+		}
+
+		best, ok := scores[aggScore.value]
+		if !ok {
+			return n.scoreDist, result
+		}
+
+		aggScore.probability = 0.0
+		aggScore.confidence = 0.0
+
+		for _, score := range best {
+			cnt := score.recordCount / score.probability
+			prob := score.probability * (cnt / recordCount)
+
+			aggScore.probability += prob
+			aggScore.confidence += prob
+		}
+
+		return []scoreDist{aggScore}, result
+	}
+
+	return n.scoreDist, result
+}
+
+func (n node) evaluateMissingValueStrategyAggregateNodes(input DataRow) (scoreDist, predicateResult) {
+	result := n.test(input)
+
+	if result == f {
+		return n.score, result
+	}
+
+	childScores := make([]scoreDist, 0, 0)
+	unknownValues := false
+	var trueValue *scoreDist
+
+	for _, c := range n.children {
+		score, childResult := c.evaluateMissingValueStrategyAggregateNodes(input)
+		childScores = append(childScores, score)
+
+		if childResult == u {
+			unknownValues = true
+		} else if childResult == t {
+			trueValue = &score
+		}
+	}
+
+	if !unknownValues && trueValue != nil {
+		return *trueValue, result
+	}
+
+	if unknownValues {
+		aggScore := scoreDist{confidence: 0.0, recordCount: 0.0}
+		recordCount := 0.0
+
+		for _, sc := range childScores {
+			if sc.recordCount > aggScore.recordCount {
+				aggScore = sc
+			}
+
+			recordCount = recordCount + (sc.recordCount / sc.probability)
+		}
+
+		aggScore.probability = aggScore.recordCount / recordCount
+		aggScore.confidence = aggScore.recordCount / recordCount
+		return aggScore, t
+	}
+
+	score := n.score
+
+	for _, sc := range n.scoreDist {
+		if score.value == sc.value {
+			return sc, result
+		}
+	}
+
+	return score, result
 }
 
 func NewTreeModel(dd *models.DataDictionary, td *models.TransformationDictionary, model *models.TreeModel) (*TreeModel, error) {
@@ -124,6 +371,8 @@ func (m *TreeModel) Validate() error {
 
 func newNode(m *TreeModel, modelNode models.Node) node {
 	n := node{
+		id: modelNode.ID,
+		defaultChild: modelNode.DefaultChild,
 		m: m,
 	}
 
@@ -341,13 +590,14 @@ func evaluateCompoundPredicate(p *models.CompoundPredicate, input DataRow, field
 			return t
 		}
 	case models.CompoundPredicateOperatorOr:
-		if unknownCount > 0 && unknownCount+trueCount < len(p.Predicates) {
-			return u
-		}
-
 		if trueCount > 0 {
 			return t
 		}
+
+		if unknownCount > 0 {
+			return u
+		}
+
 	case models.CompoundPredicateOperatorXor:
 		if unknownCount > 0 {
 			return u
@@ -408,14 +658,14 @@ func (m *TreeModel) Evaluate(input DataRow) (DataRow, error) {
 		return nil, err
 	}
 
-	score, result, _ := m.root.evaluate(input)
+	score, result := m.root.evaluate(input)
 
 	//println(fmt.Sprintf("%v", score))
 
 	if result == t {
 		return DataRow{
 			string(m.outputField): NewValue(score.value),
-			"probability":		   NewValue(score.probability),
+			"confidence":		   NewValue(score.confidence),
 		}, nil
 	}
 
