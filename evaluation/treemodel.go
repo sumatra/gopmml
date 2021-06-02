@@ -74,6 +74,8 @@ func pickBest(scores []scoreDist) scoreDist {
 
 func (n node) evaluate(input DataRow) (scoreDist, predicateResult) {
 	switch n.m.model.MissingValueStrategy {
+	case models.MissingValueStrategyNullPrediction:
+		return n.evaluateMissingValueStrategyNullPrediction(input)
 	case models.MissingValueStrategyAggregateNodes:
 		return n.evaluateMissingValueStrategyAggregateNodes(input)
 	case models.MissingValueStrategyWeightedConfidence:
@@ -84,8 +86,34 @@ func (n node) evaluate(input DataRow) (scoreDist, predicateResult) {
 	case models.MissingValueStrategyLastPrediction:
 		return n.evaluateMissingValueStrategyLastPrediction(input)
 	default:
-		return n.evaluateMissingValueStrategyNullPrediction(input)
+		return n.evaluateMissingValueStrategyNone(input)
 	}
+}
+
+func (n node) evaluateMissingValueStrategyNone(input DataRow) (scoreDist, predicateResult) {
+	result := n.test(input)
+
+	if result == f || result == u {
+		return scoreDist{}, f
+	}
+
+	for _, c := range n.children {
+		score, childResult := c.evaluateMissingValueStrategyNullPrediction(input)
+
+		if childResult == t {
+			return score, childResult
+		}
+	}
+
+	score := n.score
+
+	for _, sc := range n.scoreDist {
+		if score.value == sc.value {
+			return sc, result
+		}
+	}
+
+	return score, result
 }
 
 func (n node) evaluateMissingValueStrategyLastPrediction(input DataRow) (scoreDist, predicateResult) {
@@ -388,7 +416,7 @@ func newNode(m *TreeModel, modelNode models.Node) node {
 	}
 
 	for _, sc := range modelNode.ScoreDistributions {
-		confidence := 0.0
+		confidence := float64(sc.RecordCount) / totalRecords
 		if sc.Confidence != nil {
 			confidence = float64(*sc.Confidence)
 		}

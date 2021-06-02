@@ -129,15 +129,15 @@ func (m *MiningModel) Evaluate(input DataRow, target string) (float64, error) {
 			return 0.0, nil
 		}
 
-		probability, ok := out["probability"]
+		confidence, ok := out["confidence"]
 		if !ok {
 			return 0.0, nil
 		}
 
 		if score.String() == target {
-			totalScore += probability.Float64()
+			totalScore += confidence.Float64()
 		} else {
-			totalScore += (1 - probability.Float64())
+			totalScore += (1.0 - confidence.Float64())
 		}
 
 		mdlCnt += 1.0
