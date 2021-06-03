@@ -63,12 +63,15 @@ const (
 
 func pickBest(scores []scoreDist) scoreDist {
 	best := scoreDist{recordCount: 0.0}
+	total := 0.0
 	for _, score := range scores {
 		if score.recordCount > best.recordCount {
 			best = score
 		}
+		total += score.recordCount
 	}
 
+	best.probability = best.recordCount / total
 	return best
 }
 
@@ -105,15 +108,11 @@ func (n node) evaluateMissingValueStrategyNone(input DataRow) (scoreDist, predic
 		}
 	}
 
-	score := n.score
-
-	for _, sc := range n.scoreDist {
-		if score.value == sc.value {
-			return sc, result
-		}
+	if len(n.scoreDist) > 0 {
+		return pickBest(n.scoreDist), result
 	}
 
-	return score, result
+	return n.score, result
 }
 
 func (n node) evaluateMissingValueStrategyLastPrediction(input DataRow) (scoreDist, predicateResult) {
@@ -142,15 +141,11 @@ func (n node) evaluateMissingValueStrategyLastPrediction(input DataRow) (scoreDi
 		return *trueValue, t
 	}
 
-	score := n.score
-
-	for _, sc := range n.scoreDist {
-		if score.value == sc.value {
-			return sc, result
-		}
+	if len(n.scoreDist) > 0 {
+		return pickBest(n.scoreDist), result
 	}
 
-	return score, result
+	return n.score, result
 }
 
 func (n node) evaluateMissingValueStrategyDefaultChild(input DataRow) (scoreDist, predicateResult) {
@@ -191,15 +186,11 @@ func (n node) evaluateMissingValueStrategyDefaultChild(input DataRow) (scoreDist
 		return score, t
 	}
 
-	score := n.score
-
-	for _, sc := range n.scoreDist {
-		if score.value == sc.value {
-			return sc, result
-		}
+	if len(n.scoreDist) > 0 {
+		return pickBest(n.scoreDist), result
 	}
 
-	return score, result
+	return n.score, result
 }
 
 func (n node) evaluateMissingValueStrategyNullPrediction(input DataRow) (scoreDist, predicateResult) {
@@ -228,6 +219,7 @@ func (n node) evaluateMissingValueStrategyNullPrediction(input DataRow) (scoreDi
 	if len(n.scoreDist) > 0 {
 		return pickBest(n.scoreDist), result
 	}
+
 	return n.score, result
 }
 
@@ -341,15 +333,11 @@ func (n node) evaluateMissingValueStrategyAggregateNodes(input DataRow) (scoreDi
 		return aggScore, t
 	}
 
-	score := n.score
-
-	for _, sc := range n.scoreDist {
-		if score.value == sc.value {
-			return sc, result
-		}
+	if len(n.scoreDist) > 0 {
+		return pickBest(n.scoreDist), result
 	}
 
-	return score, result
+	return n.score, result
 }
 
 func NewModel(dd *models.DataDictionary, td *models.TransformationDictionary, mdl models.ModelElement) (Model, error){
