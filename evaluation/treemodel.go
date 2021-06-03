@@ -225,15 +225,10 @@ func (n node) evaluateMissingValueStrategyNullPrediction(input DataRow) (scoreDi
 		}
 	}
 
-	score := n.score
-
-	for _, sc := range n.scoreDist {
-		if score.value == sc.value {
-			return sc, result
-		}
+	if len(n.scoreDist) > 0 {
+		return pickBest(n.scoreDist), result
 	}
-
-	return score, result
+	return n.score, result
 }
 
 func (n node) evaluateMissingValueStrategyWeightedConfidence(input DataRow) ([]scoreDist, predicateResult) {
@@ -355,6 +350,17 @@ func (n node) evaluateMissingValueStrategyAggregateNodes(input DataRow) (scoreDi
 	}
 
 	return score, result
+}
+
+func NewModel(dd *models.DataDictionary, td *models.TransformationDictionary, mdl models.ModelElement) (Model, error){
+	switch v := mdl.(type) {
+	case *models.TreeModel:
+		return NewTreeModel(dd, td, v)
+	case *models.MiningModel:
+		return NewMiningModel(dd, td, v)
+	default:
+		return nil, errors.New("invalid model type")
+	}
 }
 
 func NewTreeModel(dd *models.DataDictionary, td *models.TransformationDictionary, model *models.TreeModel) (*TreeModel, error) {
@@ -687,8 +693,6 @@ func (m *TreeModel) Evaluate(input DataRow) (DataRow, error) {
 	}
 
 	score, result := m.root.evaluate(input)
-
-	//println(fmt.Sprintf("%v", score))
 
 	if result == t {
 		return DataRow{

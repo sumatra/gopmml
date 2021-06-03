@@ -1,0 +1,260 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<PMML xmlns="http://www.dmg.org/PMML-4_4" xmlns:data="http://jpmml.org/jpmml-model/InlineTable" version="4.4">
+	<Header>
+		<Application name="JPMML-SkLearn" version="1.6.18"/>
+		<Timestamp>2021-06-03T02:37:26Z</Timestamp>
+	</Header>
+	<MiningBuildTask>
+		<Extension>PMMLPipeline(steps=[('classifier', RandomForestClassifier(max_depth=2, n_estimators=3))])</Extension>
+	</MiningBuildTask>
+	<DataDictionary>
+		<DataField name="label" optype="categorical" dataType="string">
+			<Value value="fraud"/>
+			<Value value="good"/>
+		</DataField>
+		<DataField name="a" optype="continuous" dataType="float"/>
+		<DataField name="b" optype="continuous" dataType="float"/>
+		<DataField name="c" optype="continuous" dataType="float"/>
+	</DataDictionary>
+	<TransformationDictionary/>
+	<MiningModel functionName="classification" algorithmName="sklearn.ensemble._forest.RandomForestClassifier">
+		<MiningSchema>
+			<MiningField name="label" usageType="target"/>
+			<MiningField name="c"/>
+			<MiningField name="b"/>
+			<MiningField name="a"/>
+		</MiningSchema>
+		<Output>
+			<OutputField name="probability(fraud)" optype="continuous" dataType="double" feature="probability" value="fraud"/>
+			<OutputField name="probability(good)" optype="continuous" dataType="double" feature="probability" value="good"/>
+		</Output>
+		<LocalTransformations>
+			<DerivedField name="double(c)" optype="continuous" dataType="double">
+				<FieldRef field="c"/>
+			</DerivedField>
+			<DerivedField name="double(b)" optype="continuous" dataType="double">
+				<FieldRef field="b"/>
+			</DerivedField>
+			<DerivedField name="double(a)" optype="continuous" dataType="double">
+				<FieldRef field="a"/>
+			</DerivedField>
+		</LocalTransformations>
+		<Segmentation multipleModelMethod="average">
+			<Segment id="1">
+				<True/>
+				<TreeModel functionName="classification" splitCharacteristic="binarySplit">
+					<MiningSchema>
+						<MiningField name="double(c)"/>
+						<MiningField name="double(b)"/>
+						<MiningField name="double(a)"/>
+					</MiningSchema>
+					<Node id="0">
+						<True/>
+						<Node id="1">
+							<SimplePredicate field="double(c)" operator="lessOrEqual" value="0.3500000089406967"/>
+							<Node id="2" score="fraud" recordCount="3">
+								<SimplePredicate field="double(b)" operator="lessOrEqual" value="0.30000000447034836"/>
+								<ScoreDistribution value="fraud" recordCount="2"/>
+								<ScoreDistribution value="good" recordCount="1"/>
+							</Node>
+							<Node id="3" score="fraud" recordCount="3">
+								<SimplePredicate field="double(b)" operator="greaterThan" value="0.30000000447034836"/>
+								<ScoreDistribution value="fraud" recordCount="3"/>
+								<ScoreDistribution value="good" recordCount="0"/>
+							</Node>
+						</Node>
+						<Node id="4">
+							<SimplePredicate field="double(c)" operator="greaterThan" value="0.3500000089406967"/>
+							<Node id="5" score="fraud" recordCount="1">
+								<SimplePredicate field="double(a)" operator="lessOrEqual" value="0.15000000223517418"/>
+								<ScoreDistribution value="fraud" recordCount="1"/>
+								<ScoreDistribution value="good" recordCount="0"/>
+							</Node>
+							<Node id="6" score="good" recordCount="13">
+								<SimplePredicate field="double(a)" operator="greaterThan" value="0.15000000223517418"/>
+								<ScoreDistribution value="fraud" recordCount="3"/>
+								<ScoreDistribution value="good" recordCount="10"/>
+							</Node>
+						</Node>
+					</Node>
+				</TreeModel>
+			</Segment>
+			<Segment id="2">
+				<True/>
+				<TreeModel functionName="classification" splitCharacteristic="binarySplit">
+					<MiningSchema>
+						<MiningField name="double(c)"/>
+						<MiningField name="double(a)"/>
+					</MiningSchema>
+					<Node id="0">
+						<True/>
+						<Node id="1" score="good" recordCount="9">
+							<SimplePredicate field="double(a)" operator="lessOrEqual" value="0.3500000089406967"/>
+							<ScoreDistribution value="fraud" recordCount="0"/>
+							<ScoreDistribution value="good" recordCount="9"/>
+						</Node>
+						<Node id="2">
+							<SimplePredicate field="double(a)" operator="greaterThan" value="0.3500000089406967"/>
+							<Node id="3" score="fraud" recordCount="4">
+								<SimplePredicate field="double(c)" operator="lessOrEqual" value="0.3500000089406967"/>
+								<ScoreDistribution value="fraud" recordCount="4"/>
+								<ScoreDistribution value="good" recordCount="0"/>
+							</Node>
+							<Node id="4" score="fraud" recordCount="7">
+								<SimplePredicate field="double(c)" operator="greaterThan" value="0.3500000089406967"/>
+								<ScoreDistribution value="fraud" recordCount="5"/>
+								<ScoreDistribution value="good" recordCount="2"/>
+							</Node>
+						</Node>
+					</Node>
+				</TreeModel>
+			</Segment>
+			<Segment id="3">
+				<True/>
+				<TreeModel functionName="classification" splitCharacteristic="binarySplit">
+					<MiningSchema>
+						<MiningField name="double(c)"/>
+						<MiningField name="double(b)"/>
+					</MiningSchema>
+					<Node id="0">
+						<True/>
+						<Node id="1" score="good" recordCount="4">
+							<SimplePredicate field="double(b)" operator="lessOrEqual" value="0.15000000223517418"/>
+							<ScoreDistribution value="fraud" recordCount="0"/>
+							<ScoreDistribution value="good" recordCount="4"/>
+						</Node>
+						<Node id="2">
+							<SimplePredicate field="double(b)" operator="greaterThan" value="0.15000000223517418"/>
+							<Node id="3" score="fraud" recordCount="14">
+								<SimplePredicate field="double(c)" operator="lessOrEqual" value="0.949999988079071"/>
+								<ScoreDistribution value="fraud" recordCount="12"/>
+								<ScoreDistribution value="good" recordCount="2"/>
+							</Node>
+							<Node id="4" score="good" recordCount="2">
+								<SimplePredicate field="double(c)" operator="greaterThan" value="0.949999988079071"/>
+								<ScoreDistribution value="fraud" recordCount="0"/>
+								<ScoreDistribution value="good" recordCount="2"/>
+							</Node>
+						</Node>
+					</Node>
+				</TreeModel>
+			</Segment>
+		</Segmentation>
+		<ModelVerification recordCount="15">
+			<VerificationFields>
+				<VerificationField field="a" column="data:a"/>
+				<VerificationField field="b" column="data:b"/>
+				<VerificationField field="c" column="data:c"/>
+				<VerificationField field="probability(fraud)" column="data:probability_fraud" precision="1.0E-13" zeroThreshold="1.0E-13"/>
+				<VerificationField field="probability(good)" column="data:probability_good" precision="1.0E-13" zeroThreshold="1.0E-13"/>
+			</VerificationFields>
+			<InlineTable>
+				<row>
+					<data:a>0.1</data:a>
+					<data:b>0.2</data:b>
+					<data:c>0.4</data:c>
+					<data:probability_fraud>0.6190476190476191</data:probability_fraud>
+					<data:probability_good>0.38095238095238093</data:probability_good>
+				</row>
+				<row>
+					<data:a>0.6</data:a>
+					<data:b>0.8</data:b>
+					<data:c>0.4</data:c>
+					<data:probability_fraud>0.6007326007326007</data:probability_fraud>
+					<data:probability_good>0.39926739926739924</data:probability_good>
+				</row>
+				<row>
+					<data:a>0.9</data:a>
+					<data:b>0.3</data:b>
+					<data:c>0.9</data:c>
+					<data:probability_fraud>0.6007326007326007</data:probability_fraud>
+					<data:probability_good>0.39926739926739924</data:probability_good>
+				</row>
+				<row>
+					<data:a>0.4</data:a>
+					<data:b>0.5</data:b>
+					<data:c>0.0</data:c>
+					<data:probability_fraud>0.9523809523809524</data:probability_fraud>
+					<data:probability_good>0.047619047619047616</data:probability_good>
+				</row>
+				<row>
+					<data:a>0.9</data:a>
+					<data:b>0.2</data:b>
+					<data:c>0.7</data:c>
+					<data:probability_fraud>0.6007326007326007</data:probability_fraud>
+					<data:probability_good>0.39926739926739924</data:probability_good>
+				</row>
+				<row>
+					<data:a>0.4</data:a>
+					<data:b>0.0</data:b>
+					<data:c>0.4</data:c>
+					<data:probability_fraud>0.315018315018315</data:probability_fraud>
+					<data:probability_good>0.6849816849816849</data:probability_good>
+				</row>
+				<row>
+					<data:a>0.4</data:a>
+					<data:b>0.1</data:b>
+					<data:c>0.2</data:c>
+					<data:probability_fraud>0.5555555555555555</data:probability_fraud>
+					<data:probability_good>0.4444444444444444</data:probability_good>
+				</row>
+				<row>
+					<data:a>0.2</data:a>
+					<data:b>0.1</data:b>
+					<data:c>1.0</data:c>
+					<data:probability_fraud>0.07692307692307693</data:probability_fraud>
+					<data:probability_good>0.923076923076923</data:probability_good>
+				</row>
+				<row>
+					<data:a>0.1</data:a>
+					<data:b>0.2</data:b>
+					<data:c>0.7</data:c>
+					<data:probability_fraud>0.6190476190476191</data:probability_fraud>
+					<data:probability_good>0.38095238095238093</data:probability_good>
+				</row>
+				<row>
+					<data:a>0.2</data:a>
+					<data:b>0.5</data:b>
+					<data:c>0.7</data:c>
+					<data:probability_fraud>0.3626373626373626</data:probability_fraud>
+					<data:probability_good>0.6373626373626373</data:probability_good>
+				</row>
+				<row>
+					<data:a>1.0</data:a>
+					<data:b>0.2</data:b>
+					<data:c>0.2</data:c>
+					<data:probability_fraud>0.8412698412698413</data:probability_fraud>
+					<data:probability_good>0.15873015873015872</data:probability_good>
+				</row>
+				<row>
+					<data:a>0.5</data:a>
+					<data:b>0.2</data:b>
+					<data:c>0.7</data:c>
+					<data:probability_fraud>0.6007326007326007</data:probability_fraud>
+					<data:probability_good>0.39926739926739924</data:probability_good>
+				</row>
+				<row>
+					<data:a>0.3</data:a>
+					<data:b>0.3</data:b>
+					<data:c>0.5</data:c>
+					<data:probability_fraud>0.3626373626373626</data:probability_fraud>
+					<data:probability_good>0.6373626373626373</data:probability_good>
+				</row>
+				<row>
+					<data:a>0.5</data:a>
+					<data:b>0.8</data:b>
+					<data:c>0.9</data:c>
+					<data:probability_fraud>0.6007326007326007</data:probability_fraud>
+					<data:probability_good>0.39926739926739924</data:probability_good>
+				</row>
+				<row>
+					<data:a>0.2</data:a>
+					<data:b>0.6</data:b>
+					<data:c>0.2</data:c>
+					<data:probability_fraud>0.6190476190476191</data:probability_fraud>
+					<data:probability_good>0.38095238095238093</data:probability_good>
+				</row>
+			</InlineTable>
+		</ModelVerification>
+	</MiningModel>
+</PMML>

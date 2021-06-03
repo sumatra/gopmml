@@ -2406,6 +2406,31 @@ type InlineTable struct {
 
 func (*InlineTable) table() {}
 
+func (x *InlineTable) UnmarshalXML(decoder *xml.Decoder, start xml.StartElement) error {
+	for {
+		var token xml.Token
+
+		token, err := decoder.Token()
+		if err != nil {
+			return err
+		}
+
+		switch tok := token.(type) {
+		case xml.StartElement:
+			if tok.Name.Local == "row" {
+				row := make(Row)
+				err = decoder.DecodeElement(&row, &tok)
+				x.Rows = append(x.Rows, row)
+			}
+
+		case xml.EndElement:
+			return nil
+		}
+	}
+
+	return nil
+}
+
 /*
   <xs:element name="InstanceField">
     <xs:complexType>
@@ -2881,6 +2906,7 @@ type MiningModel struct {
 	IsScorable    bool    `xml:"isScorable,attr"`
 	ModelName     *string `xml:"modelName,attr"`
 
+	ModelVerification    ModelVerification    `xml:"ModelVerification"`
 	MiningSchema         MiningSchema         `xml:"MiningSchema"`
 	LocalTransformations LocalTransformations `xml:"LocalTransformations"`
 	Output               Output               `xml:"Output"`
@@ -5723,7 +5749,11 @@ type VectorInstance struct {
   </xs:element>
 */
 type VerificationField struct {
-	Extensions []Extension `xml:"Extension"`
+	Field         FieldName   `xml:"field,attr"`
+	Column        string      `xml:"column,attr"`
+	Precision     float64     `xml:"precision,attr"`
+	ZeroThreshold float64     `xml:"zeroThreshold,attr"`
+	Extensions    []Extension `xml:"Extension"`
 }
 
 /*
@@ -5869,7 +5899,34 @@ type Minkowski struct {
     </xs:complexType>
   </xs:element>
 */
-type Row struct {
+
+type Row map[string]interface{}
+
+func (x Row) UnmarshalXML(decoder *xml.Decoder, start xml.StartElement) error {
+	for {
+		var token xml.Token
+
+		token, err := decoder.Token()
+		if err != nil {
+			return err
+		}
+
+		switch tok := token.(type) {
+		case xml.StartElement:
+			key := tok.Name.Local
+			var value float64
+			err = decoder.DecodeElement(&value, &tok)
+			if err != nil {
+				return err
+			}
+			x[key] = value
+
+		case xml.EndElement:
+			return nil
+		}
+	}
+
+	return nil
 }
 
 /*
