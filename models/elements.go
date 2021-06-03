@@ -2906,7 +2906,7 @@ type MiningModel struct {
 	IsScorable    bool    `xml:"isScorable,attr"`
 	ModelName     *string `xml:"modelName,attr"`
 
-	ModelVerification    ModelVerification    `xml:"ModelVerification"`
+	ModelVerification    *ModelVerification    `xml:"ModelVerification"`
 	MiningSchema         MiningSchema         `xml:"MiningSchema"`
 	LocalTransformations LocalTransformations `xml:"LocalTransformations"`
 	Output               Output               `xml:"Output"`

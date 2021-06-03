@@ -3,7 +3,6 @@ package evaluation
 import (
 	"fmt"
 	"github.com/flukeish/pmml/models"
-	"math"
 )
 
 type MiningModel struct {
@@ -41,50 +40,7 @@ func NewMiningModel(dd *models.DataDictionary, td *models.TransformationDictiona
 }
 
 func (m *MiningModel) Verify() error {
-	outputMap := make(map[string]string)
-
-	for _, vField := range m.model.ModelVerification.VerificationFields.Fields {
-		outputMap[vField.Column] = string(vField.Field)
-	}
-
-	for _, vRow := range m.model.ModelVerification.InlineTable.Rows {
-		input := make(DataRow)
-		for k, v := range vRow {
-			input[k] = NewValue(v)
-		}
-
-		output, err := m.Evaluate(input)
-		if err != nil {
-			return err
-		}
-
-		for k, v := range input {
-			outKey := fmt.Sprintf("data:%s", k)
-			resKey, ok := outputMap[outKey]
-			if ok {
-				expected := v.Float64()
-				predictedVal, ok := output[resKey]
-				predicted := predictedVal.Float64()
-				if ok {
-					if math.Abs(expected - predicted) > 1e6 {
-						return fmt.Errorf("%s: expected %f, predicted %f", k, expected, predicted)
-					}
-				}
-			}
-		}
-
-		for k, v := range output {
-			col, ok := outputMap[k]
-			if ok {
-				expected := input[col].Float64()
-				predicted := v.Float64()
-				if expected != predicted {
-					return fmt.Errorf("%s: expected %f, predicted %f", col, expected, predicted)
-				}
-			}
-		}
-	}
-	return nil
+	return verifyModel(m, m.model.ModelVerification)
 }
 
 func (m *MiningModel) Validate() error {
@@ -168,44 +124,30 @@ func (m *MiningModel) Evaluate(input DataRow) (DataRow, error) {
 	}
 
 	mdlCnt := 0.0
-
-
-	labelScores := make([]float64, 2, 2)
-	labels := make([]string, 2, 2)
-
-	labels[0] = string(m.outputFields[0].Name)
-	labels[1] = string(m.outputFields[1].Name)
+	aggScores := make(map[string]float64)
 
 	for _, tree := range m.trees {
-		out, err := tree.Evaluate(input)
+		treeout, err := tree.Evaluate(input)
 		if err != nil {
 			return nil, err
 		}
 
-		score, ok := out[string(m.outputField)]
-		if !ok {
-			return nil, nil
-		}
-
-		confidence, ok := out["confidence"]
-		if !ok {
-			return nil, nil
-		}
-
-		if labels[0] == fmt.Sprintf("probability(%s)", score.String()) {
-			labelScores[0] += confidence.Float64()
-			labelScores[1] += 1 - confidence.Float64()
-		} else {
-			labelScores[1] += confidence.Float64()
-			labelScores[0] += 1 - confidence.Float64()
+		for _, field := range m.outputFields {
+			outval, ok := treeout[string(field.Name)]
+			if ok {
+				agg := aggScores[string(field.Name)]
+				agg += outval.Float64()
+				aggScores[string(field.Name)] = agg
+			}
 		}
 
 		mdlCnt += 1.0
 	}
 
 	out := make(DataRow)
-	out[labels[0]] = NewValue(labelScores[0] / mdlCnt)
-	out[labels[1]] = NewValue(labelScores[1] / mdlCnt)
+	for lbl, score := range aggScores {
+		out[lbl] = NewValue(score / mdlCnt)
+	}
 
 	return out, nil
 }

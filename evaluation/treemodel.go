@@ -2,6 +2,7 @@ package evaluation
 
 import (
 	"errors"
+	"fmt"
 	"github.com/flukeish/pmml/models"
 	"strconv"
 )
@@ -62,28 +63,25 @@ const (
  */
 
 func pickBest(scores []scoreDist) scoreDist {
-	best := scoreDist{recordCount: 0.0}
-	total := 0.0
+	best := scoreDist{probability: 0.0}
+
 	for _, score := range scores {
-		if score.recordCount > best.recordCount {
+		if score.probability > best.probability {
 			best = score
 		}
-		total += score.recordCount
 	}
 
-	best.probability = best.recordCount / total
 	return best
 }
 
-func (n node) evaluate(input DataRow) (scoreDist, predicateResult) {
+func (n node) evaluate(input DataRow) ([]scoreDist, predicateResult) {
 	switch n.m.model.MissingValueStrategy {
 	case models.MissingValueStrategyNullPrediction:
 		return n.evaluateMissingValueStrategyNullPrediction(input)
 	case models.MissingValueStrategyAggregateNodes:
 		return n.evaluateMissingValueStrategyAggregateNodes(input)
 	case models.MissingValueStrategyWeightedConfidence:
-		scores, result := n.evaluateMissingValueStrategyWeightedConfidence(input)
-		return pickBest(scores), result
+		return n.evaluateMissingValueStrategyWeightedConfidence(input)
 	case models.MissingValueStrategyDefaultChild:
 		return n.evaluateMissingValueStrategyDefaultChild(input)
 	case models.MissingValueStrategyLastPrediction:
@@ -92,38 +90,57 @@ func (n node) evaluate(input DataRow) (scoreDist, predicateResult) {
 		return n.evaluateMissingValueStrategyNone(input)
 	}
 }
+var emptyScoreDist []scoreDist
 
-func (n node) evaluateMissingValueStrategyNone(input DataRow) (scoreDist, predicateResult) {
+func (n node) outputScoreDist() []scoreDist {
+	if len(n.scoreDist) > 0 {
+		return n.scoreDist
+	} else {
+		sd := make([]scoreDist, 0, 0)
+
+		for _, field := range n.m.dd.DataFields {
+			if field.Name == n.m.outputField {
+				for _, val := range field.Values {
+					if val.Value == n.score.value {
+						sd = append(sd, scoreDist{val.Value, 1.0, 1.0, n.score.recordCount})
+					} else {
+						sd = append(sd, scoreDist{val.Value, 0.0, 0.0, 0})
+					}
+				}
+			}
+		}
+
+		return sd
+	}
+}
+
+func (n node) evaluateMissingValueStrategyNone(input DataRow) ([]scoreDist, predicateResult) {
 	result := n.test(input)
 
 	if result == f || result == u {
-		return scoreDist{}, f
+		return emptyScoreDist, f
 	}
 
 	for _, c := range n.children {
-		score, childResult := c.evaluateMissingValueStrategyNullPrediction(input)
+		score, childResult := c.evaluateMissingValueStrategyNone(input)
 
 		if childResult == t {
 			return score, childResult
 		}
 	}
 
-	if len(n.scoreDist) > 0 {
-		return pickBest(n.scoreDist), result
-	}
-
-	return n.score, result
+	return n.outputScoreDist(), result
 }
 
-func (n node) evaluateMissingValueStrategyLastPrediction(input DataRow) (scoreDist, predicateResult) {
+func (n node) evaluateMissingValueStrategyLastPrediction(input DataRow) ([]scoreDist, predicateResult) {
 	result := n.test(input)
 
 	if result == f {
-		return scoreDist{confidence: 1.0}, result
+		return emptyScoreDist, result
 	}
 
 	unknownValues := false
-	var trueValue *scoreDist
+	var trueDist []scoreDist
 
 	for _, c := range n.children {
 		score, childResult := c.evaluateMissingValueStrategyLastPrediction(input)
@@ -133,31 +150,27 @@ func (n node) evaluateMissingValueStrategyLastPrediction(input DataRow) (scoreDi
 		}
 
 		if childResult == t {
-			trueValue = &score
+			trueDist = score
 		}
 	}
 
-	if !unknownValues && trueValue != nil {
-		return *trueValue, t
+	if !unknownValues && len(trueDist) != 0 {
+		return trueDist, t
 	}
 
-	if len(n.scoreDist) > 0 {
-		return pickBest(n.scoreDist), result
-	}
-
-	return n.score, result
+	return n.outputScoreDist(), result
 }
 
-func (n node) evaluateMissingValueStrategyDefaultChild(input DataRow) (scoreDist, predicateResult) {
+func (n node) evaluateMissingValueStrategyDefaultChild(input DataRow) ([]scoreDist, predicateResult) {
 	result := n.test(input)
 
 	if result == f {
-		return scoreDist{confidence: 1.0}, result
+		return emptyScoreDist, result
 	}
 
-	childScores := make(map[string]scoreDist)
+	childScores := make(map[string][]scoreDist)
 	unknownValues := false
-	var trueValue *scoreDist
+	var trueDist []scoreDist
 
 	for _, c := range n.children {
 		score, childResult := c.evaluateMissingValueStrategyDefaultChild(input)
@@ -168,40 +181,43 @@ func (n node) evaluateMissingValueStrategyDefaultChild(input DataRow) (scoreDist
 		}
 
 		if childResult == t {
-			trueValue = &score
+			trueDist = score
 		}
 	}
 
-	if !unknownValues && trueValue != nil {
-		return *trueValue, t
+	if !unknownValues && len(trueDist) != 0 {
+		return trueDist, t
 	}
 
 	if unknownValues {
-		score, ok := childScores[n.defaultChild]
+		defaultScores, ok := childScores[n.defaultChild]
 		if !ok {
-			return scoreDist{}, u
+			return emptyScoreDist, u
 		}
 
-		score.confidence = score.confidence * float64(n.m.model.MissingValuePenalty)
-		return score, t
+		adjustedScores := make([]scoreDist, len(defaultScores), len(defaultScores))
+
+		for idx, score := range defaultScores {
+			score.confidence = score.confidence * float64(n.m.model.MissingValuePenalty)
+			score.probability = score.probability * float64(n.m.model.MissingValuePenalty)
+			adjustedScores[idx] = score
+		}
+
+		return adjustedScores, t
 	}
 
-	if len(n.scoreDist) > 0 {
-		return pickBest(n.scoreDist), result
-	}
-
-	return n.score, result
+	return n.outputScoreDist(), result
 }
 
-func (n node) evaluateMissingValueStrategyNullPrediction(input DataRow) (scoreDist, predicateResult) {
+func (n node) evaluateMissingValueStrategyNullPrediction(input DataRow) ([]scoreDist, predicateResult) {
 	result := n.test(input)
 
 	if result == f {
-		return scoreDist{confidence: 1.0}, result
+		return emptyScoreDist, result
 	}
 
 	if result == u  {
-		return scoreDist{confidence: 1.0}, result
+		return emptyScoreDist, result
 	}
 
 	for _, c := range n.children {
@@ -212,15 +228,11 @@ func (n node) evaluateMissingValueStrategyNullPrediction(input DataRow) (scoreDi
 		}
 
 		if childResult == u {
-			return scoreDist{confidence: 1.0}, childResult
+			return emptyScoreDist, childResult
 		}
 	}
 
-	if len(n.scoreDist) > 0 {
-		return pickBest(n.scoreDist), result
-	}
-
-	return n.score, result
+	return n.outputScoreDist(), result
 }
 
 func (n node) evaluateMissingValueStrategyWeightedConfidence(input DataRow) ([]scoreDist, predicateResult) {
@@ -230,114 +242,116 @@ func (n node) evaluateMissingValueStrategyWeightedConfidence(input DataRow) ([]s
 		return n.scoreDist, result
 	}
 
-	childScores := make([]scoreDist, 0, 0)
 	unknownValues := false
-	var trueValue []scoreDist
+	var trueDist []scoreDist
+	childRecordCounts := make(map[string]float64)
+	childScores := make(map[string][]scoreDist)
+	totalRecordCount := 0.0
 
 	for _, c := range n.children {
 		scores, childResult := c.evaluateMissingValueStrategyWeightedConfidence(input)
 
 		if childResult != f {
-			childScores = append(childScores, scores...)
+			childRecordCounts[c.id] = c.score.recordCount
+			childScores[c.id] = scores
+			totalRecordCount += c.score.recordCount
 		}
 
 		if childResult == u {
 			unknownValues = true
 		} else if childResult == t {
-			trueValue = scores
+			trueDist = scores
 		}
 	}
 
-	if !unknownValues && len(trueValue) > 0 {
-		return trueValue, result
+	if !unknownValues && len(trueDist) > 0 {
+		return trueDist, result
 	}
 
 	if unknownValues {
-		aggScore := scoreDist{confidence: 0.0, recordCount: 0.0}
-		recordCount := 0.0
+		aggScoreMap := make(map[string]scoreDist)
 
-		scores := make(map[string][]scoreDist)
+		for nid, scores := range childScores {
+			for _, score := range scores {
+				aggScore, ok := aggScoreMap[score.value]
+				if !ok {
+					aggScore = scoreDist{value: score.value}
+				}
+				nodeRecordCount := childRecordCounts[nid]
 
-		for _, sc := range childScores {
-			scores[sc.value] = append(scores[sc.value], sc)
+				aggScore.recordCount += score.recordCount
+				aggScore.probability += score.probability * (nodeRecordCount / totalRecordCount)
+				aggScore.confidence += score.confidence * (nodeRecordCount / totalRecordCount)
 
-			if sc.recordCount > aggScore.recordCount {
-				aggScore = sc
+				aggScoreMap[score.value] = aggScore
 			}
-
-			recordCount = recordCount + sc.recordCount
 		}
 
-		best, ok := scores[aggScore.value]
-		if !ok {
-			return n.scoreDist, result
+		aggScores := make([]scoreDist, 0, 0)
+		for _, aggScore := range aggScoreMap {
+			aggScores = append(aggScores, aggScore)
 		}
 
-		aggScore.probability = 0.0
-		aggScore.confidence = 0.0
-
-		for _, score := range best {
-			cnt := score.recordCount / score.probability
-			prob := score.probability * (cnt / recordCount)
-
-			aggScore.probability += prob
-			aggScore.confidence += prob
-		}
-
-		return []scoreDist{aggScore}, result
+		return aggScores, t
 	}
 
-	return n.scoreDist, result
+
+	return n.outputScoreDist(), result
 }
 
-func (n node) evaluateMissingValueStrategyAggregateNodes(input DataRow) (scoreDist, predicateResult) {
+func (n node) evaluateMissingValueStrategyAggregateNodes(input DataRow) ([]scoreDist, predicateResult) {
 	result := n.test(input)
 
 	if result == f {
-		return n.score, result
+		return n.outputScoreDist(), result
 	}
 
 	childScores := make([]scoreDist, 0, 0)
 	unknownValues := false
-	var trueValue *scoreDist
+	var trueDist []scoreDist
 
 	for _, c := range n.children {
 		score, childResult := c.evaluateMissingValueStrategyAggregateNodes(input)
-		childScores = append(childScores, score)
+		childScores = append(childScores, score...)
 
 		if childResult == u {
 			unknownValues = true
 		} else if childResult == t {
-			trueValue = &score
+			trueDist = score
 		}
 	}
 
-	if !unknownValues && trueValue != nil {
-		return *trueValue, result
+	if !unknownValues && len(trueDist) != 0 {
+		return trueDist, result
 	}
 
 	if unknownValues {
-		aggScore := scoreDist{confidence: 0.0, recordCount: 0.0}
-		recordCount := 0.0
+		aggScoreMap := make(map[string]scoreDist)
 
+		recordCount := 0.0
 		for _, sc := range childScores {
-			if sc.recordCount > aggScore.recordCount {
-				aggScore = sc
+			aggScore, ok := aggScoreMap[sc.value]
+
+			if !ok {
+				aggScore.value = sc.value
 			}
 
-			recordCount = recordCount + (sc.recordCount / sc.probability)
+			aggScore.recordCount += sc.recordCount
+			aggScoreMap[sc.value] = aggScore
+			recordCount += sc.recordCount
 		}
 
-		aggScore.probability = aggScore.recordCount / recordCount
-		aggScore.confidence = aggScore.recordCount / recordCount
-		return aggScore, t
+		aggScores := make([]scoreDist, 0, 0)
+		for _, aggScore := range aggScoreMap {
+			aggScore.probability = aggScore.recordCount / recordCount
+			aggScore.confidence = aggScore.recordCount / recordCount
+			aggScores = append(aggScores, aggScore)
+		}
+
+		return aggScores, t
 	}
 
-	if len(n.scoreDist) > 0 {
-		return pickBest(n.scoreDist), result
-	}
-
-	return n.score, result
+	return n.outputScoreDist(), result
 }
 
 func NewModel(dd *models.DataDictionary, td *models.TransformationDictionary, mdl models.ModelElement) (Model, error){
@@ -642,13 +656,15 @@ func (m *TreeModel) Compile() error {
 		}
 	}
 
-	fieldTypes := map[models.FieldName]models.DataType{}
+	m.fieldTypes = make(map[models.FieldName]models.DataType)
 
 	for _, df := range m.dd.DataFields {
-		fieldTypes[df.Name] = df.DataType
+		m.fieldTypes[df.Name] = df.DataType
 	}
 
-	m.fieldTypes = fieldTypes
+	for _, tf := range m.model.LocalTransformations.DerivedFields {
+		m.fieldTypes[models.FieldName(tf.Name)] = tf.DataType
+	}
 
 	m.root = newNode(m, m.model.Node)
 
@@ -657,11 +673,7 @@ func (m *TreeModel) Compile() error {
 }
 
 func (m *TreeModel) Verify() error {
-	if m.model.ModelVerification == nil {
-		return nil
-	}
-
-	return ErrNotImplemented
+	return verifyModel(m, m.model.ModelVerification)
 }
 
 func (m *TreeModel) Evaluate(input DataRow) (DataRow, error) {
@@ -680,13 +692,18 @@ func (m *TreeModel) Evaluate(input DataRow) (DataRow, error) {
 		return nil, err
 	}
 
-	score, result := m.root.evaluate(input)
+	scores, result := m.root.evaluate(input)
+	best := pickBest(scores)
 
 	if result == t {
-		return DataRow{
-			string(m.outputField): NewValue(score.value),
-			"confidence":		   NewValue(score.confidence),
-		}, nil
+		out := make(DataRow)
+		out[string(m.outputField)] = NewValue(best.value)
+		for _, score := range scores {
+			key := fmt.Sprintf("probability(%s)", score.value)
+			out[key] = NewValue(score.probability)
+		}
+
+		return out, nil
 	}
 
 	return nil, nil

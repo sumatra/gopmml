@@ -35,31 +35,32 @@ func TestEvaluation(t *testing.T) {
 	require.NoError(t, err)
 
 	for _, modelxml := range modelFiles {
-		f, err := os.Open(modelxml)
-		require.NoError(t, err)
+		t.Run(modelxml, func(t *testing.T) {
+			f, err := os.Open(modelxml)
+			require.NoError(t, err)
 
-		r := bufio.NewReader(f)
+			r := bufio.NewReader(f)
 
-		var doc models.PMML
+			var doc models.PMML
 
-		err = xml.NewDecoder(r).Decode(&doc)
-		require.NoError(t, err)
+			err = xml.NewDecoder(r).Decode(&doc)
+			require.NoError(t, err)
 
-		require.Len(t, doc.Models, 1)
+			require.Len(t, doc.Models, 1)
 
-		mdl := doc.Models[0]
-		emdl, err := evaluation.NewModel(&doc.DataDictionary, doc.TransformationDictionary, mdl)
-		require.NoError(t, err)
+			mdl := doc.Models[0]
+			emdl, err := evaluation.NewModel(&doc.DataDictionary, doc.TransformationDictionary, mdl)
+			require.NoError(t, err)
 
-		err = emdl.Verify()
-		require.NoError(t, err)
+			err = emdl.Verify()
+			require.NoError(t, err)
 
-		err = emdl.Compile()
-		require.NoError(t, err)
+			err = emdl.Compile()
+			require.NoError(t, err)
 
-		err = emdl.Validate()
-		require.NoError(t, err)
-
+			err = emdl.Validate()
+			require.NoError(t, err)
+		})
 	}
 
 

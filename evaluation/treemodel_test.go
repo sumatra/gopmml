@@ -459,7 +459,7 @@ func TestTreeModel(t *testing.T) {
 	})
 	require.NoError(t, err)
 
-	assert.Len(t, out, 2)
+	assert.Len(t, out, 4)
 
 	assert.Equal(t, out["whatIdo"], evaluation.NewValue("may play"))
 }
@@ -496,7 +496,7 @@ func TestTreeMode_Confidence1(t *testing.T) {
 	})
 	require.NoError(t, err)
 
-	assert.Len(t, out, 2)
+	assert.Len(t, out, 4)
 
 	assert.Equal(t, evaluation.NewValue("no play"), out["whatIdo"])
 }
@@ -531,10 +531,10 @@ func TestTreeMode_WeightedConfidence(t *testing.T) {
 	})
 	require.NoError(t, err)
 
-	assert.Len(t, out, 2)
+	assert.Len(t, out, 4)
 
 	assert.Equal(t, evaluation.NewValue("will play"), out["whatIdo"])
-	assert.Equal(t, evaluation.NewValue(0.8), out["confidence"])
+	assert.Equal(t, evaluation.NewValue(0.8), out["probability(will play)"])
 }
 
 func TestTreeMode_DefaultChild(t *testing.T) {
@@ -568,9 +568,9 @@ func TestTreeMode_DefaultChild(t *testing.T) {
 	})
 	require.NoError(t, err)
 
-	require.Len(t, out, 2)
+	require.Len(t, out, 4)
 	assert.Equal(t, evaluation.NewValue("no play"), out["whatIdo"])
-	assert.Equal(t, evaluation.NewValue(0.48), out["confidence"])
+	assert.Equal(t, evaluation.NewValue(0.48), out["probability(no play)"])
 }
 
 func TestTreeMode_LastPrediction(t *testing.T) {
@@ -603,9 +603,9 @@ func TestTreeMode_LastPrediction(t *testing.T) {
 	})
 	require.NoError(t, err)
 
-	require.Len(t, out, 2)
+	require.Len(t, out, 4)
 	assert.Equal(t, evaluation.NewValue("will play"), out["whatIdo"])
-	assert.Equal(t, evaluation.NewValue(0.8), out["confidence"])
+	assert.Equal(t, evaluation.NewValue(0.8), out["probability(will play)"])
 }
 
 func TestTreeMode_AggregateNodes(t *testing.T) {
@@ -639,7 +639,7 @@ func TestTreeMode_AggregateNodes(t *testing.T) {
 	})
 	require.NoError(t, err)
 
-	require.Len(t, out, 2)
+	require.Len(t, out, 4)
 	assert.Equal(t, evaluation.NewValue("may play"), out["whatIdo"])
 }
 
