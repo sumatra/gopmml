@@ -1,0 +1,241 @@
+<PMML xmlns="http://www.dmg.org/PMML-4_4" xmlns:data="http://jpmml.org/jpmml-model/InlineTable" version="4.4">
+    <Header>
+        <Application name="JPMML-SkLearn" version="1.6.18"/>
+        <Timestamp>2021-06-02T13:50:38Z</Timestamp>
+    </Header>
+    <MiningBuildTask>
+        <Extension>PMMLPipeline(steps=[('classifier', XGBClassifier(base_score=0.5, booster='gbtree', colsample_bylevel=1,
+            colsample_bynode=1, colsample_bytree=1, gamma=0, gpu_id=-1,
+            importance_type='gain', interaction_constraints='',
+            learning_rate=0.300000012, max_delta_step=0, max_depth=2,
+            min_child_weight=1, missing=nan, monotone_constraints='()',
+            n_estimators=3, n_jobs=8, num_parallel_tree=1, random_state=0,
+            reg_alpha=0, reg_lambda=1, scale_pos_weight=1, subsample=1,
+            tree_method='exact', validate_parameters=1, verbosity=None))])</Extension>
+    </MiningBuildTask>
+    <DataDictionary>
+        <DataField name="label" optype="categorical" dataType="string">
+            <Value value="fraud"/>
+            <Value value="good"/>
+        </DataField>
+        <DataField name="b" optype="continuous" dataType="float"/>
+        <DataField name="c" optype="continuous" dataType="float"/>
+    </DataDictionary>
+    <MiningModel functionName="classification" algorithmName="XGBoost (GBTree)" x-mathContext="float">
+        <MiningSchema>
+            <MiningField name="label" usageType="target"/>
+            <MiningField name="b"/>
+            <MiningField name="c"/>
+        </MiningSchema>
+        <Segmentation multipleModelMethod="modelChain" missingPredictionTreatment="returnMissing">
+            <Segment id="1">
+                <True/>
+                <MiningModel functionName="regression" x-mathContext="float">
+                    <MiningSchema>
+                        <MiningField name="b"/>
+                        <MiningField name="c"/>
+                    </MiningSchema>
+                    <Output>
+                        <OutputField name="xgbValue" optype="continuous" dataType="float" isFinalResult="false"/>
+                    </Output>
+                    <Segmentation multipleModelMethod="sum">
+                        <Segment id="1">
+                            <True/>
+                            <TreeModel functionName="regression" missingValueStrategy="defaultChild" splitCharacteristic="binarySplit" x-mathContext="float">
+                                <MiningSchema>
+                                    <MiningField name="b"/>
+                                </MiningSchema>
+                                <Node id="0" defaultChild="1">
+                                    <True/>
+                                    <Node id="1" defaultChild="3">
+                                        <SimplePredicate field="b" operator="lessThan" value="0.65"/>
+                                        <Node id="3" score="-0.06666667">
+                                            <SimplePredicate field="b" operator="lessThan" value="0.2"/>
+                                        </Node>
+                                        <Node id="4" score="-0.3">
+                                            <SimplePredicate field="b" operator="greaterOrEqual" value="0.2"/>
+                                        </Node>
+                                    </Node>
+                                    <Node id="2" defaultChild="5">
+                                        <SimplePredicate field="b" operator="greaterOrEqual" value="0.65"/>
+                                        <Node id="5" score="0.3">
+                                            <SimplePredicate field="b" operator="lessThan" value="0.75"/>
+                                        </Node>
+                                        <Node id="6" score="0.05454546">
+                                            <SimplePredicate field="b" operator="greaterOrEqual" value="0.75"/>
+                                        </Node>
+                                    </Node>
+                                </Node>
+                            </TreeModel>
+                        </Segment>
+                        <Segment id="2">
+                            <True/>
+                            <TreeModel functionName="regression" missingValueStrategy="defaultChild" splitCharacteristic="binarySplit" x-mathContext="float">
+                                <MiningSchema>
+                                    <MiningField name="b"/>
+                                    <MiningField name="c"/>
+                                </MiningSchema>
+                                <Node id="0" defaultChild="1">
+                                    <True/>
+                                    <Node id="1" score="-0.19702125">
+                                        <SimplePredicate field="b" operator="lessThan" value="0.65"/>
+                                    </Node>
+                                    <Node id="2" defaultChild="3">
+                                        <SimplePredicate field="b" operator="greaterOrEqual" value="0.65"/>
+                                        <Node id="3" score="0.20973434">
+                                            <SimplePredicate field="c" operator="lessThan" value="0.75"/>
+                                        </Node>
+                                        <Node id="4" score="0.049608637">
+                                            <SimplePredicate field="c" operator="greaterOrEqual" value="0.75"/>
+                                        </Node>
+                                    </Node>
+                                </Node>
+                            </TreeModel>
+                        </Segment>
+                        <Segment id="3">
+                            <True/>
+                            <TreeModel functionName="regression" missingValueStrategy="defaultChild" splitCharacteristic="binarySplit" x-mathContext="float">
+                                <MiningSchema>
+                                    <MiningField name="b"/>
+                                    <MiningField name="c"/>
+                                </MiningSchema>
+                                <Node id="0" defaultChild="1">
+                                    <True/>
+                                    <Node id="1" score="-0.15952669">
+                                        <SimplePredicate field="b" operator="lessThan" value="0.65"/>
+                                    </Node>
+                                    <Node id="2" defaultChild="3">
+                                        <SimplePredicate field="b" operator="greaterOrEqual" value="0.65"/>
+                                        <Node id="3" score="0.17563345">
+                                            <SimplePredicate field="c" operator="lessThan" value="0.75"/>
+                                        </Node>
+                                        <Node id="4" score="0.041443404">
+                                            <SimplePredicate field="c" operator="greaterOrEqual" value="0.75"/>
+                                        </Node>
+                                    </Node>
+                                </Node>
+                            </TreeModel>
+                        </Segment>
+                    </Segmentation>
+                </MiningModel>
+            </Segment>
+            <Segment id="2">
+                <True/>
+                <RegressionModel functionName="classification" normalizationMethod="logit" x-mathContext="float">
+                    <MiningSchema>
+                        <MiningField name="label" usageType="target"/>
+                        <MiningField name="xgbValue"/>
+                    </MiningSchema>
+                    <Output>
+                        <OutputField name="probability(fraud)" optype="continuous" dataType="float" feature="probability" value="fraud"/>
+                        <OutputField name="probability(good)" optype="continuous" dataType="float" feature="probability" value="good"/>
+                    </Output>
+                    <RegressionTable intercept="0.0" targetCategory="good">
+                        <NumericPredictor name="xgbValue" coefficient="1.0"/>
+                    </RegressionTable>
+                    <RegressionTable intercept="0.0" targetCategory="fraud"/>
+                </RegressionModel>
+            </Segment>
+        </Segmentation>
+        <ModelVerification recordCount="15">
+            <VerificationFields>
+                <VerificationField field="b" column="data:b"/>
+                <VerificationField field="c" column="data:c"/>
+                <VerificationField field="probability(fraud)" column="data:probability_fraud" precision="1.0E-13" zeroThreshold="1.0E-13"/>
+                <VerificationField field="probability(good)" column="data:probability_good" precision="1.0E-13" zeroThreshold="1.0E-13"/>
+            </VerificationFields>
+            <InlineTable>
+                <row>
+                    <data:b>0.6</data:b>
+                    <data:c>0.8</data:c>
+                    <data:probability_fraud>0.6584845</data:probability_fraud>
+                    <data:probability_good>0.34151548</data:probability_good>
+                </row>
+                <row>
+                    <data:b>0.7</data:b>
+                    <data:c>0.8</data:c>
+                    <data:probability_fraud>0.40346402</data:probability_fraud>
+                    <data:probability_good>0.596536</data:probability_good>
+                </row>
+                <row>
+                    <data:b>0.2</data:b>
+                    <data:c>0.2</data:c>
+                    <data:probability_fraud>0.6584845</data:probability_fraud>
+                    <data:probability_good>0.34151548</data:probability_good>
+                </row>
+                <row>
+                    <data:b>0.1</data:b>
+                    <data:c>0.1</data:c>
+                    <data:probability_fraud>0.6042522</data:probability_fraud>
+                    <data:probability_good>0.39574778</data:probability_good>
+                </row>
+                <row>
+                    <data:b>0.3</data:b>
+                    <data:c>0.6</data:c>
+                    <data:probability_fraud>0.6584845</data:probability_fraud>
+                    <data:probability_good>0.34151548</data:probability_good>
+                </row>
+                <row>
+                    <data:b>0.5</data:b>
+                    <data:c>0.2</data:c>
+                    <data:probability_fraud>0.6584845</data:probability_fraud>
+                    <data:probability_good>0.34151548</data:probability_good>
+                </row>
+                <row>
+                    <data:b>0.6</data:b>
+                    <data:c>0.8</data:c>
+                    <data:probability_fraud>0.6584845</data:probability_fraud>
+                    <data:probability_good>0.34151548</data:probability_good>
+                </row>
+                <row>
+                    <data:b>0.7</data:b>
+                    <data:c>0.2</data:c>
+                    <data:probability_fraud>0.3350643</data:probability_fraud>
+                    <data:probability_good>0.6649357</data:probability_good>
+                </row>
+                <row>
+                    <data:b>0.5</data:b>
+                    <data:c>0.5</data:c>
+                    <data:probability_fraud>0.6584845</data:probability_fraud>
+                    <data:probability_good>0.34151548</data:probability_good>
+                </row>
+                <row>
+                    <data:b>0.8</data:b>
+                    <data:c>0.9</data:c>
+                    <data:probability_fraud>0.46366477</data:probability_fraud>
+                    <data:probability_good>0.53633523</data:probability_good>
+                </row>
+                <row>
+                    <data:b>0.5</data:b>
+                    <data:c>0.9</data:c>
+                    <data:probability_fraud>0.6584845</data:probability_fraud>
+                    <data:probability_good>0.34151548</data:probability_good>
+                </row>
+                <row>
+                    <data:b>0.1</data:b>
+                    <data:c>0.0</data:c>
+                    <data:probability_fraud>0.6042522</data:probability_fraud>
+                    <data:probability_good>0.39574778</data:probability_good>
+                </row>
+                <row>
+                    <data:b>0.6</data:b>
+                    <data:c>0.6</data:c>
+                    <data:probability_fraud>0.6584845</data:probability_fraud>
+                    <data:probability_good>0.34151548</data:probability_good>
+                </row>
+                <row>
+                    <data:b>0.6</data:b>
+                    <data:c>0.1</data:c>
+                    <data:probability_fraud>0.6584845</data:probability_fraud>
+                    <data:probability_good>0.34151548</data:probability_good>
+                </row>
+                <row>
+                    <data:b>0.7</data:b>
+                    <data:c>0.7</data:c>
+                    <data:probability_fraud>0.3350643</data:probability_fraud>
+                    <data:probability_good>0.6649357</data:probability_good>
+                </row>
+            </InlineTable>
+        </ModelVerification>
+    </MiningModel>
+</PMML>

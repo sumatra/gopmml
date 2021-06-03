@@ -2901,12 +2901,12 @@ type MiningField struct {
   </xs:element>
 */
 type MiningModel struct {
-	AlgorithmName *string `xml:"algorithmName,attr"`
-	FunctionName  string  `xml:"functionName,attr"`
-	IsScorable    bool    `xml:"isScorable,attr"`
-	ModelName     *string `xml:"modelName,attr"`
+	AlgorithmName *string        `xml:"algorithmName,attr"`
+	FunctionName  MiningFunction `xml:"functionName,attr"`
+	IsScorable    bool           `xml:"isScorable,attr"`
+	ModelName     *string        `xml:"modelName,attr"`
 
-	ModelVerification    *ModelVerification    `xml:"ModelVerification"`
+	ModelVerification    *ModelVerification   `xml:"ModelVerification"`
 	MiningSchema         MiningSchema         `xml:"MiningSchema"`
 	LocalTransformations LocalTransformations `xml:"LocalTransformations"`
 	Output               Output               `xml:"Output"`
@@ -3482,6 +3482,10 @@ type NumericInfo struct {
   </xs:element>
 */
 type NumericPredictor struct {
+	Name        string  `xml:"name,attr"`
+	Coefficient float64 `xml:"coefficient,attr"`
+	Exponent    int64   `xml:"exponent,attr"`
+
 	Extensions []Extension `xml:"Extension"`
 }
 
@@ -3687,11 +3691,11 @@ type PCovMatrix struct {
 type PMML struct {
 	Version string `xml:"version,attr"`
 
-	DataDictionary           DataDictionary            `xml:"DataDictionary"`
-	Extensions               []Extension               `xml:"Extension"`
-	Header                   Header                    `xml:"Header"`
-	MiningBuildTask          *MiningBuildTask          `xml:"MiningBuildTask"`
-	TransformationDictionary *TransformationDictionary `xml:"TransformationDictionary"`
+	DataDictionary           DataDictionary           `xml:"DataDictionary"`
+	TransformationDictionary TransformationDictionary `xml:"TransformationDictionary"`
+	Extensions               []Extension              `xml:"Extension"`
+	Header                   Header                   `xml:"Header"`
+	MiningBuildTask          *MiningBuildTask         `xml:"MiningBuildTask"`
 	Models                   []ModelElement
 }
 
@@ -4201,6 +4205,21 @@ func (*Regression) embeddedModel() {}
   </xs:element>
 */
 type RegressionModel struct {
+	AlgorithmName                 string                        `xml:"algorithmName,attr"`
+	FunctionName                  MiningFunction                `xml:"functionName,attr"`
+	IsScorable                    bool                          `xml:"isScorable,attr"`
+	ModelName                     string                        `xml:"modelName,attr"`
+	RegressionNormalizationMethod RegressionNormalizationMethod `xml:"normalizationMethod,attr"`
+
+	LocalTransformations LocalTransformations `xml:"LocalTransformations"`
+	MiningSchema         MiningSchema         `xml:"MiningSchema"`
+	RegressionTables     []RegressionTable    `xml:"RegressionTable"`
+	ModelExplanation     *ModelExplanation    `xml:"ModelExplanation"`
+	ModelStats           *ModelStats          `xml:"ModelStats"`
+	ModelVerification    *ModelVerification   `xml:"ModelVerification"`
+	Output               Output              `xml:"Output"`
+	Targets              *Targets             `xml:"Targets"`
+
 	Extensions []Extension `xml:"Extension"`
 }
 
@@ -4221,7 +4240,10 @@ func (*RegressionModel) modelElement() {}
   </xs:element>
 */
 type RegressionTable struct {
-	Extensions []Extension `xml:"Extension"`
+	Intercept        float64            `xml:"intercept,attr"`
+	TargetCategory   string             `xml:"targetCategory,attr"`
+	NumericPredictor []NumericPredictor `xml:"NumericPredictor"`
+	Extensions       []Extension        `xml:"Extension"`
 }
 
 /*

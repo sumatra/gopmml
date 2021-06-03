@@ -13,6 +13,20 @@ type Model interface {
 	Evaluate(input DataRow) (DataRow, error)
 }
 
+
+func NewModel(dd *models.DataDictionary, td *models.TransformationDictionary, mdl models.ModelElement) (Model, error){
+	switch v := mdl.(type) {
+	case *models.TreeModel:
+		return NewTreeModel(dd, td, v)
+	case *models.MiningModel:
+		return NewMiningModel(dd, td, v)
+	case *models.RegressionModel:
+		return NewRegressionModel(dd, td, v)
+	default:
+		return nil, fmt.Errorf("invalid model type %T", v)
+	}
+}
+
 func verifyModel(m Model, mv *models.ModelVerification) error {
 	if mv == nil {
 		return nil

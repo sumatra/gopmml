@@ -49,7 +49,8 @@ func TestEvaluation(t *testing.T) {
 			require.Len(t, doc.Models, 1)
 
 			mdl := doc.Models[0]
-			emdl, err := evaluation.NewModel(&doc.DataDictionary, doc.TransformationDictionary, mdl)
+			emdl, err := evaluation.NewModel(&doc.DataDictionary, &doc.TransformationDictionary, mdl)
+
 			require.NoError(t, err)
 
 			err = emdl.Verify()

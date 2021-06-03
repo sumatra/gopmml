@@ -19,7 +19,7 @@ type TreeModel struct {
 	fieldTypes map[models.FieldName]models.DataType
 	root       node
 
-	outputField models.FieldName
+	targetField models.FieldName
 }
 
 type test func(DataRow) predicateResult
@@ -98,16 +98,20 @@ func (n node) outputScoreDist() []scoreDist {
 	} else {
 		sd := make([]scoreDist, 0, 0)
 
-		for _, field := range n.m.dd.DataFields {
-			if field.Name == n.m.outputField {
-				for _, val := range field.Values {
-					if val.Value == n.score.value {
-						sd = append(sd, scoreDist{val.Value, 1.0, 1.0, n.score.recordCount})
-					} else {
-						sd = append(sd, scoreDist{val.Value, 0.0, 0.0, 0})
+		if n.m.targetField != "" {
+			for _, field := range n.m.dd.DataFields {
+				if field.Name == n.m.targetField {
+					for _, val := range field.Values {
+						if val.Value == n.score.value {
+							sd = append(sd, scoreDist{val.Value, 1.0, 1.0, n.score.recordCount})
+						} else {
+							sd = append(sd, scoreDist{val.Value, 0.0, 0.0, 0})
+						}
 					}
 				}
 			}
+		} else {
+			sd = append(sd, n.score)
 		}
 
 		return sd
@@ -354,17 +358,6 @@ func (n node) evaluateMissingValueStrategyAggregateNodes(input DataRow) ([]score
 	return n.outputScoreDist(), result
 }
 
-func NewModel(dd *models.DataDictionary, td *models.TransformationDictionary, mdl models.ModelElement) (Model, error){
-	switch v := mdl.(type) {
-	case *models.TreeModel:
-		return NewTreeModel(dd, td, v)
-	case *models.MiningModel:
-		return NewMiningModel(dd, td, v)
-	default:
-		return nil, errors.New("invalid model type")
-	}
-}
-
 func NewTreeModel(dd *models.DataDictionary, td *models.TransformationDictionary, model *models.TreeModel) (*TreeModel, error) {
 	m := new(TreeModel)
 	m.dd = dd
@@ -385,6 +378,11 @@ func NewTreeModel(dd *models.DataDictionary, td *models.TransformationDictionary
 }
 
 func (m *TreeModel) Validate() error {
+	if m.model.FunctionName != models.MiningFunctionClassification &&
+		m.model.FunctionName != models.MiningFunctionRegression {
+		return fmt.Errorf("unsupported mining function %s", m.model.FunctionName)
+	}
+
 	for i, f := range m.model.MiningSchema.MiningFields {
 		if f.UsageType == "" {
 			f.UsageType = models.FieldUsageTypeActive
@@ -652,7 +650,7 @@ func evaluateCompoundPredicate(p *models.CompoundPredicate, input DataRow, field
 func (m *TreeModel) Compile() error {
 	for _, f := range m.model.MiningSchema.MiningFields {
 		if f.UsageType == models.FieldUsageTypeTarget {
-			m.outputField = f.Name
+			m.targetField = f.Name
 		}
 	}
 
@@ -663,7 +661,11 @@ func (m *TreeModel) Compile() error {
 	}
 
 	for _, tf := range m.model.LocalTransformations.DerivedFields {
-		m.fieldTypes[models.FieldName(tf.Name)] = tf.DataType
+		m.td.DerivedFields = append(m.td.DerivedFields, tf)
+	}
+
+	for _, df := range m.td.DerivedFields {
+		m.fieldTypes[models.FieldName(df.Name)] = df.DataType
 	}
 
 	m.root = newNode(m, m.model.Node)
@@ -693,14 +695,24 @@ func (m *TreeModel) Evaluate(input DataRow) (DataRow, error) {
 	}
 
 	scores, result := m.root.evaluate(input)
-	best := pickBest(scores)
 
 	if result == t {
+		best := pickBest(scores)
 		out := make(DataRow)
-		out[string(m.outputField)] = NewValue(best.value)
-		for _, score := range scores {
-			key := fmt.Sprintf("probability(%s)", score.value)
-			out[key] = NewValue(score.probability)
+
+		if m.model.FunctionName == models.MiningFunctionClassification {
+			out[string(m.targetField)] = NewValue(best.value)
+			for _, score := range scores {
+				key := fmt.Sprintf("probability(%s)", score.value)
+				out[key] = NewValue(score.probability)
+			}
+		} else if m.model.FunctionName == models.MiningFunctionRegression {
+			score, err := strconv.ParseFloat(scores[0].value, 64)
+			if err != nil {
+				return nil, err
+			}
+
+			out["score"] = NewValue(score)
 		}
 
 		return out, nil
