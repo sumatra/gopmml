@@ -1,0 +1,600 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<PMML xmlns="http://www.dmg.org/PMML-4_4" xmlns:data="http://jpmml.org/jpmml-model/InlineTable" version="4.4">
+	<Header>
+		<Application name="JPMML-SkLearn" version="1.6.18"/>
+		<Timestamp>2021-06-04T19:52:25Z</Timestamp>
+	</Header>
+	<MiningBuildTask>
+		<Extension>PMMLPipeline(steps=[('classifier', XGBClassifier(base_score=0.5, booster='gbtree', colsample_bylevel=1,
+              colsample_bynode=1, colsample_bytree=1, gamma=0, gpu_id=-1,
+              importance_type='gain', interaction_constraints='',
+              learning_rate=0.300000012, max_delta_step=0, max_depth=3,
+              min_child_weight=1, missing=nan, monotone_constraints='()',
+              n_estimators=10, n_jobs=8, num_parallel_tree=1, random_state=0,
+              reg_alpha=0, reg_lambda=1, scale_pos_weight=1, subsample=1,
+              tree_method='exact', validate_parameters=1, verbosity=None))])</Extension>
+	</MiningBuildTask>
+	<DataDictionary>
+		<DataField name="label" optype="categorical" dataType="string">
+			<Value value="fraud"/>
+			<Value value="good"/>
+		</DataField>
+		<DataField name="is_email_domain_free" optype="continuous" dataType="float"/>
+		<DataField name="emails_per_bank" optype="continuous" dataType="float"/>
+		<DataField name="dollars_out_by_email" optype="continuous" dataType="float"/>
+		<DataField name="dollars_in_out_1h" optype="continuous" dataType="float"/>
+		<DataField name="amount" optype="continuous" dataType="float"/>
+	</DataDictionary>
+	<MiningModel functionName="classification" algorithmName="XGBoost (GBTree)" x-mathContext="float">
+		<MiningSchema>
+			<MiningField name="label" usageType="target"/>
+			<MiningField name="is_email_domain_free"/>
+			<MiningField name="emails_per_bank"/>
+			<MiningField name="dollars_out_by_email"/>
+			<MiningField name="dollars_in_out_1h"/>
+			<MiningField name="amount"/>
+		</MiningSchema>
+		<Segmentation multipleModelMethod="modelChain" missingPredictionTreatment="returnMissing">
+			<Segment id="1">
+				<True/>
+				<MiningModel functionName="regression" x-mathContext="float">
+					<MiningSchema>
+						<MiningField name="is_email_domain_free"/>
+						<MiningField name="emails_per_bank"/>
+						<MiningField name="dollars_out_by_email"/>
+						<MiningField name="dollars_in_out_1h"/>
+						<MiningField name="amount"/>
+					</MiningSchema>
+					<Output>
+						<OutputField name="xgbValue" optype="continuous" dataType="float" isFinalResult="false"/>
+					</Output>
+					<Segmentation multipleModelMethod="sum">
+						<Segment id="1">
+							<True/>
+							<TreeModel functionName="regression" missingValueStrategy="defaultChild" splitCharacteristic="binarySplit" x-mathContext="float">
+								<MiningSchema>
+									<MiningField name="emails_per_bank"/>
+									<MiningField name="dollars_out_by_email"/>
+									<MiningField name="dollars_in_out_1h"/>
+									<MiningField name="amount"/>
+								</MiningSchema>
+								<Node id="0" defaultChild="1">
+									<True/>
+									<Node id="1" defaultChild="3">
+										<SimplePredicate field="emails_per_bank" operator="lessThan" value="1.5"/>
+										<Node id="3" defaultChild="5">
+											<SimplePredicate field="dollars_in_out_1h" operator="lessThan" value="2630.98"/>
+											<Node id="5" score="-0.0">
+												<SimplePredicate field="dollars_out_by_email" operator="lessThan" value="0.275"/>
+											</Node>
+											<Node id="6" score="0.5919735">
+												<SimplePredicate field="dollars_out_by_email" operator="greaterOrEqual" value="0.275"/>
+											</Node>
+										</Node>
+										<Node id="4" defaultChild="7">
+											<SimplePredicate field="dollars_in_out_1h" operator="greaterOrEqual" value="2630.98"/>
+											<Node id="7" score="-0.56842107">
+												<SimplePredicate field="amount" operator="lessThan" value="2623.3599"/>
+											</Node>
+											<Node id="8" score="0.57927233">
+												<SimplePredicate field="amount" operator="greaterOrEqual" value="2623.3599"/>
+											</Node>
+										</Node>
+									</Node>
+									<Node id="2" score="-0.59770113">
+										<SimplePredicate field="emails_per_bank" operator="greaterOrEqual" value="1.5"/>
+									</Node>
+								</Node>
+							</TreeModel>
+						</Segment>
+						<Segment id="2">
+							<True/>
+							<TreeModel functionName="regression" missingValueStrategy="defaultChild" splitCharacteristic="binarySplit" x-mathContext="float">
+								<MiningSchema>
+									<MiningField name="emails_per_bank"/>
+									<MiningField name="dollars_out_by_email"/>
+									<MiningField name="dollars_in_out_1h"/>
+									<MiningField name="amount"/>
+								</MiningSchema>
+								<Node id="0" defaultChild="1">
+									<True/>
+									<Node id="1" defaultChild="3">
+										<SimplePredicate field="emails_per_bank" operator="lessThan" value="1.5"/>
+										<Node id="3" defaultChild="5">
+											<SimplePredicate field="dollars_in_out_1h" operator="lessThan" value="1099.925"/>
+											<Node id="5" score="0.4150655">
+												<SimplePredicate field="dollars_out_by_email" operator="lessThan" value="81.39"/>
+											</Node>
+											<Node id="6" score="0.46101555">
+												<SimplePredicate field="dollars_out_by_email" operator="greaterOrEqual" value="81.39"/>
+											</Node>
+										</Node>
+										<Node id="4" defaultChild="7">
+											<SimplePredicate field="dollars_in_out_1h" operator="greaterOrEqual" value="1099.925"/>
+											<Node id="7" score="-0.6405578">
+												<SimplePredicate field="amount" operator="lessThan" value="1100.14"/>
+											</Node>
+											<Node id="8" score="0.43781814">
+												<SimplePredicate field="amount" operator="greaterOrEqual" value="1100.14"/>
+											</Node>
+										</Node>
+									</Node>
+									<Node id="2" score="-0.46307752">
+										<SimplePredicate field="emails_per_bank" operator="greaterOrEqual" value="1.5"/>
+									</Node>
+								</Node>
+							</TreeModel>
+						</Segment>
+						<Segment id="3">
+							<True/>
+							<TreeModel functionName="regression" missingValueStrategy="defaultChild" splitCharacteristic="binarySplit" x-mathContext="float">
+								<MiningSchema>
+									<MiningField name="emails_per_bank"/>
+									<MiningField name="dollars_out_by_email"/>
+									<MiningField name="dollars_in_out_1h"/>
+									<MiningField name="amount"/>
+								</MiningSchema>
+								<Node id="0" defaultChild="1">
+									<True/>
+									<Node id="1" defaultChild="3">
+										<SimplePredicate field="emails_per_bank" operator="lessThan" value="1.5"/>
+										<Node id="3" defaultChild="5">
+											<SimplePredicate field="dollars_in_out_1h" operator="lessThan" value="2630.98"/>
+											<Node id="5" score="0.35013196">
+												<SimplePredicate field="dollars_out_by_email" operator="lessThan" value="81.39"/>
+											</Node>
+											<Node id="6" score="0.39620247">
+												<SimplePredicate field="dollars_out_by_email" operator="greaterOrEqual" value="81.39"/>
+											</Node>
+										</Node>
+										<Node id="4" defaultChild="7">
+											<SimplePredicate field="dollars_in_out_1h" operator="greaterOrEqual" value="2630.98"/>
+											<Node id="7" score="-0.50968844">
+												<SimplePredicate field="amount" operator="lessThan" value="2623.3599"/>
+											</Node>
+											<Node id="8" score="0.3822988">
+												<SimplePredicate field="amount" operator="greaterOrEqual" value="2623.3599"/>
+											</Node>
+										</Node>
+									</Node>
+									<Node id="2" score="-0.40183327">
+										<SimplePredicate field="emails_per_bank" operator="greaterOrEqual" value="1.5"/>
+									</Node>
+								</Node>
+							</TreeModel>
+						</Segment>
+						<Segment id="4">
+							<True/>
+							<TreeModel functionName="regression" missingValueStrategy="defaultChild" splitCharacteristic="binarySplit" x-mathContext="float">
+								<MiningSchema>
+									<MiningField name="emails_per_bank"/>
+									<MiningField name="dollars_out_by_email"/>
+									<MiningField name="dollars_in_out_1h"/>
+									<MiningField name="amount"/>
+								</MiningSchema>
+								<Node id="0" defaultChild="1">
+									<True/>
+									<Node id="1" defaultChild="3">
+										<SimplePredicate field="emails_per_bank" operator="lessThan" value="1.5"/>
+										<Node id="3" defaultChild="5">
+											<SimplePredicate field="dollars_in_out_1h" operator="lessThan" value="1299.985"/>
+											<Node id="5" score="0.3057548">
+												<SimplePredicate field="dollars_out_by_email" operator="lessThan" value="81.39"/>
+											</Node>
+											<Node id="6" score="0.3624191">
+												<SimplePredicate field="dollars_out_by_email" operator="greaterOrEqual" value="81.39"/>
+											</Node>
+										</Node>
+										<Node id="4" defaultChild="7">
+											<SimplePredicate field="dollars_in_out_1h" operator="greaterOrEqual" value="1299.985"/>
+											<Node id="7" score="-0.7152351">
+												<SimplePredicate field="amount" operator="lessThan" value="1300.03"/>
+											</Node>
+											<Node id="8" score="0.3330301">
+												<SimplePredicate field="amount" operator="greaterOrEqual" value="1300.03"/>
+											</Node>
+										</Node>
+									</Node>
+									<Node id="2" score="-0.36717704">
+										<SimplePredicate field="emails_per_bank" operator="greaterOrEqual" value="1.5"/>
+									</Node>
+								</Node>
+							</TreeModel>
+						</Segment>
+						<Segment id="5">
+							<True/>
+							<TreeModel functionName="regression" missingValueStrategy="defaultChild" splitCharacteristic="binarySplit" x-mathContext="float">
+								<MiningSchema>
+									<MiningField name="emails_per_bank"/>
+									<MiningField name="dollars_out_by_email"/>
+									<MiningField name="dollars_in_out_1h"/>
+									<MiningField name="amount"/>
+								</MiningSchema>
+								<Node id="0" defaultChild="1">
+									<True/>
+									<Node id="1" defaultChild="3">
+										<SimplePredicate field="emails_per_bank" operator="lessThan" value="1.5"/>
+										<Node id="3" defaultChild="5">
+											<SimplePredicate field="dollars_in_out_1h" operator="lessThan" value="2299.95"/>
+											<Node id="5" score="0.2701858">
+												<SimplePredicate field="dollars_out_by_email" operator="lessThan" value="81.39"/>
+											</Node>
+											<Node id="6" score="0.3363193">
+												<SimplePredicate field="dollars_out_by_email" operator="greaterOrEqual" value="81.39"/>
+											</Node>
+										</Node>
+										<Node id="4" defaultChild="7">
+											<SimplePredicate field="dollars_in_out_1h" operator="greaterOrEqual" value="2299.95"/>
+											<Node id="7" score="-0.51393366">
+												<SimplePredicate field="amount" operator="lessThan" value="2300.1"/>
+											</Node>
+											<Node id="8" score="0.30721933">
+												<SimplePredicate field="amount" operator="greaterOrEqual" value="2300.1"/>
+											</Node>
+										</Node>
+									</Node>
+									<Node id="2" score="-0.34534723">
+										<SimplePredicate field="emails_per_bank" operator="greaterOrEqual" value="1.5"/>
+									</Node>
+								</Node>
+							</TreeModel>
+						</Segment>
+						<Segment id="6">
+							<True/>
+							<TreeModel functionName="regression" missingValueStrategy="defaultChild" splitCharacteristic="binarySplit" x-mathContext="float">
+								<MiningSchema>
+									<MiningField name="emails_per_bank"/>
+									<MiningField name="dollars_out_by_email"/>
+									<MiningField name="dollars_in_out_1h"/>
+									<MiningField name="amount"/>
+								</MiningSchema>
+								<Node id="0" defaultChild="1">
+									<True/>
+									<Node id="1" defaultChild="3">
+										<SimplePredicate field="emails_per_bank" operator="lessThan" value="1.5"/>
+										<Node id="3" defaultChild="5">
+											<SimplePredicate field="dollars_in_out_1h" operator="lessThan" value="1050.6951"/>
+											<Node id="5" score="0.23844138">
+												<SimplePredicate field="dollars_out_by_email" operator="lessThan" value="81.39"/>
+											</Node>
+											<Node id="6" score="0.32323363">
+												<SimplePredicate field="dollars_out_by_email" operator="greaterOrEqual" value="81.39"/>
+											</Node>
+										</Node>
+										<Node id="4" defaultChild="7">
+											<SimplePredicate field="dollars_in_out_1h" operator="greaterOrEqual" value="1050.6951"/>
+											<Node id="7" score="-0.59319603">
+												<SimplePredicate field="amount" operator="lessThan" value="1050.0549"/>
+											</Node>
+											<Node id="8" score="0.27481583">
+												<SimplePredicate field="amount" operator="greaterOrEqual" value="1050.0549"/>
+											</Node>
+										</Node>
+									</Node>
+									<Node id="2" score="-0.3306074">
+										<SimplePredicate field="emails_per_bank" operator="greaterOrEqual" value="1.5"/>
+									</Node>
+								</Node>
+							</TreeModel>
+						</Segment>
+						<Segment id="7">
+							<True/>
+							<TreeModel functionName="regression" missingValueStrategy="defaultChild" splitCharacteristic="binarySplit" x-mathContext="float">
+								<MiningSchema>
+									<MiningField name="is_email_domain_free"/>
+									<MiningField name="emails_per_bank"/>
+									<MiningField name="dollars_in_out_1h"/>
+									<MiningField name="amount"/>
+								</MiningSchema>
+								<Node id="0" defaultChild="1">
+									<True/>
+									<Node id="1" defaultChild="3">
+										<SimplePredicate field="emails_per_bank" operator="lessThan" value="1.5"/>
+										<Node id="3" defaultChild="5">
+											<SimplePredicate field="dollars_in_out_1h" operator="lessThan" value="2582.01"/>
+											<Node id="5" score="0.31741428">
+												<SimplePredicate field="is_email_domain_free" operator="lessThan" value="0.5"/>
+											</Node>
+											<Node id="6" score="0.282111">
+												<SimplePredicate field="is_email_domain_free" operator="greaterOrEqual" value="0.5"/>
+											</Node>
+										</Node>
+										<Node id="4" defaultChild="7">
+											<SimplePredicate field="dollars_in_out_1h" operator="greaterOrEqual" value="2582.01"/>
+											<Node id="7" score="-0.4755336">
+												<SimplePredicate field="amount" operator="lessThan" value="2562.25"/>
+											</Node>
+											<Node id="8" score="0.26403657">
+												<SimplePredicate field="amount" operator="greaterOrEqual" value="2562.25"/>
+											</Node>
+										</Node>
+									</Node>
+									<Node id="2" score="-0.32007292">
+										<SimplePredicate field="emails_per_bank" operator="greaterOrEqual" value="1.5"/>
+									</Node>
+								</Node>
+							</TreeModel>
+						</Segment>
+						<Segment id="8">
+							<True/>
+							<TreeModel functionName="regression" missingValueStrategy="defaultChild" splitCharacteristic="binarySplit" x-mathContext="float">
+								<MiningSchema>
+									<MiningField name="emails_per_bank"/>
+									<MiningField name="dollars_out_by_email"/>
+									<MiningField name="dollars_in_out_1h"/>
+								</MiningSchema>
+								<Node id="0" defaultChild="1">
+									<True/>
+									<Node id="1" defaultChild="3">
+										<SimplePredicate field="emails_per_bank" operator="lessThan" value="1.5"/>
+										<Node id="3" defaultChild="5">
+											<SimplePredicate field="dollars_in_out_1h" operator="lessThan" value="799.875"/>
+											<Node id="5" score="0.1730588">
+												<SimplePredicate field="dollars_out_by_email" operator="lessThan" value="96.165"/>
+											</Node>
+											<Node id="6" score="0.30229738">
+												<SimplePredicate field="dollars_out_by_email" operator="greaterOrEqual" value="96.165"/>
+											</Node>
+										</Node>
+										<Node id="4" defaultChild="7">
+											<SimplePredicate field="dollars_in_out_1h" operator="greaterOrEqual" value="799.875"/>
+											<Node id="7" score="-1.3608767">
+												<SimplePredicate field="dollars_out_by_email" operator="lessThan" value="800.03503"/>
+											</Node>
+											<Node id="8" score="0.23329689">
+												<SimplePredicate field="dollars_out_by_email" operator="greaterOrEqual" value="800.03503"/>
+											</Node>
+										</Node>
+									</Node>
+									<Node id="2" score="-0.31209612">
+										<SimplePredicate field="emails_per_bank" operator="greaterOrEqual" value="1.5"/>
+									</Node>
+								</Node>
+							</TreeModel>
+						</Segment>
+						<Segment id="9">
+							<True/>
+							<TreeModel functionName="regression" missingValueStrategy="defaultChild" splitCharacteristic="binarySplit" x-mathContext="float">
+								<MiningSchema>
+									<MiningField name="is_email_domain_free"/>
+									<MiningField name="emails_per_bank"/>
+									<MiningField name="dollars_in_out_1h"/>
+									<MiningField name="amount"/>
+								</MiningSchema>
+								<Node id="0" defaultChild="1">
+									<True/>
+									<Node id="1" defaultChild="3">
+										<SimplePredicate field="emails_per_bank" operator="lessThan" value="1.5"/>
+										<Node id="3" defaultChild="5">
+											<SimplePredicate field="dollars_in_out_1h" operator="lessThan" value="4529.865"/>
+											<Node id="5" score="0.30036336">
+												<SimplePredicate field="is_email_domain_free" operator="lessThan" value="0.5"/>
+											</Node>
+											<Node id="6" score="0.23483689">
+												<SimplePredicate field="is_email_domain_free" operator="greaterOrEqual" value="0.5"/>
+											</Node>
+										</Node>
+										<Node id="4" defaultChild="7">
+											<SimplePredicate field="dollars_in_out_1h" operator="greaterOrEqual" value="4529.865"/>
+											<Node id="7" score="-1.2920765">
+												<SimplePredicate field="amount" operator="lessThan" value="3762.255"/>
+											</Node>
+											<Node id="8" score="0.3021443">
+												<SimplePredicate field="amount" operator="greaterOrEqual" value="3762.255"/>
+											</Node>
+										</Node>
+									</Node>
+									<Node id="2" score="-0.30563584">
+										<SimplePredicate field="emails_per_bank" operator="greaterOrEqual" value="1.5"/>
+									</Node>
+								</Node>
+							</TreeModel>
+						</Segment>
+						<Segment id="10">
+							<True/>
+							<TreeModel functionName="regression" missingValueStrategy="defaultChild" splitCharacteristic="binarySplit" x-mathContext="float">
+								<MiningSchema>
+									<MiningField name="emails_per_bank"/>
+									<MiningField name="dollars_in_out_1h"/>
+									<MiningField name="amount"/>
+								</MiningSchema>
+								<Node id="0" defaultChild="1">
+									<True/>
+									<Node id="1" defaultChild="3">
+										<SimplePredicate field="emails_per_bank" operator="lessThan" value="1.5"/>
+										<Node id="3" defaultChild="5">
+											<SimplePredicate field="dollars_in_out_1h" operator="lessThan" value="799.875"/>
+											<Node id="5" score="0.10065157">
+												<SimplePredicate field="amount" operator="lessThan" value="96.165"/>
+											</Node>
+											<Node id="6" score="0.2834971">
+												<SimplePredicate field="amount" operator="greaterOrEqual" value="96.165"/>
+											</Node>
+										</Node>
+										<Node id="4" defaultChild="7">
+											<SimplePredicate field="dollars_in_out_1h" operator="greaterOrEqual" value="799.875"/>
+											<Node id="7" score="-0.76054424">
+												<SimplePredicate field="amount" operator="lessThan" value="800.03503"/>
+											</Node>
+											<Node id="8" score="0.1818117">
+												<SimplePredicate field="amount" operator="greaterOrEqual" value="800.03503"/>
+											</Node>
+										</Node>
+									</Node>
+									<Node id="2" score="-0.2999719">
+										<SimplePredicate field="emails_per_bank" operator="greaterOrEqual" value="1.5"/>
+									</Node>
+								</Node>
+							</TreeModel>
+						</Segment>
+					</Segmentation>
+				</MiningModel>
+			</Segment>
+			<Segment id="2">
+				<True/>
+				<RegressionModel functionName="classification" normalizationMethod="logit" x-mathContext="float">
+					<MiningSchema>
+						<MiningField name="label" usageType="target"/>
+						<MiningField name="xgbValue"/>
+					</MiningSchema>
+					<Output>
+						<OutputField name="probability(fraud)" optype="continuous" dataType="float" feature="probability" value="fraud"/>
+						<OutputField name="probability(good)" optype="continuous" dataType="float" feature="probability" value="good"/>
+					</Output>
+					<RegressionTable intercept="0.0" targetCategory="good">
+						<NumericPredictor name="xgbValue" coefficient="1.0"/>
+					</RegressionTable>
+					<RegressionTable intercept="0.0" targetCategory="fraud"/>
+				</RegressionModel>
+			</Segment>
+		</Segmentation>
+		<ModelVerification recordCount="15">
+			<VerificationFields>
+				<VerificationField field="is_email_domain_free" column="data:is_email_domain_free"/>
+				<VerificationField field="emails_per_bank" column="data:emails_per_bank"/>
+				<VerificationField field="dollars_out_by_email" column="data:dollars_out_by_email"/>
+				<VerificationField field="dollars_in_out_1h" column="data:dollars_in_out_1h"/>
+				<VerificationField field="amount" column="data:amount"/>
+				<VerificationField field="probability(fraud)" column="data:probability_fraud" precision="1.0E-13" zeroThreshold="1.0E-13"/>
+				<VerificationField field="probability(good)" column="data:probability_good" precision="1.0E-13" zeroThreshold="1.0E-13"/>
+			</VerificationFields>
+			<InlineTable>
+				<row>
+					<data:is_email_domain_free>1.0</data:is_email_domain_free>
+					<data:emails_per_bank>1.0</data:emails_per_bank>
+					<data:dollars_out_by_email>1298.55</data:dollars_out_by_email>
+					<data:dollars_in_out_1h>1298.55</data:dollars_in_out_1h>
+					<data:amount>1298.55</data:amount>
+					<data:probability_fraud>0.034502745</data:probability_fraud>
+					<data:probability_good>0.96549726</data:probability_good>
+				</row>
+				<row>
+					<data:is_email_domain_free>1.0</data:is_email_domain_free>
+					<data:emails_per_bank>1.0</data:emails_per_bank>
+					<data:dollars_out_by_email>2089.49</data:dollars_out_by_email>
+					<data:dollars_in_out_1h>176.49</data:dollars_in_out_1h>
+					<data:amount>176.49</data:amount>
+					<data:probability_fraud>0.027280986</data:probability_fraud>
+					<data:probability_good>0.972719</data:probability_good>
+				</row>
+				<row>
+					<data:is_email_domain_free>0.0</data:is_email_domain_free>
+					<data:emails_per_bank>1.0</data:emails_per_bank>
+					<data:dollars_out_by_email>492.37</data:dollars_out_by_email>
+					<data:dollars_in_out_1h>492.37</data:dollars_in_out_1h>
+					<data:amount>492.37</data:amount>
+					<data:probability_fraud>0.024729013</data:probability_fraud>
+					<data:probability_good>0.975271</data:probability_good>
+				</row>
+				<row>
+					<data:is_email_domain_free>0.0</data:is_email_domain_free>
+					<data:emails_per_bank>1.0</data:emails_per_bank>
+					<data:dollars_out_by_email>5386.56</data:dollars_out_by_email>
+					<data:dollars_in_out_1h>5386.56</data:dollars_in_out_1h>
+					<data:amount>5386.56</data:amount>
+					<data:probability_fraud>0.035717487</data:probability_fraud>
+					<data:probability_good>0.9642825</data:probability_good>
+				</row>
+				<row>
+					<data:is_email_domain_free>1.0</data:is_email_domain_free>
+					<data:emails_per_bank>1.0</data:emails_per_bank>
+					<data:dollars_out_by_email>108.77</data:dollars_out_by_email>
+					<data:dollars_in_out_1h>108.77</data:dollars_in_out_1h>
+					<data:amount>108.77</data:amount>
+					<data:probability_fraud>0.027280986</data:probability_fraud>
+					<data:probability_good>0.972719</data:probability_good>
+				</row>
+				<row>
+					<data:is_email_domain_free>0.0</data:is_email_domain_free>
+					<data:emails_per_bank>1.0</data:emails_per_bank>
+					<data:dollars_out_by_email>2715.49</data:dollars_out_by_email>
+					<data:dollars_in_out_1h>2715.49</data:dollars_in_out_1h>
+					<data:amount>2715.49</data:amount>
+					<data:probability_fraud>0.03577888</data:probability_fraud>
+					<data:probability_good>0.9642211</data:probability_good>
+				</row>
+				<row>
+					<data:is_email_domain_free>1.0</data:is_email_domain_free>
+					<data:emails_per_bank>1.0</data:emails_per_bank>
+					<data:dollars_out_by_email>1435.39</data:dollars_out_by_email>
+					<data:dollars_in_out_1h>1435.39</data:dollars_in_out_1h>
+					<data:amount>1435.39</data:amount>
+					<data:probability_fraud>0.03549528</data:probability_fraud>
+					<data:probability_good>0.9645047</data:probability_good>
+				</row>
+				<row>
+					<data:is_email_domain_free>1.0</data:is_email_domain_free>
+					<data:emails_per_bank>1.0</data:emails_per_bank>
+					<data:dollars_out_by_email>445.02</data:dollars_out_by_email>
+					<data:dollars_in_out_1h>445.02</data:dollars_in_out_1h>
+					<data:amount>445.02</data:amount>
+					<data:probability_fraud>0.027280986</data:probability_fraud>
+					<data:probability_good>0.972719</data:probability_good>
+				</row>
+				<row>
+					<data:is_email_domain_free>0.0</data:is_email_domain_free>
+					<data:emails_per_bank>1.0</data:emails_per_bank>
+					<data:dollars_out_by_email>1902.22</data:dollars_out_by_email>
+					<data:dollars_in_out_1h>983.65</data:dollars_in_out_1h>
+					<data:amount>983.65</data:amount>
+					<data:probability_fraud>0.029197216</data:probability_fraud>
+					<data:probability_good>0.9708028</data:probability_good>
+				</row>
+				<row>
+					<data:is_email_domain_free>1.0</data:is_email_domain_free>
+					<data:emails_per_bank>1.0</data:emails_per_bank>
+					<data:dollars_out_by_email>325.38</data:dollars_out_by_email>
+					<data:dollars_in_out_1h>325.38</data:dollars_in_out_1h>
+					<data:amount>325.38</data:amount>
+					<data:probability_fraud>0.027280986</data:probability_fraud>
+					<data:probability_good>0.972719</data:probability_good>
+				</row>
+				<row>
+					<data:is_email_domain_free>0.0</data:is_email_domain_free>
+					<data:emails_per_bank>1.0</data:emails_per_bank>
+					<data:dollars_out_by_email>3754.85</data:dollars_out_by_email>
+					<data:dollars_in_out_1h>397.86</data:dollars_in_out_1h>
+					<data:amount>397.86</data:amount>
+					<data:probability_fraud>0.024729013</data:probability_fraud>
+					<data:probability_good>0.975271</data:probability_good>
+				</row>
+				<row>
+					<data:is_email_domain_free>1.0</data:is_email_domain_free>
+					<data:emails_per_bank>1.0</data:emails_per_bank>
+					<data:dollars_out_by_email>738.49</data:dollars_out_by_email>
+					<data:dollars_in_out_1h>738.49</data:dollars_in_out_1h>
+					<data:amount>738.49</data:amount>
+					<data:probability_fraud>0.027280986</data:probability_fraud>
+					<data:probability_good>0.972719</data:probability_good>
+				</row>
+				<row>
+					<data:is_email_domain_free>0.0</data:is_email_domain_free>
+					<data:emails_per_bank>1.0</data:emails_per_bank>
+					<data:dollars_out_by_email>1836.68</data:dollars_out_by_email>
+					<data:dollars_in_out_1h>1836.68</data:dollars_in_out_1h>
+					<data:amount>1836.68</data:amount>
+					<data:probability_fraud>0.032200396</data:probability_fraud>
+					<data:probability_good>0.9677996</data:probability_good>
+				</row>
+				<row>
+					<data:is_email_domain_free>1.0</data:is_email_domain_free>
+					<data:emails_per_bank>1.0</data:emails_per_bank>
+					<data:dollars_out_by_email>255.19</data:dollars_out_by_email>
+					<data:dollars_in_out_1h>255.19</data:dollars_in_out_1h>
+					<data:amount>255.19</data:amount>
+					<data:probability_fraud>0.027280986</data:probability_fraud>
+					<data:probability_good>0.972719</data:probability_good>
+				</row>
+				<row>
+					<data:is_email_domain_free>0.0</data:is_email_domain_free>
+					<data:emails_per_bank>1.0</data:emails_per_bank>
+					<data:dollars_out_by_email>251.78</data:dollars_out_by_email>
+					<data:dollars_in_out_1h>251.78</data:dollars_in_out_1h>
+					<data:amount>251.78</data:amount>
+					<data:probability_fraud>0.024729013</data:probability_fraud>
+					<data:probability_good>0.975271</data:probability_good>
+				</row>
+			</InlineTable>
+		</ModelVerification>
+	</MiningModel>
+</PMML>
