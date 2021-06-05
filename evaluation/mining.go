@@ -141,7 +141,8 @@ func (m *MiningModel) evaluateMultipleModelChain(input DataRow) (DataRow, error)
 }
 
 func (m *MiningModel) evaluateMultipleModelSum(input DataRow) (DataRow, error) {
-	aggScores := make(map[string]float64)
+	aggScores := make([]float64, len(m.outputFields))
+	//aggScores := make(map[string]float64)
 
 	for _, segmodel := range m.segmodels {
 		segout, err := segmodel.Evaluate(input)
@@ -149,28 +150,24 @@ func (m *MiningModel) evaluateMultipleModelSum(input DataRow) (DataRow, error) {
 			return nil, err
 		}
 
-		for _, field := range m.outputFields {
+		for idx, field := range m.outputFields {
 			if m.model.FunctionName == models.MiningFunctionClassification {
 				outval, ok := segout[string(field.Name)]
 				if ok {
-					agg := aggScores[string(field.Name)]
-					agg += outval.Float64()
-					aggScores[string(field.Name)] = agg
+					aggScores[idx] += outval.Float64()
 				}
 			} else if m.model.FunctionName == models.MiningFunctionRegression {
 				outval, ok := segout["score"]
 				if ok {
-					agg := aggScores[string(field.Name)]
-					agg += outval.Float64()
-					aggScores[string(field.Name)] = agg
+					aggScores[idx] += outval.Float64()
 				}
 			}
 		}
 	}
 
 	out := make(DataRow)
-	for lbl, score := range aggScores {
-		out[lbl] = NewValue(score)
+	for idx, field := range m.outputFields {
+		out[string(field.Name)] = NewValue(aggScores[idx])
 	}
 
 	return out, nil
