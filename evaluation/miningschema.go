@@ -27,7 +27,7 @@ func (v Value) Float64() float64 {
 		return float64(f)
 	}
 
-	return 0.0
+	return float64(v.Int64())
 }
 
 func (v Value) Int64() int64 {
