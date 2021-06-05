@@ -55,12 +55,6 @@ func TestEvaluation(t *testing.T) {
 
 			err = emdl.Verify()
 			require.NoError(t, err)
-
-			err = emdl.Compile()
-			require.NoError(t, err)
-
-			err = emdl.Validate()
-			require.NoError(t, err)
 		})
 	}
 

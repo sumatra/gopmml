@@ -4217,7 +4217,7 @@ type RegressionModel struct {
 	ModelExplanation     *ModelExplanation    `xml:"ModelExplanation"`
 	ModelStats           *ModelStats          `xml:"ModelStats"`
 	ModelVerification    *ModelVerification   `xml:"ModelVerification"`
-	Output               Output              `xml:"Output"`
+	Output               Output               `xml:"Output"`
 	Targets              *Targets             `xml:"Targets"`
 
 	Extensions []Extension `xml:"Extension"`
@@ -4703,8 +4703,9 @@ type SimplePredicate struct {
 	Field    FieldName               `xml:"field,attr"`
 	Operator SimplePredicateOperator `xml:"operator,attr"`
 	Value    string                  `xml:"value,attr"`
-
 	Extensions []Extension `xml:"Extension"`
+
+	RawPredicateValue interface{}
 }
 
 func (*SimplePredicate) predicate() {}

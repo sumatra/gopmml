@@ -19,6 +19,7 @@ type TreeModel struct {
 	fieldTypes map[models.FieldName]models.DataType
 	root       node
 
+	outKeys map[string]string
 	targetField models.FieldName
 }
 
@@ -32,9 +33,9 @@ type scoreDist struct {
 }
 
 type node struct {
-	id string
+	id           string
 	defaultChild string
-	children []node
+	children     []node
 
 	scoreDist []scoreDist
 
@@ -60,7 +61,7 @@ const (
 	MissingValueStrategyNullPrediction     = MissingValueStrategy("nullPrediction")
 	MissingValueStrategyWeightedConfidence = MissingValueStrategy("weightedConfidence")
 )
- */
+*/
 
 func pickBest(scores []scoreDist) scoreDist {
 	best := scoreDist{probability: 0.0}
@@ -90,32 +91,33 @@ func (n node) evaluate(input DataRow) ([]scoreDist, predicateResult) {
 		return n.evaluateMissingValueStrategyNone(input)
 	}
 }
+
 var emptyScoreDist []scoreDist
 
 func (n node) outputScoreDist() []scoreDist {
 	if len(n.scoreDist) > 0 {
 		return n.scoreDist
-	} else {
-		sd := make([]scoreDist, 0, 0)
+	}
 
-		if n.m.targetField != "" {
-			for _, field := range n.m.dd.DataFields {
-				if field.Name == n.m.targetField {
-					for _, val := range field.Values {
-						if val.Value == n.score.value {
-							sd = append(sd, scoreDist{val.Value, 1.0, 1.0, n.score.recordCount})
-						} else {
-							sd = append(sd, scoreDist{val.Value, 0.0, 0.0, 0})
-						}
+	sd := make([]scoreDist, 0, 0)
+
+	if n.m.targetField != "" {
+		for _, field := range n.m.dd.DataFields {
+			if field.Name == n.m.targetField {
+				for _, val := range field.Values {
+					if val.Value == n.score.value {
+						sd = append(sd, scoreDist{val.Value, 1.0, 1.0, n.score.recordCount})
+					} else {
+						sd = append(sd, scoreDist{val.Value, 0.0, 0.0, 0})
 					}
 				}
 			}
-		} else {
-			sd = append(sd, n.score)
 		}
-
-		return sd
+	} else {
+		sd = append(sd, n.score)
 	}
+
+	return sd
 }
 
 func (n node) evaluateMissingValueStrategyNone(input DataRow) ([]scoreDist, predicateResult) {
@@ -220,7 +222,7 @@ func (n node) evaluateMissingValueStrategyNullPrediction(input DataRow) ([]score
 		return emptyScoreDist, result
 	}
 
-	if result == u  {
+	if result == u {
 		return emptyScoreDist, result
 	}
 
@@ -299,7 +301,6 @@ func (n node) evaluateMissingValueStrategyWeightedConfidence(input DataRow) ([]s
 		return aggScores, t
 	}
 
-
 	return n.outputScoreDist(), result
 }
 
@@ -363,6 +364,7 @@ func NewTreeModel(dd *models.DataDictionary, td *models.TransformationDictionary
 	m.dd = dd
 	m.td = td
 	m.model = model
+	m.outKeys = make(map[string]string)
 
 	err := m.Validate()
 	if err != nil {
@@ -405,9 +407,9 @@ func (m *TreeModel) Validate() error {
 
 func newNode(m *TreeModel, modelNode models.Node) node {
 	n := node{
-		id: modelNode.ID,
+		id:           modelNode.ID,
 		defaultChild: modelNode.DefaultChild,
-		m: m,
+		m:            m,
 	}
 
 	score := scoreDist{
@@ -492,9 +494,13 @@ func evaluateSimplePredicate(p *models.SimplePredicate, input DataRow, fieldType
 		return f
 	}
 
-	rawPredicateValue, err := getRawValue(predicateValueType, p.Value)
-	if err != nil {
-		return f
+	if p.RawPredicateValue == nil {
+		rawPredicateValue, err := getRawValue(predicateValueType, p.Value)
+		if err != nil {
+			return f
+		}
+
+		p.RawPredicateValue = rawPredicateValue
 	}
 
 	val, ok := input[string(p.Field)]
@@ -510,70 +516,70 @@ func evaluateSimplePredicate(p *models.SimplePredicate, input DataRow, fieldType
 	case models.SimplePredicateOperatorIsNotMissing:
 		return t
 	case models.SimplePredicateOperatorEqual:
-		if val.Raw() == rawPredicateValue {
+		if val.Raw() == p.RawPredicateValue {
 			return t
 		}
 	case models.SimplePredicateOperatorNotEqual:
-		if val.Raw() != rawPredicateValue {
+		if val.Raw() != p.RawPredicateValue {
 			return t
 		}
 	case models.SimplePredicateOperatorGreaterOrEqual:
 		switch predicateValueType {
 		case models.DataTypeDouble:
-			if val.Float64() >= rawPredicateValue.(float64) {
+			if val.Float64() >= p.RawPredicateValue.(float64) {
 				return t
 			}
 		case models.DataTypeFloat:
-			if val.Float64() >= rawPredicateValue.(float64) {
+			if val.Float64() >= p.RawPredicateValue.(float64) {
 				return t
 			}
 		case models.DataTypeInteger:
-			if val.Int64() >= rawPredicateValue.(int64) {
+			if val.Int64() >= p.RawPredicateValue.(int64) {
 				return t
 			}
 		}
 	case models.SimplePredicateOperatorGreaterThan:
 		switch predicateValueType {
 		case models.DataTypeDouble:
-			if val.Float64() > rawPredicateValue.(float64) {
+			if val.Float64() > p.RawPredicateValue.(float64) {
 				return t
 			}
 		case models.DataTypeFloat:
-			if val.Float64() > rawPredicateValue.(float64) {
+			if val.Float64() > p.RawPredicateValue.(float64) {
 				return t
 			}
 		case models.DataTypeInteger:
-			if val.Int64() > rawPredicateValue.(int64) {
+			if val.Int64() > p.RawPredicateValue.(int64) {
 				return t
 			}
 		}
 	case models.SimplePredicateOperatorLessOrEqual:
 		switch predicateValueType {
 		case models.DataTypeDouble:
-			if val.Float64() <= rawPredicateValue.(float64) {
+			if val.Float64() <= p.RawPredicateValue.(float64) {
 				return t
 			}
 		case models.DataTypeFloat:
-			if val.Float64() <= rawPredicateValue.(float64) {
+			if val.Float64() <= p.RawPredicateValue.(float64) {
 				return t
 			}
 		case models.DataTypeInteger:
-			if val.Int64() <= rawPredicateValue.(int64) {
+			if val.Int64() <= p.RawPredicateValue.(int64) {
 				return t
 			}
 		}
 	case models.SimplePredicateOperatorLessThan:
 		switch predicateValueType {
 		case models.DataTypeDouble:
-			if val.Float64() < rawPredicateValue.(float64) {
+			if val.Float64() < p.RawPredicateValue.(float64) {
 				return t
 			}
 		case models.DataTypeFloat:
-			if val.Float64() < rawPredicateValue.(float64) {
+			if val.Float64() < p.RawPredicateValue.(float64) {
 				return t
 			}
 		case models.DataTypeInteger:
-			if val.Int64() < rawPredicateValue.(int64) {
+			if val.Int64() < p.RawPredicateValue.(int64) {
 				return t
 			}
 		}
@@ -703,7 +709,12 @@ func (m *TreeModel) Evaluate(input DataRow) (DataRow, error) {
 		if m.model.FunctionName == models.MiningFunctionClassification {
 			out[string(m.targetField)] = NewValue(best.value)
 			for _, score := range scores {
-				key := fmt.Sprintf("probability(%s)", score.value)
+				key, ok := m.outKeys[score.value]
+				if !ok {
+					key = fmt.Sprintf("probability(%s)", score.value)
+					m.outKeys[score.value] = key
+				}
+				
 				out[key] = NewValue(score.probability)
 			}
 		} else if m.model.FunctionName == models.MiningFunctionRegression {
