@@ -2,8 +2,9 @@ package evaluation
 
 import (
 	"fmt"
-	"github.com/flukeish/pmml/models"
 	"math"
+
+	"github.com/flukeish/pmml/models"
 )
 
 type Model interface {
@@ -13,8 +14,7 @@ type Model interface {
 	Evaluate(input DataRow) (DataRow, error)
 }
 
-
-func NewModel(dd *models.DataDictionary, td *models.TransformationDictionary, mdl models.ModelElement) (Model, error){
+func NewModel(dd *models.DataDictionary, td *models.TransformationDictionary, mdl models.ModelElement) (Model, error) {
 	switch v := mdl.(type) {
 	case *models.TreeModel:
 		return NewTreeModel(dd, td, v)
@@ -55,9 +55,9 @@ func verifyModel(m Model, mv *models.ModelVerification) error {
 			if ok {
 				expected := v.Float64()
 				predictedVal, ok := output[resKey]
-				predicted := predictedVal.Float64()
 				if ok {
-					if math.Abs(expected - predicted) > 1e-6 {
+					predicted := predictedVal.Float64()
+					if math.Abs(expected-predicted) > 1e-6 {
 						return fmt.Errorf("%s: expected %f, predicted %f", k, expected, predicted)
 					}
 				}

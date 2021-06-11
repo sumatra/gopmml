@@ -2,8 +2,9 @@ package evaluation
 
 import (
 	"fmt"
-	"github.com/flukeish/pmml/models"
 	"math"
+
+	"github.com/flukeish/pmml/models"
 )
 
 type RegressionModel struct {
@@ -26,7 +27,6 @@ func NewRegressionModel(dd *models.DataDictionary, td *models.TransformationDict
 }
 
 func (m *RegressionModel) Compile() error {
-
 
 	return nil
 }
@@ -62,24 +62,67 @@ func (m *RegressionModel) Verify() error {
 	return verifyModel(m, m.model.ModelVerification)
 }
 
-func (m *RegressionModel) normalize(term float64) float64 {
+func (m *RegressionModel) normalize(term float64) (float64, error) {
 	switch m.model.RegressionNormalizationMethod {
 	case models.RegressionNormalizationMethodSoftmax:
-		return 1.0 / (1.0 + math.Exp(-term))
+		return 1.0 / (1.0 + math.Exp(-term)), nil
 	case models.RegressionNormalizationMethodLogit:
-		return 1.0 / (1.0 + math.Exp(-term))
+		return 1.0 / (1.0 + math.Exp(-term)), nil
 	case models.RegressionNormalizationMethodExp:
-		return math.Exp(term)
+		return math.Exp(term), nil
 	case models.RegressionNormalizationMethodCloglog:
-		return 1.0 - math.Exp(-math.Exp(term))
+		return 1.0 - math.Exp(-math.Exp(term)), nil
 	case models.RegressionNormalizationMethodCauchit:
-		return 0.5 + (1 / math.Pi) * math.Atan(term)
-	default:
-		return term
+		return 0.5 + (1/math.Pi)*math.Atan(term), nil
 	}
+	return 0.0, fmt.Errorf("unrecognized normalization method: %v", m.model.RegressionNormalizationMethod)
 }
 
 func (m *RegressionModel) Evaluate(input DataRow) (DataRow, error) {
+	if m.model.FunctionName == "regression" {
+		return m.EvaluateRegression(input)
+	} else if m.model.FunctionName == "classification" && len(m.model.Output.Fields) == 2 {
+		return m.EvaluateBinaryClassification(input)
+	} else if m.model.FunctionName == "classification" {
+		return m.EvaluateMulticlassClassification(input)
+	}
+	return nil, fmt.Errorf("unrecognized regression function name: %s", m.model.FunctionName)
+}
+
+func (m *RegressionModel) EvaluateRegression(input DataRow) (DataRow, error) {
+	out := make(DataRow)
+
+	if len(m.model.RegressionTables) != 1 {
+		return out, fmt.Errorf("regression expects exactly 1 RegressionTable, found: %d", len(m.model.RegressionTables))
+	}
+	rtbl := m.model.RegressionTables[0]
+
+	if len(m.model.Output.Fields) != 1 {
+		return out, fmt.Errorf("regression expects exactly 1 OutputField, found: %d", len(m.model.Output.Fields))
+	}
+	outField := m.model.Output.Fields[0]
+
+	y := rtbl.Intercept
+	for _, np := range rtbl.NumericPredictor {
+		term, ok := input[np.Name]
+		if !ok {
+			return nil, fmt.Errorf("regression missing term %s", np.Name)
+		}
+		indVar := term.Float64()
+		coeff := np.Coefficient
+		y += coeff * indVar
+	}
+
+	pred, err := m.normalize(y)
+	if err != nil {
+		return out, err
+	}
+	out[string(outField.Name)] = NewValue(pred)
+
+	return out, nil
+}
+
+func (m *RegressionModel) EvaluateBinaryClassification(input DataRow) (DataRow, error) {
 	out := make(DataRow)
 
 	finalPred := 1.0
@@ -93,10 +136,11 @@ func (m *RegressionModel) Evaluate(input DataRow) (DataRow, error) {
 				if !ok {
 					return nil, fmt.Errorf("regression missing term %s", np.Name)
 				}
-
-				if m.model.RegressionNormalizationMethod == models.RegressionNormalizationMethodLogit {
-					pred += m.normalize(term.Float64())
+				normalized, err := m.normalize(term.Float64())
+				if err != nil {
+					return out, err
 				}
+				pred += normalized
 			}
 		} else {
 			pred = finalPred
@@ -111,5 +155,51 @@ func (m *RegressionModel) Evaluate(input DataRow) (DataRow, error) {
 		}
 	}
 
+	return out, nil
+}
+
+func (m *RegressionModel) EvaluateMulticlassClassification(input DataRow) (DataRow, error) {
+	out := make(DataRow)
+
+	outFields := make(map[string]string)
+	for _, output := range m.model.Output.Fields {
+		outFields[output.Value] = string(output.Name)
+	}
+
+	y := make([]float64, len(m.model.RegressionTables))
+	targets := make([]string, len(m.model.RegressionTables))
+	for i, rtbl := range m.model.RegressionTables {
+		targets[i] = outFields[rtbl.TargetCategory]
+		y[i] = rtbl.Intercept
+
+		for _, np := range rtbl.NumericPredictor {
+			term, ok := input[np.Name]
+			if !ok {
+				return nil, fmt.Errorf("regression missing term %s", np.Name)
+			}
+			indVar := term.Float64()
+			coeff := np.Coefficient
+			y[i] += coeff * indVar
+		}
+	}
+
+	for i, target := range targets {
+		switch m.model.RegressionNormalizationMethod {
+		case models.RegressionNormalizationMethodSoftmax:
+			s := 0.0
+			for _, yVal := range y {
+				s += math.Exp(yVal)
+			}
+			out[target] = NewValue(math.Exp(y[i]) / s)
+		case models.RegressionNormalizationMethodSimplemax:
+			s := 0.0
+			for _, yVal := range y {
+				s += yVal
+			}
+			out[target] = NewValue(y[i] / s)
+		default:
+			return out, fmt.Errorf("unsupported normalization method: %v", m.model.RegressionNormalizationMethod)
+		}
+	}
 	return out, nil
 }
