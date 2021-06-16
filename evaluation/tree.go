@@ -44,6 +44,10 @@ type node struct {
 	m     *TreeModel
 }
 
+func (n node) leaf() bool {
+	return len(n.children) == 0
+}
+
 type predicateResult int
 
 const (
@@ -95,6 +99,10 @@ func (n node) evaluate(input DataRow) ([]scoreDist, predicateResult) {
 var emptyScoreDist []scoreDist
 
 func (n node) outputScoreDist() []scoreDist {
+	if !n.leaf() && n.m.model.NoTrueChildStrategy == models.NoTrueChildStrategyReturnNullPrediction {
+		return nil
+	}
+
 	if len(n.scoreDist) > 0 {
 		return n.scoreDist
 	}

@@ -18,6 +18,18 @@ func (v Value) Raw() interface{} {
 	return v.val
 }
 
+func (v Value) Float32() float32 {
+	if f, ok := v.val.(float32); ok {
+		return f
+	}
+
+	if f, ok := v.val.(float64); ok {
+		return float32(f)
+	}
+
+	return float32(v.Int64())
+}
+
 func (v Value) Float64() float64 {
 	if f, ok := v.val.(float64); ok {
 		return f

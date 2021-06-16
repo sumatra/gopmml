@@ -2911,6 +2911,7 @@ type MiningModel struct {
 	LocalTransformations LocalTransformations `xml:"LocalTransformations"`
 	Output               Output               `xml:"Output"`
 	Segmentation         Segmentation         `xml:"Segmentation"`
+	Targets              Targets              `xml:"Targets"`
 
 	Extensions []Extension `xml:"Extension"`
 }

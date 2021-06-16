@@ -71,8 +71,9 @@ func verifyModel(m Model, mv *models.ModelVerification) error {
 					return fmt.Errorf("expected output: %s not produced by model", fieldName)
 				}
 				predicted := predictedVal.Float64()
-				if math.Abs(expected-predicted) > 1e-6 {
-					return fmt.Errorf("%s: expected %f, predicted %f", k, expected, predicted)
+				delta := expected - predicted
+				if math.Abs(delta) > 1e-5 {
+					return fmt.Errorf("%s: expected %f, predicted %f, error %f\n", k, expected, predicted, delta)
 				}
 			}
 		}

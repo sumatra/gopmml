@@ -19,6 +19,7 @@ type MiningModel struct {
 	fieldTypes   map[models.FieldName]models.DataType
 	targetField  models.FieldName
 	outputFields []models.OutputField
+	targets      []models.Target
 }
 
 func NewMiningModel(dd *models.DataDictionary, td *models.TransformationDictionary, model *models.MiningModel) (*MiningModel, error) {
@@ -67,6 +68,7 @@ func (m *MiningModel) Validate() error {
 
 func (m *MiningModel) Compile() error {
 	m.outputFields = m.model.Output.Fields
+	m.targets = m.model.Targets.Targets
 
 	for _, f := range m.model.MiningSchema.MiningFields {
 		if f.UsageType == models.FieldUsageTypeTarget {
@@ -141,8 +143,15 @@ func (m *MiningModel) evaluateMultipleModelChain(input DataRow) (DataRow, error)
 }
 
 func (m *MiningModel) evaluateMultipleModelSum(input DataRow) (DataRow, error) {
-	aggScores := make([]float64, len(m.outputFields))
-	//aggScores := make(map[string]float64)
+	scoreMap := make(map[models.FieldName]float64)
+
+	for _, field := range m.outputFields {
+		scoreMap[field.Name] = 0.0
+	}
+
+	for _, target := range m.targets {
+		scoreMap[target.Field] = 0.0
+	}
 
 	for _, segmodel := range m.segmodels {
 		segout, err := segmodel.Evaluate(input)
@@ -150,24 +159,34 @@ func (m *MiningModel) evaluateMultipleModelSum(input DataRow) (DataRow, error) {
 			return nil, err
 		}
 
-		for idx, field := range m.outputFields {
+		for k, v := range scoreMap {
 			if m.model.FunctionName == models.MiningFunctionClassification {
-				outval, ok := segout[string(field.Name)]
+				outval, ok := segout[string(k)]
 				if ok {
-					aggScores[idx] += outval.Float64()
+					scoreMap[k] = v + outval.Float64()
 				}
-			} else if m.model.FunctionName == models.MiningFunctionRegression {
+			} else {
 				outval, ok := segout["score"]
 				if ok {
-					aggScores[idx] += outval.Float64()
+					scoreMap[k] = v + outval.Float64()
 				}
 			}
 		}
 	}
 
+	for _, target := range m.targets {
+		if target.RescaleFactor != nil {
+			scoreMap[target.Field] = scoreMap[target.Field] * *target.RescaleFactor
+		}
+		if target.RescaleConstant != nil {
+			scoreMap[target.Field] = scoreMap[target.Field] + *target.RescaleConstant
+		}
+	}
+
+
 	out := make(DataRow)
-	for idx, field := range m.outputFields {
-		out[string(field.Name)] = NewValue(aggScores[idx])
+	for k, v := range scoreMap {
+		out[string(k)] = NewValue(v)
 	}
 
 	return out, nil
@@ -180,7 +199,7 @@ func (m *MiningModel) evaluateMultipleModelAverage(input DataRow) (DataRow, erro
 	}
 
 	for lbl, score := range out {
-		out[lbl] = NewValue(score.Float64() /  float64(len(m.model.Segmentation.Segments)))
+		out[lbl] = NewValue(score.Float64() / float64(len(m.model.Segmentation.Segments)))
 	}
 
 	return out, nil
