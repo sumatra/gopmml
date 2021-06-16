@@ -3,14 +3,15 @@ package evaluation_test
 import (
 	"bufio"
 	"encoding/xml"
-	"github.com/flukeish/pmml/evaluation"
-	"github.com/flukeish/pmml/models"
-	"github.com/stretchr/testify/require"
 	"os"
 	"path"
 	"path/filepath"
 	"strings"
 	"testing"
+
+	"github.com/flukeish/pmml/evaluation"
+	"github.com/flukeish/pmml/models"
+	"github.com/stretchr/testify/require"
 )
 
 func TestEvaluation(t *testing.T) {
@@ -57,7 +58,5 @@ func TestEvaluation(t *testing.T) {
 			require.NoError(t, err)
 		})
 	}
-
-
 
 }

@@ -3,6 +3,7 @@ package evaluation
 import (
 	"fmt"
 	"math"
+	"strings"
 
 	"github.com/flukeish/pmml/models"
 )
@@ -33,15 +34,27 @@ func verifyModel(m Model, mv *models.ModelVerification) error {
 	}
 
 	outputMap := make(map[string]string)
+	inputMap := make(map[string]string)
 
 	for _, vField := range mv.VerificationFields.Fields {
-		outputMap[vField.Column] = string(vField.Field)
+		if !strings.HasPrefix(vField.Column, "data:") {
+			return fmt.Errorf("verification field missing 'data:' prefix: %s", vField.Column)
+		}
+		colName := vField.Column[5:]
+		if vField.Precision == nil {
+			inputMap[colName] = string(vField.Field)
+		} else {
+			outputMap[colName] = string(vField.Field)
+		}
 	}
 
 	for _, vRow := range mv.InlineTable.Rows {
 		input := make(DataRow)
 		for k, v := range vRow {
-			input[k] = NewValue(v)
+			_, isInput := inputMap[k]
+			if isInput {
+				input[k] = NewValue(v)
+			}
 		}
 
 		output, err := m.Evaluate(input)
@@ -49,17 +62,17 @@ func verifyModel(m Model, mv *models.ModelVerification) error {
 			return err
 		}
 
-		for k, v := range input {
-			outKey := fmt.Sprintf("data:%s", k)
-			resKey, ok := outputMap[outKey]
-			if ok {
-				expected := v.Float64()
-				predictedVal, ok := output[resKey]
-				if ok {
-					predicted := predictedVal.Float64()
-					if math.Abs(expected-predicted) > 1e-6 {
-						return fmt.Errorf("%s: expected %f, predicted %f", k, expected, predicted)
-					}
+		for k, v := range vRow {
+			fieldName, isOutput := outputMap[k]
+			if isOutput {
+				expected := NewValue(v).Float64()
+				predictedVal, ok := output[fieldName]
+				if !ok {
+					return fmt.Errorf("expected output: %s not produced by model", fieldName)
+				}
+				predicted := predictedVal.Float64()
+				if math.Abs(expected-predicted) > 1e-6 {
+					return fmt.Errorf("%s: expected %f, predicted %f", k, expected, predicted)
 				}
 			}
 		}

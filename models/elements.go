@@ -4700,10 +4700,10 @@ const (
   </xs:element>
 */
 type SimplePredicate struct {
-	Field    FieldName               `xml:"field,attr"`
-	Operator SimplePredicateOperator `xml:"operator,attr"`
-	Value    string                  `xml:"value,attr"`
-	Extensions []Extension `xml:"Extension"`
+	Field      FieldName               `xml:"field,attr"`
+	Operator   SimplePredicateOperator `xml:"operator,attr"`
+	Value      string                  `xml:"value,attr"`
+	Extensions []Extension             `xml:"Extension"`
 
 	RawPredicateValue interface{}
 }
@@ -5774,8 +5774,8 @@ type VectorInstance struct {
 type VerificationField struct {
 	Field         FieldName   `xml:"field,attr"`
 	Column        string      `xml:"column,attr"`
-	Precision     float64     `xml:"precision,attr"`
-	ZeroThreshold float64     `xml:"zeroThreshold,attr"`
+	Precision     *float64    `xml:"precision,attr"`
+	ZeroThreshold *float64    `xml:"zeroThreshold,attr"`
 	Extensions    []Extension `xml:"Extension"`
 }
 
