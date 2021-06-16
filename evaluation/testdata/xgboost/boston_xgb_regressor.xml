@@ -1,0 +1,837 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<PMML xmlns="http://www.dmg.org/PMML-4_4" xmlns:data="http://jpmml.org/jpmml-model/InlineTable" version="4.4">
+	<Header>
+		<Application name="JPMML-SkLearn" version="1.6.18"/>
+		<Timestamp>2021-06-15T23:37:32Z</Timestamp>
+	</Header>
+	<DataDictionary>
+		<DataField name="y" optype="continuous" dataType="double"/>
+		<DataField name="CRIM" optype="continuous" dataType="float"/>
+		<DataField name="ZN" optype="continuous" dataType="float"/>
+		<DataField name="INDUS" optype="continuous" dataType="float"/>
+		<DataField name="CHAS" optype="continuous" dataType="float"/>
+		<DataField name="NOX" optype="continuous" dataType="float"/>
+		<DataField name="RM" optype="continuous" dataType="float"/>
+		<DataField name="AGE" optype="continuous" dataType="float"/>
+		<DataField name="DIS" optype="continuous" dataType="float"/>
+		<DataField name="RAD" optype="continuous" dataType="float"/>
+		<DataField name="TAX" optype="continuous" dataType="float"/>
+		<DataField name="PTRATIO" optype="continuous" dataType="float"/>
+		<DataField name="B" optype="continuous" dataType="float"/>
+		<DataField name="LSTAT" optype="continuous" dataType="float"/>
+	</DataDictionary>
+	<MiningModel functionName="regression" algorithmName="XGBoost (GBTree)" x-mathContext="float">
+		<MiningSchema>
+			<MiningField name="y" usageType="target"/>
+			<MiningField name="CRIM"/>
+			<MiningField name="ZN"/>
+			<MiningField name="INDUS"/>
+			<MiningField name="CHAS"/>
+			<MiningField name="NOX"/>
+			<MiningField name="RM"/>
+			<MiningField name="AGE"/>
+			<MiningField name="DIS"/>
+			<MiningField name="RAD"/>
+			<MiningField name="TAX"/>
+			<MiningField name="PTRATIO"/>
+			<MiningField name="B"/>
+			<MiningField name="LSTAT"/>
+		</MiningSchema>
+		<Targets>
+			<Target field="y" rescaleConstant="0.5"/>
+		</Targets>
+		<Segmentation multipleModelMethod="sum">
+			<Segment id="1">
+				<True/>
+				<TreeModel functionName="regression" noTrueChildStrategy="returnLastPrediction" x-mathContext="float">
+					<MiningSchema>
+						<MiningField name="NOX"/>
+						<MiningField name="RM"/>
+						<MiningField name="DIS"/>
+						<MiningField name="B"/>
+						<MiningField name="LSTAT"/>
+					</MiningSchema>
+					<Node score="11.88">
+						<True/>
+						<Node score="3.5475001">
+							<SimplePredicate field="LSTAT" operator="greaterOrEqual" value="9.725"/>
+							<Node score="5.0604">
+								<SimplePredicate field="LSTAT" operator="greaterOrEqual" value="16.085"/>
+								<Node score="3.5571876">
+									<SimplePredicate field="NOX" operator="greaterOrEqual" value="0.60300004"/>
+								</Node>
+							</Node>
+							<Node score="5.9910417">
+								<SimplePredicate field="B" operator="greaterOrEqual" value="116.024994"/>
+							</Node>
+						</Node>
+						<Node score="9.67683">
+							<SimplePredicate field="RM" operator="greaterOrEqual" value="6.941"/>
+							<Node score="12.94742">
+								<SimplePredicate field="RM" operator="greaterOrEqual" value="7.4370003"/>
+							</Node>
+						</Node>
+						<Node score="7.2047486">
+							<SimplePredicate field="DIS" operator="greaterOrEqual" value="1.48495"/>
+						</Node>
+					</Node>
+				</TreeModel>
+			</Segment>
+			<Segment id="2">
+				<True/>
+				<TreeModel functionName="regression" noTrueChildStrategy="returnLastPrediction" x-mathContext="float">
+					<MiningSchema>
+						<MiningField name="CRIM"/>
+						<MiningField name="NOX"/>
+						<MiningField name="RM"/>
+						<MiningField name="DIS"/>
+						<MiningField name="LSTAT"/>
+					</MiningSchema>
+					<Node score="8.594448">
+						<True/>
+						<Node score="6.7394905">
+							<SimplePredicate field="RM" operator="greaterOrEqual" value="6.8375"/>
+							<Node score="2.2228298">
+								<SimplePredicate field="NOX" operator="greaterOrEqual" value="0.65900004"/>
+							</Node>
+							<Node score="9.410249">
+								<SimplePredicate field="RM" operator="greaterOrEqual" value="7.4370003"/>
+							</Node>
+						</Node>
+						<Node score="3.5343006">
+							<SimplePredicate field="LSTAT" operator="greaterOrEqual" value="14.4"/>
+							<Node score="2.1871219">
+								<SimplePredicate field="CRIM" operator="greaterOrEqual" value="6.99237"/>
+							</Node>
+						</Node>
+						<Node score="4.652115">
+							<SimplePredicate field="DIS" operator="greaterOrEqual" value="1.38485"/>
+						</Node>
+					</Node>
+				</TreeModel>
+			</Segment>
+			<Segment id="3">
+				<True/>
+				<TreeModel functionName="regression" noTrueChildStrategy="returnLastPrediction" x-mathContext="float">
+					<MiningSchema>
+						<MiningField name="NOX"/>
+						<MiningField name="RM"/>
+						<MiningField name="DIS"/>
+						<MiningField name="LSTAT"/>
+					</MiningSchema>
+					<Node score="7.17194">
+						<True/>
+						<Node score="2.8827846">
+							<SimplePredicate field="LSTAT" operator="greaterOrEqual" value="5.4399996"/>
+							<Node score="2.3469074">
+								<SimplePredicate field="LSTAT" operator="greaterOrEqual" value="19.23"/>
+								<Node score="1.2603621">
+									<SimplePredicate field="NOX" operator="greaterOrEqual" value="0.60300004"/>
+								</Node>
+							</Node>
+							<Node score="4.0782027">
+								<SimplePredicate field="RM" operator="greaterOrEqual" value="6.5445"/>
+							</Node>
+						</Node>
+						<Node score="0.9344625">
+							<SimplePredicate field="NOX" operator="greaterOrEqual" value="0.6825"/>
+						</Node>
+						<Node score="5.2570033">
+							<SimplePredicate field="DIS" operator="greaterOrEqual" value="3.20745"/>
+						</Node>
+					</Node>
+				</TreeModel>
+			</Segment>
+			<Segment id="4">
+				<True/>
+				<TreeModel functionName="regression" noTrueChildStrategy="returnLastPrediction" x-mathContext="float">
+					<MiningSchema>
+						<MiningField name="CRIM"/>
+						<MiningField name="NOX"/>
+						<MiningField name="RM"/>
+						<MiningField name="PTRATIO"/>
+						<MiningField name="LSTAT"/>
+					</MiningSchema>
+					<Node score="3.7105596">
+						<True/>
+						<Node score="2.1959188">
+							<SimplePredicate field="LSTAT" operator="greaterOrEqual" value="7.685"/>
+							<Node score="1.512895">
+								<SimplePredicate field="NOX" operator="greaterOrEqual" value="0.6695"/>
+								<Node score="0.41399312">
+									<SimplePredicate field="CRIM" operator="greaterOrEqual" value="11.36915"/>
+								</Node>
+							</Node>
+							<Node score="1.2497604">
+								<SimplePredicate field="PTRATIO" operator="greaterOrEqual" value="20.95"/>
+							</Node>
+						</Node>
+						<Node score="5.0433407">
+							<SimplePredicate field="RM" operator="greaterOrEqual" value="7.4370003"/>
+							<Node score="0.7942932">
+								<SimplePredicate field="CRIM" operator="greaterOrEqual" value="2.7422352"/>
+							</Node>
+						</Node>
+						<Node score="2.7554233">
+							<SimplePredicate field="LSTAT" operator="greaterOrEqual" value="4.915"/>
+						</Node>
+					</Node>
+				</TreeModel>
+			</Segment>
+			<Segment id="5">
+				<True/>
+				<TreeModel functionName="regression" noTrueChildStrategy="returnLastPrediction" x-mathContext="float">
+					<MiningSchema>
+						<MiningField name="CRIM"/>
+						<MiningField name="NOX"/>
+						<MiningField name="RM"/>
+						<MiningField name="DIS"/>
+						<MiningField name="PTRATIO"/>
+						<MiningField name="LSTAT"/>
+					</MiningSchema>
+					<Node score="5.0507884">
+						<True/>
+						<Node score="4.044363">
+							<SimplePredicate field="RM" operator="greaterOrEqual" value="7.0105"/>
+							<Node score="1.0429881">
+								<SimplePredicate field="NOX" operator="greaterOrEqual" value="0.65900004"/>
+								<Node score="0.26908994">
+									<SimplePredicate field="CRIM" operator="greaterOrEqual" value="13.928595"/>
+								</Node>
+							</Node>
+							<Node score="2.8641622">
+								<SimplePredicate field="DIS" operator="greaterOrEqual" value="2.5611"/>
+							</Node>
+						</Node>
+						<Node score="1.4055734">
+							<SimplePredicate field="LSTAT" operator="greaterOrEqual" value="11.705"/>
+							<Node score="0.85944575">
+								<SimplePredicate field="PTRATIO" operator="greaterOrEqual" value="19.650002"/>
+							</Node>
+						</Node>
+						<Node score="1.7363971">
+							<SimplePredicate field="DIS" operator="greaterOrEqual" value="1.38485"/>
+						</Node>
+					</Node>
+				</TreeModel>
+			</Segment>
+			<Segment id="6">
+				<True/>
+				<TreeModel functionName="regression" noTrueChildStrategy="returnLastPrediction" x-mathContext="float">
+					<MiningSchema>
+						<MiningField name="NOX"/>
+						<MiningField name="RM"/>
+						<MiningField name="DIS"/>
+						<MiningField name="PTRATIO"/>
+						<MiningField name="LSTAT"/>
+					</MiningSchema>
+					<Node score="3.4656448">
+						<True/>
+						<Node score="0.20376913">
+							<SimplePredicate field="RM" operator="greaterOrEqual" value="6.5455"/>
+							<Node score="1.7014757">
+								<SimplePredicate field="PTRATIO" operator="greaterOrEqual" value="15.25"/>
+								<Node score="0.4934761">
+									<SimplePredicate field="NOX" operator="greaterOrEqual" value="0.651"/>
+								</Node>
+							</Node>
+							<Node score="2.7282093">
+								<SimplePredicate field="NOX" operator="greaterOrEqual" value="0.4005"/>
+							</Node>
+						</Node>
+						<Node score="0.8812794">
+							<SimplePredicate field="LSTAT" operator="greaterOrEqual" value="19.645"/>
+							<Node score="0.1781457">
+								<SimplePredicate field="PTRATIO" operator="greaterOrEqual" value="19.650002"/>
+							</Node>
+						</Node>
+						<Node score="0.9455723">
+							<SimplePredicate field="DIS" operator="greaterOrEqual" value="1.37275"/>
+						</Node>
+					</Node>
+				</TreeModel>
+			</Segment>
+			<Segment id="7">
+				<True/>
+				<TreeModel functionName="regression" noTrueChildStrategy="returnLastPrediction" x-mathContext="float">
+					<MiningSchema>
+						<MiningField name="AGE"/>
+						<MiningField name="DIS"/>
+						<MiningField name="TAX"/>
+						<MiningField name="PTRATIO"/>
+						<MiningField name="B"/>
+						<MiningField name="LSTAT"/>
+					</MiningSchema>
+					<Node score="2.308075">
+						<True/>
+						<Node score="2.0645761">
+							<SimplePredicate field="LSTAT" operator="greaterOrEqual" value="4.65"/>
+							<Node score="2.5441985">
+								<SimplePredicate field="PTRATIO" operator="greaterOrEqual" value="18.75"/>
+								<Node score="0.45450598">
+									<SimplePredicate field="DIS" operator="greaterOrEqual" value="1.17165"/>
+								</Node>
+							</Node>
+							<Node score="0.85502964">
+								<SimplePredicate field="TAX" operator="greaterOrEqual" value="222.5"/>
+							</Node>
+						</Node>
+						<Node score="0.041736603">
+							<SimplePredicate field="DIS" operator="greaterOrEqual" value="5.9736004"/>
+							<Node score="1.1654373">
+								<SimplePredicate field="AGE" operator="greaterOrEqual" value="7.6"/>
+							</Node>
+						</Node>
+						<Node score="1.0263687">
+							<SimplePredicate field="B" operator="greaterOrEqual" value="395.57"/>
+						</Node>
+					</Node>
+				</TreeModel>
+			</Segment>
+			<Segment id="8">
+				<True/>
+				<TreeModel functionName="regression" noTrueChildStrategy="returnLastPrediction" x-mathContext="float">
+					<MiningSchema>
+						<MiningField name="CRIM"/>
+						<MiningField name="RM"/>
+						<MiningField name="DIS"/>
+						<MiningField name="TAX"/>
+					</MiningSchema>
+					<Node score="0.4058378">
+						<True/>
+						<Node score="1.0599667">
+							<SimplePredicate field="RM" operator="greaterOrEqual" value="6.049"/>
+							<Node score="2.7033484">
+								<SimplePredicate field="TAX" operator="greaterOrEqual" value="267.5"/>
+								<Node score="0.6063119">
+									<SimplePredicate field="DIS" operator="greaterOrEqual" value="1.2593501"/>
+								</Node>
+							</Node>
+							<Node score="2.3068435">
+								<SimplePredicate field="RM" operator="greaterOrEqual" value="7.8255"/>
+							</Node>
+						</Node>
+						<Node score="-0.040125214">
+							<SimplePredicate field="CRIM" operator="greaterOrEqual" value="22.3241"/>
+							<Node score="-0.6886545">
+								<SimplePredicate field="RM" operator="greaterOrEqual" value="5.401"/>
+							</Node>
+						</Node>
+						<Node score="0.0026725517">
+							<SimplePredicate field="DIS" operator="greaterOrEqual" value="4.4412003"/>
+						</Node>
+					</Node>
+				</TreeModel>
+			</Segment>
+			<Segment id="9">
+				<True/>
+				<TreeModel functionName="regression" noTrueChildStrategy="returnLastPrediction" x-mathContext="float">
+					<MiningSchema>
+						<MiningField name="CRIM"/>
+						<MiningField name="NOX"/>
+						<MiningField name="RM"/>
+						<MiningField name="DIS"/>
+						<MiningField name="B"/>
+						<MiningField name="LSTAT"/>
+					</MiningSchema>
+					<Node score="0.89507306">
+						<True/>
+						<Node score="-0.33397123">
+							<SimplePredicate field="LSTAT" operator="greaterOrEqual" value="4.65"/>
+							<Node score="0.2218876">
+								<SimplePredicate field="B" operator="greaterOrEqual" value="105.24"/>
+								<Node score="0.5463388">
+									<SimplePredicate field="RM" operator="greaterOrEqual" value="6.143"/>
+								</Node>
+							</Node>
+							<Node score="0.3703493">
+								<SimplePredicate field="DIS" operator="greaterOrEqual" value="2.64765"/>
+							</Node>
+						</Node>
+						<Node score="1.797185">
+							<SimplePredicate field="CRIM" operator="greaterOrEqual" value="0.89943504"/>
+						</Node>
+						<Node score="-0.41283476">
+							<SimplePredicate field="NOX" operator="greaterOrEqual" value="0.52550006"/>
+						</Node>
+					</Node>
+				</TreeModel>
+			</Segment>
+			<Segment id="10">
+				<True/>
+				<TreeModel functionName="regression" noTrueChildStrategy="returnLastPrediction" x-mathContext="float">
+					<MiningSchema>
+						<MiningField name="CHAS"/>
+						<MiningField name="RM"/>
+						<MiningField name="AGE"/>
+						<MiningField name="TAX"/>
+						<MiningField name="PTRATIO"/>
+						<MiningField name="LSTAT"/>
+					</MiningSchema>
+					<Node score="0.9440256">
+						<True/>
+						<Node score="0.6460665">
+							<SimplePredicate field="RM" operator="greaterOrEqual" value="7.141"/>
+							<Node score="0.7810518">
+								<SimplePredicate field="PTRATIO" operator="greaterOrEqual" value="16.65"/>
+								<Node score="0.19066097">
+									<SimplePredicate field="AGE" operator="greaterOrEqual" value="71.0"/>
+								</Node>
+							</Node>
+							<Node score="1.4001172">
+								<SimplePredicate field="RM" operator="greaterOrEqual" value="7.8365"/>
+							</Node>
+						</Node>
+						<Node score="1.7457771">
+							<SimplePredicate field="CHAS" operator="greaterOrEqual" value="0.5"/>
+							<Node score="0.47513855">
+								<SimplePredicate field="LSTAT" operator="greaterOrEqual" value="9.21"/>
+							</Node>
+						</Node>
+						<Node score="0.15829077">
+							<SimplePredicate field="TAX" operator="greaterOrEqual" value="219.0"/>
+						</Node>
+					</Node>
+				</TreeModel>
+			</Segment>
+			<Segment id="11">
+				<True/>
+				<TreeModel functionName="regression" noTrueChildStrategy="returnLastPrediction" x-mathContext="float">
+					<MiningSchema>
+						<MiningField name="CRIM"/>
+						<MiningField name="INDUS"/>
+						<MiningField name="RM"/>
+						<MiningField name="DIS"/>
+						<MiningField name="TAX"/>
+						<MiningField name="LSTAT"/>
+					</MiningSchema>
+					<Node score="1.8891286">
+						<True/>
+						<Node score="0.0179541">
+							<SimplePredicate field="LSTAT" operator="greaterOrEqual" value="23.880001"/>
+							<Node score="-1.1551766">
+								<SimplePredicate field="INDUS" operator="greaterOrEqual" value="26.695"/>
+							</Node>
+							<Node score="-0.48714522">
+								<SimplePredicate field="RM" operator="greaterOrEqual" value="5.7415"/>
+							</Node>
+						</Node>
+						<Node score="0.71180516">
+							<SimplePredicate field="DIS" operator="greaterOrEqual" value="1.35735"/>
+							<Node score="0.18926392">
+								<SimplePredicate field="TAX" operator="greaterOrEqual" value="222.5"/>
+							</Node>
+						</Node>
+						<Node score="0.25128034">
+							<SimplePredicate field="CRIM" operator="greaterOrEqual" value="10.5917"/>
+						</Node>
+					</Node>
+				</TreeModel>
+			</Segment>
+			<Segment id="12">
+				<True/>
+				<TreeModel functionName="regression" noTrueChildStrategy="returnLastPrediction" x-mathContext="float">
+					<MiningSchema>
+						<MiningField name="CRIM"/>
+						<MiningField name="NOX"/>
+						<MiningField name="RM"/>
+						<MiningField name="AGE"/>
+						<MiningField name="DIS"/>
+						<MiningField name="PTRATIO"/>
+					</MiningSchema>
+					<Node score="0.5671849">
+						<True/>
+						<Node score="1.4168462">
+							<SimplePredicate field="PTRATIO" operator="greaterOrEqual" value="17.7"/>
+							<Node score="0.20584205">
+								<SimplePredicate field="DIS" operator="greaterOrEqual" value="1.35735"/>
+								<Node score="-0.077140175">
+									<SimplePredicate field="AGE" operator="greaterOrEqual" value="73.3"/>
+								</Node>
+							</Node>
+							<Node score="0.20142333">
+								<SimplePredicate field="CRIM" operator="greaterOrEqual" value="10.1702"/>
+							</Node>
+						</Node>
+						<Node score="-0.26593405">
+							<SimplePredicate field="DIS" operator="greaterOrEqual" value="6.2231503"/>
+							<Node score="0.20970759">
+								<SimplePredicate field="RM" operator="greaterOrEqual" value="6.5525"/>
+							</Node>
+						</Node>
+						<Node score="-0.10398094">
+							<SimplePredicate field="NOX" operator="greaterOrEqual" value="0.759"/>
+						</Node>
+					</Node>
+				</TreeModel>
+			</Segment>
+			<Segment id="13">
+				<True/>
+				<TreeModel functionName="regression" noTrueChildStrategy="returnLastPrediction" x-mathContext="float">
+					<MiningSchema>
+						<MiningField name="CRIM"/>
+						<MiningField name="NOX"/>
+						<MiningField name="RM"/>
+						<MiningField name="TAX"/>
+					</MiningSchema>
+					<Node score="0.91907924">
+						<True/>
+						<Node score="1.5499816">
+							<SimplePredicate field="RM" operator="greaterOrEqual" value="6.049"/>
+							<Node score="-0.029699292">
+								<SimplePredicate field="TAX" operator="greaterOrEqual" value="207.0"/>
+								<Node score="0.21612619">
+									<SimplePredicate field="CRIM" operator="greaterOrEqual" value="0.06554"/>
+								</Node>
+							</Node>
+							<Node score="0.33210438">
+								<SimplePredicate field="RM" operator="greaterOrEqual" value="6.6455"/>
+							</Node>
+						</Node>
+						<Node score="-0.29693294">
+							<SimplePredicate field="RM" operator="greaterOrEqual" value="6.0205"/>
+							<Node score="-1.1749674">
+								<SimplePredicate field="NOX" operator="greaterOrEqual" value="0.56"/>
+							</Node>
+						</Node>
+						<Node score="-0.0016971652">
+							<SimplePredicate field="RM" operator="greaterOrEqual" value="4.0004997"/>
+						</Node>
+					</Node>
+				</TreeModel>
+			</Segment>
+			<Segment id="14">
+				<True/>
+				<TreeModel functionName="regression" noTrueChildStrategy="returnLastPrediction" x-mathContext="float">
+					<MiningSchema>
+						<MiningField name="CRIM"/>
+						<MiningField name="DIS"/>
+						<MiningField name="B"/>
+						<MiningField name="LSTAT"/>
+					</MiningSchema>
+					<Node score="0.5083624">
+						<True/>
+						<Node score="1.3164567">
+							<SimplePredicate field="B" operator="greaterOrEqual" value="105.24"/>
+							<Node score="-0.6872298">
+								<SimplePredicate field="LSTAT" operator="greaterOrEqual" value="29.615"/>
+								<Node score="0.23990251">
+									<SimplePredicate field="LSTAT" operator="greaterOrEqual" value="33.2"/>
+								</Node>
+							</Node>
+							<Node score="0.103157826">
+								<SimplePredicate field="DIS" operator="greaterOrEqual" value="1.1736"/>
+							</Node>
+						</Node>
+						<Node score="-0.39196727">
+							<SimplePredicate field="DIS" operator="greaterOrEqual" value="1.60605"/>
+							<Node score="0.21022254">
+								<SimplePredicate field="DIS" operator="greaterOrEqual" value="2.64765"/>
+							</Node>
+						</Node>
+						<Node score="-0.17413302">
+							<SimplePredicate field="CRIM" operator="greaterOrEqual" value="34.9734"/>
+						</Node>
+					</Node>
+				</TreeModel>
+			</Segment>
+			<Segment id="15">
+				<True/>
+				<TreeModel functionName="regression" noTrueChildStrategy="returnLastPrediction" x-mathContext="float">
+					<MiningSchema>
+						<MiningField name="CRIM"/>
+						<MiningField name="ZN"/>
+						<MiningField name="RM"/>
+						<MiningField name="RAD"/>
+						<MiningField name="TAX"/>
+						<MiningField name="B"/>
+					</MiningSchema>
+					<Node score="-0.95078534">
+						<True/>
+						<Node score="0.05819836">
+							<SimplePredicate field="RM" operator="greaterOrEqual" value="7.7834997"/>
+							<Node score="0.7138817">
+								<SimplePredicate field="TAX" operator="greaterOrEqual" value="270.0"/>
+								<Node score="-0.13377394">
+									<SimplePredicate field="B" operator="greaterOrEqual" value="383.525"/>
+								</Node>
+							</Node>
+							<Node score="0.8423421">
+								<SimplePredicate field="RM" operator="greaterOrEqual" value="7.8255"/>
+							</Node>
+						</Node>
+						<Node score="0.061730698">
+							<SimplePredicate field="RAD" operator="greaterOrEqual" value="1.5"/>
+							<Node score="-0.5229393">
+								<SimplePredicate field="CRIM" operator="greaterOrEqual" value="33.15885"/>
+							</Node>
+						</Node>
+						<Node score="-0.013439986">
+							<SimplePredicate field="ZN" operator="greaterOrEqual" value="26.5"/>
+						</Node>
+					</Node>
+				</TreeModel>
+			</Segment>
+		</Segmentation>
+		<ModelVerification recordCount="15">
+			<VerificationFields>
+				<VerificationField field="CRIM" column="data:CRIM"/>
+				<VerificationField field="ZN" column="data:ZN"/>
+				<VerificationField field="INDUS" column="data:INDUS"/>
+				<VerificationField field="CHAS" column="data:CHAS"/>
+				<VerificationField field="NOX" column="data:NOX"/>
+				<VerificationField field="RM" column="data:RM"/>
+				<VerificationField field="AGE" column="data:AGE"/>
+				<VerificationField field="DIS" column="data:DIS"/>
+				<VerificationField field="RAD" column="data:RAD"/>
+				<VerificationField field="TAX" column="data:TAX"/>
+				<VerificationField field="PTRATIO" column="data:PTRATIO"/>
+				<VerificationField field="B" column="data:B"/>
+				<VerificationField field="LSTAT" column="data:LSTAT"/>
+				<VerificationField field="y" column="data:y" precision="1.0E-13" zeroThreshold="1.0E-13"/>
+			</VerificationFields>
+			<InlineTable>
+				<row>
+					<data:CRIM>0.00632</data:CRIM>
+					<data:ZN>18.0</data:ZN>
+					<data:INDUS>2.31</data:INDUS>
+					<data:CHAS>0.0</data:CHAS>
+					<data:NOX>0.538</data:NOX>
+					<data:RM>6.575</data:RM>
+					<data:AGE>65.2</data:AGE>
+					<data:DIS>4.09</data:DIS>
+					<data:RAD>1.0</data:RAD>
+					<data:TAX>296.0</data:TAX>
+					<data:PTRATIO>15.3</data:PTRATIO>
+					<data:B>396.9</data:B>
+					<data:LSTAT>4.98</data:LSTAT>
+					<data:y>25.852255</data:y>
+				</row>
+				<row>
+					<data:CRIM>0.02731</data:CRIM>
+					<data:ZN>0.0</data:ZN>
+					<data:INDUS>7.07</data:INDUS>
+					<data:CHAS>0.0</data:CHAS>
+					<data:NOX>0.469</data:NOX>
+					<data:RM>6.421</data:RM>
+					<data:AGE>78.9</data:AGE>
+					<data:DIS>4.9671</data:DIS>
+					<data:RAD>2.0</data:RAD>
+					<data:TAX>242.0</data:TAX>
+					<data:PTRATIO>17.8</data:PTRATIO>
+					<data:B>396.9</data:B>
+					<data:LSTAT>9.14</data:LSTAT>
+					<data:y>22.984474</data:y>
+				</row>
+				<row>
+					<data:CRIM>0.02729</data:CRIM>
+					<data:ZN>0.0</data:ZN>
+					<data:INDUS>7.07</data:INDUS>
+					<data:CHAS>0.0</data:CHAS>
+					<data:NOX>0.469</data:NOX>
+					<data:RM>7.185</data:RM>
+					<data:AGE>61.1</data:AGE>
+					<data:DIS>4.9671</data:DIS>
+					<data:RAD>2.0</data:RAD>
+					<data:TAX>242.0</data:TAX>
+					<data:PTRATIO>17.8</data:PTRATIO>
+					<data:B>392.83</data:B>
+					<data:LSTAT>4.03</data:LSTAT>
+					<data:y>36.023983</data:y>
+				</row>
+				<row>
+					<data:CRIM>0.03237</data:CRIM>
+					<data:ZN>0.0</data:ZN>
+					<data:INDUS>2.18</data:INDUS>
+					<data:CHAS>0.0</data:CHAS>
+					<data:NOX>0.458</data:NOX>
+					<data:RM>6.998</data:RM>
+					<data:AGE>45.8</data:AGE>
+					<data:DIS>6.0622</data:DIS>
+					<data:RAD>3.0</data:RAD>
+					<data:TAX>222.0</data:TAX>
+					<data:PTRATIO>18.7</data:PTRATIO>
+					<data:B>394.63</data:B>
+					<data:LSTAT>2.94</data:LSTAT>
+					<data:y>33.65336</data:y>
+				</row>
+				<row>
+					<data:CRIM>0.06905</data:CRIM>
+					<data:ZN>0.0</data:ZN>
+					<data:INDUS>2.18</data:INDUS>
+					<data:CHAS>0.0</data:CHAS>
+					<data:NOX>0.458</data:NOX>
+					<data:RM>7.147</data:RM>
+					<data:AGE>54.2</data:AGE>
+					<data:DIS>6.0622</data:DIS>
+					<data:RAD>3.0</data:RAD>
+					<data:TAX>222.0</data:TAX>
+					<data:PTRATIO>18.7</data:PTRATIO>
+					<data:B>396.9</data:B>
+					<data:LSTAT>5.33</data:LSTAT>
+					<data:y>35.244972</data:y>
+				</row>
+				<row>
+					<data:CRIM>0.02985</data:CRIM>
+					<data:ZN>0.0</data:ZN>
+					<data:INDUS>2.18</data:INDUS>
+					<data:CHAS>0.0</data:CHAS>
+					<data:NOX>0.458</data:NOX>
+					<data:RM>6.43</data:RM>
+					<data:AGE>58.7</data:AGE>
+					<data:DIS>6.0622</data:DIS>
+					<data:RAD>3.0</data:RAD>
+					<data:TAX>222.0</data:TAX>
+					<data:PTRATIO>18.7</data:PTRATIO>
+					<data:B>394.12</data:B>
+					<data:LSTAT>5.21</data:LSTAT>
+					<data:y>27.933268</data:y>
+				</row>
+				<row>
+					<data:CRIM>0.08829</data:CRIM>
+					<data:ZN>12.5</data:ZN>
+					<data:INDUS>7.87</data:INDUS>
+					<data:CHAS>0.0</data:CHAS>
+					<data:NOX>0.524</data:NOX>
+					<data:RM>6.012</data:RM>
+					<data:AGE>66.6</data:AGE>
+					<data:DIS>5.5605</data:DIS>
+					<data:RAD>5.0</data:RAD>
+					<data:TAX>311.0</data:TAX>
+					<data:PTRATIO>15.2</data:PTRATIO>
+					<data:B>395.6</data:B>
+					<data:LSTAT>12.43</data:LSTAT>
+					<data:y>20.730524</data:y>
+				</row>
+				<row>
+					<data:CRIM>0.14455</data:CRIM>
+					<data:ZN>12.5</data:ZN>
+					<data:INDUS>7.87</data:INDUS>
+					<data:CHAS>0.0</data:CHAS>
+					<data:NOX>0.524</data:NOX>
+					<data:RM>6.172</data:RM>
+					<data:AGE>96.1</data:AGE>
+					<data:DIS>5.9505</data:DIS>
+					<data:RAD>5.0</data:RAD>
+					<data:TAX>311.0</data:TAX>
+					<data:PTRATIO>15.2</data:PTRATIO>
+					<data:B>396.9</data:B>
+					<data:LSTAT>19.15</data:LSTAT>
+					<data:y>19.827984</data:y>
+				</row>
+				<row>
+					<data:CRIM>0.21124</data:CRIM>
+					<data:ZN>12.5</data:ZN>
+					<data:INDUS>7.87</data:INDUS>
+					<data:CHAS>0.0</data:CHAS>
+					<data:NOX>0.524</data:NOX>
+					<data:RM>5.631</data:RM>
+					<data:AGE>100.0</data:AGE>
+					<data:DIS>6.0821</data:DIS>
+					<data:RAD>5.0</data:RAD>
+					<data:TAX>311.0</data:TAX>
+					<data:PTRATIO>15.2</data:PTRATIO>
+					<data:B>386.63</data:B>
+					<data:LSTAT>29.93</data:LSTAT>
+					<data:y>17.120203</data:y>
+				</row>
+				<row>
+					<data:CRIM>0.17004</data:CRIM>
+					<data:ZN>12.5</data:ZN>
+					<data:INDUS>7.87</data:INDUS>
+					<data:CHAS>0.0</data:CHAS>
+					<data:NOX>0.524</data:NOX>
+					<data:RM>6.004</data:RM>
+					<data:AGE>85.9</data:AGE>
+					<data:DIS>6.5921</data:DIS>
+					<data:RAD>5.0</data:RAD>
+					<data:TAX>311.0</data:TAX>
+					<data:PTRATIO>15.2</data:PTRATIO>
+					<data:B>386.71</data:B>
+					<data:LSTAT>17.1</data:LSTAT>
+					<data:y>17.848951</data:y>
+				</row>
+				<row>
+					<data:CRIM>0.22489</data:CRIM>
+					<data:ZN>12.5</data:ZN>
+					<data:INDUS>7.87</data:INDUS>
+					<data:CHAS>0.0</data:CHAS>
+					<data:NOX>0.524</data:NOX>
+					<data:RM>6.377</data:RM>
+					<data:AGE>94.3</data:AGE>
+					<data:DIS>6.3467</data:DIS>
+					<data:RAD>5.0</data:RAD>
+					<data:TAX>311.0</data:TAX>
+					<data:PTRATIO>15.2</data:PTRATIO>
+					<data:B>392.52</data:B>
+					<data:LSTAT>20.45</data:LSTAT>
+					<data:y>18.394695</data:y>
+				</row>
+				<row>
+					<data:CRIM>0.11747</data:CRIM>
+					<data:ZN>12.5</data:ZN>
+					<data:INDUS>7.87</data:INDUS>
+					<data:CHAS>0.0</data:CHAS>
+					<data:NOX>0.524</data:NOX>
+					<data:RM>6.009</data:RM>
+					<data:AGE>82.9</data:AGE>
+					<data:DIS>6.2267</data:DIS>
+					<data:RAD>5.0</data:RAD>
+					<data:TAX>311.0</data:TAX>
+					<data:PTRATIO>15.2</data:PTRATIO>
+					<data:B>396.9</data:B>
+					<data:LSTAT>13.27</data:LSTAT>
+					<data:y>19.897406</data:y>
+				</row>
+				<row>
+					<data:CRIM>0.09378</data:CRIM>
+					<data:ZN>12.5</data:ZN>
+					<data:INDUS>7.87</data:INDUS>
+					<data:CHAS>0.0</data:CHAS>
+					<data:NOX>0.524</data:NOX>
+					<data:RM>5.889</data:RM>
+					<data:AGE>39.0</data:AGE>
+					<data:DIS>5.4509</data:DIS>
+					<data:RAD>5.0</data:RAD>
+					<data:TAX>311.0</data:TAX>
+					<data:PTRATIO>15.2</data:PTRATIO>
+					<data:B>390.5</data:B>
+					<data:LSTAT>15.71</data:LSTAT>
+					<data:y>19.61271</data:y>
+				</row>
+				<row>
+					<data:CRIM>0.62976</data:CRIM>
+					<data:ZN>0.0</data:ZN>
+					<data:INDUS>8.14</data:INDUS>
+					<data:CHAS>0.0</data:CHAS>
+					<data:NOX>0.538</data:NOX>
+					<data:RM>5.949</data:RM>
+					<data:AGE>61.8</data:AGE>
+					<data:DIS>4.7075</data:DIS>
+					<data:RAD>4.0</data:RAD>
+					<data:TAX>307.0</data:TAX>
+					<data:PTRATIO>21.0</data:PTRATIO>
+					<data:B>396.9</data:B>
+					<data:LSTAT>8.26</data:LSTAT>
+					<data:y>20.567032</data:y>
+				</row>
+				<row>
+					<data:CRIM>0.63796</data:CRIM>
+					<data:ZN>0.0</data:ZN>
+					<data:INDUS>8.14</data:INDUS>
+					<data:CHAS>0.0</data:CHAS>
+					<data:NOX>0.538</data:NOX>
+					<data:RM>6.096</data:RM>
+					<data:AGE>84.5</data:AGE>
+					<data:DIS>4.4619</data:DIS>
+					<data:RAD>4.0</data:RAD>
+					<data:TAX>307.0</data:TAX>
+					<data:PTRATIO>21.0</data:PTRATIO>
+					<data:B>380.02</data:B>
+					<data:LSTAT>10.26</data:LSTAT>
+					<data:y>19.891804</data:y>
+				</row>
+			</InlineTable>
+		</ModelVerification>
+	</MiningModel>
+</PMML>
