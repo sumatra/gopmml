@@ -46,18 +46,19 @@ func (v Value) Int64() int64 {
 	if f, ok := v.val.(int); ok {
 		return int64(f)
 	}
-	if f, ok := v.val.(int8); ok {
+	if f, ok := v.val.(int64); ok {
+		return f
+	}
+	if f, ok := v.val.(int32); ok {
 		return int64(f)
 	}
 	if f, ok := v.val.(int16); ok {
 		return int64(f)
 	}
-	if f, ok := v.val.(int32); ok {
+	if f, ok := v.val.(int8); ok {
 		return int64(f)
 	}
-	if f, ok := v.val.(int64); ok {
-		return f
-	}
+
 	if f, ok := v.val.(uint); ok {
 		return int64(f)
 	}

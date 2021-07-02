@@ -910,7 +910,6 @@ type ChildParent struct {
 
 // UnmarshalXML implements the xml.Unmarshaler interface.
 func (x *ChildParent) UnmarshalXML(decoder *xml.Decoder, start xml.StartElement) error {
-	var err error
 	defaults.SetDefaults(x)
 
 	for _, attr := range start.Attr {
@@ -933,9 +932,7 @@ func (x *ChildParent) UnmarshalXML(decoder *xml.Decoder, start xml.StartElement)
 	}
 
 	for {
-		var token xml.Token
-
-		token, err = decoder.Token()
+		token, err := decoder.Token()
 		if err != nil {
 			return err
 		}
@@ -4710,7 +4707,6 @@ type SimplePredicate struct {
 }
 
 func (*SimplePredicate) predicate() {}
-
 /*
   <xs:element name="SimpleRule">
     <xs:complexType>

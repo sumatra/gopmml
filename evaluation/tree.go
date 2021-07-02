@@ -413,7 +413,33 @@ func (m *TreeModel) Validate() error {
 	return nil
 }
 
-func newNode(m *TreeModel, modelNode models.Node) node {
+func compilePredicate(m *TreeModel, pi models.Predicate) error {
+	switch p := pi.(type) {
+	case *models.SimplePredicate:
+		predicateValueType, ok := m.fieldTypes[p.Field]
+		if !ok {
+			return fmt.Errorf("unknown field type for %s", p.Field)
+		}
+
+		pv, err := getRawValue(predicateValueType, p.Value)
+		if err != nil {
+			return err
+		}
+
+		p.RawPredicateValue = pv
+	case *models.CompoundPredicate:
+		for _, cp := range p.Predicates {
+			err := compilePredicate(m, cp)
+			if err != nil {
+				return err
+			}
+		}
+	}
+
+	return nil
+}
+
+func newNode(m *TreeModel, modelNode models.Node) (node, error) {
 	n := node{
 		id:           modelNode.ID,
 		defaultChild: modelNode.DefaultChild,
@@ -453,7 +479,16 @@ func newNode(m *TreeModel, modelNode models.Node) node {
 	n.score = score
 
 	for _, child := range modelNode.Nodes {
-		n.children = append(n.children, newNode(m, child))
+		nn, err := newNode(m, child)
+		if err != nil {
+			return nn, err
+		}
+		n.children = append(n.children, nn)
+	}
+
+	err := compilePredicate(m, modelNode.Predicate)
+	if err != nil {
+		return n, err
 	}
 
 	switch p := modelNode.Predicate.(type) {
@@ -475,7 +510,7 @@ func newNode(m *TreeModel, modelNode models.Node) node {
 		}
 	}
 
-	return n
+	return n, nil
 }
 
 func getRawValue(dt models.DataType, val string) (interface{}, error) {
@@ -503,12 +538,7 @@ func evaluateSimplePredicate(p *models.SimplePredicate, input DataRow, fieldType
 	}
 
 	if p.RawPredicateValue == nil {
-		rawPredicateValue, err := getRawValue(predicateValueType, p.Value)
-		if err != nil {
-			return f
-		}
-
-		p.RawPredicateValue = rawPredicateValue
+		return f
 	}
 
 	val, ok := input[string(p.Field)]
@@ -682,9 +712,14 @@ func (m *TreeModel) Compile() error {
 		m.fieldTypes[models.FieldName(df.Name)] = df.DataType
 	}
 
-	m.root = newNode(m, m.model.Node)
+	root, err := newNode(m, m.model.Node)
+	if err != nil {
+		return err
+	}
 
+	m.root = root
 	m.compiled = true
+
 	return nil
 }
 
@@ -722,7 +757,7 @@ func (m *TreeModel) Evaluate(input DataRow) (DataRow, error) {
 					key = fmt.Sprintf("probability(%s)", score.value)
 					m.outKeys[score.value] = key
 				}
-				
+
 				out[key] = NewValue(score.probability)
 			}
 		} else if m.model.FunctionName == models.MiningFunctionRegression {
