@@ -1,0 +1,599 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<PMML xmlns="http://www.dmg.org/PMML-4_4" xmlns:data="http://jpmml.org/jpmml-model/InlineTable" version="4.4">
+	<Header>
+		<Application name="JPMML-SkLearn" version="1.6.18"/>
+		<Timestamp>2021-07-02T21:33:48Z</Timestamp>
+	</Header>
+	<DataDictionary>
+		<DataField name="salary" optype="continuous" dataType="double"/>
+		<DataField name="shirt_size" optype="categorical" dataType="string">
+			<Value value="large"/>
+			<Value value="medium"/>
+			<Value value="small"/>
+		</DataField>
+		<DataField name="home_state" optype="categorical" dataType="string">
+			<Value value="Alabama"/>
+			<Value value="Alaska"/>
+			<Value value="Arizona"/>
+			<Value value="Arkansas"/>
+			<Value value="California"/>
+			<Value value="Colorado"/>
+			<Value value="Connecticut"/>
+			<Value value="Delaware"/>
+			<Value value="Florida"/>
+			<Value value="Georgia"/>
+			<Value value="Hawaii"/>
+			<Value value="Idaho"/>
+			<Value value="Illinois"/>
+			<Value value="Indiana"/>
+			<Value value="Iowa"/>
+			<Value value="Kansas"/>
+			<Value value="Kentucky"/>
+			<Value value="Louisiana"/>
+			<Value value="Maine"/>
+			<Value value="Maryland"/>
+			<Value value="Massachusetts"/>
+			<Value value="Michigan"/>
+			<Value value="Minnesota"/>
+			<Value value="Mississippi"/>
+			<Value value="Missouri"/>
+			<Value value="Montana"/>
+			<Value value="Nebraska"/>
+			<Value value="Nevada"/>
+			<Value value="New Hampshire"/>
+			<Value value="New Jersey"/>
+			<Value value="New Mexico"/>
+			<Value value="New York"/>
+			<Value value="North Carolina"/>
+			<Value value="North Dakota"/>
+			<Value value="Ohio"/>
+			<Value value="Oklahoma"/>
+			<Value value="Oregon"/>
+			<Value value="Pennsylvania"/>
+			<Value value="Rhode Island"/>
+			<Value value="South Carolina"/>
+			<Value value="South Dakota"/>
+			<Value value="Tennessee"/>
+			<Value value="Texas"/>
+			<Value value="Utah"/>
+			<Value value="Vermont"/>
+			<Value value="Virginia"/>
+			<Value value="Washington"/>
+			<Value value="West Virginia"/>
+			<Value value="Wisconsin"/>
+			<Value value="Wyoming"/>
+		</DataField>
+		<DataField name="height_cm" optype="continuous" dataType="double">
+			<Interval closure="closedClosed" leftMargin="77.79564947120532" rightMargin="246.2450610906281"/>
+		</DataField>
+	</DataDictionary>
+	<TransformationDictionary/>
+	<MiningModel functionName="regression" algorithmName="XGBoost (GBTree)" x-mathContext="float">
+		<MiningSchema>
+			<MiningField name="salary" usageType="target"/>
+			<MiningField name="shirt_size" missingValueTreatment="asIs"/>
+			<MiningField name="home_state" missingValueTreatment="asIs"/>
+			<MiningField name="height_cm" missingValueTreatment="asIs"/>
+		</MiningSchema>
+		<ModelStats>
+			<UnivariateStats field="shirt_size">
+				<Counts totalFreq="100000" missingFreq="0" invalidFreq="0"/>
+				<DiscrStats>
+					<Array type="string">large medium small</Array>
+					<Array type="int">33432 33256 33312</Array>
+				</DiscrStats>
+			</UnivariateStats>
+			<UnivariateStats field="home_state">
+				<Counts totalFreq="100000" missingFreq="0" invalidFreq="0"/>
+				<DiscrStats>
+					<Array type="string">Alabama Alaska Arizona Arkansas California Colorado Connecticut Delaware Florida Georgia Hawaii Idaho Illinois Indiana Iowa Kansas Kentucky Louisiana Maine Maryland Massachusetts Michigan Minnesota Mississippi Missouri Montana Nebraska Nevada "New Hampshire" "New Jersey" "New Mexico" "New York" "North Carolina" "North Dakota" Ohio Oklahoma Oregon Pennsylvania "Rhode Island" "South Carolina" "South Dakota" Tennessee Texas Utah Vermont Virginia Washington "West Virginia" Wisconsin Wyoming</Array>
+					<Array type="int">116 697 2821 89 2178 1452 3122 2002 3805 3805 3061 630 1207 289 552 2306 2981 1331 3950 1338 541 2410 2569 3421 1224 1532 2328 2952 2205 2127 1295 1895 1816 1324 865 583 1875 904 219 2095 1671 2998 3016 3532 3300 2985 3795 3651 1746 1394</Array>
+				</DiscrStats>
+			</UnivariateStats>
+			<UnivariateStats field="height_cm">
+				<Counts totalFreq="100000" missingFreq="0" invalidFreq="0"/>
+				<NumericInfo minimum="77.79564947120532" maximum="246.2450610906281" mean="164.8817466775819" standardDeviation="19.941346994516145" median="164.90087369067226" interQuartileRange="26.88727795677235"/>
+			</UnivariateStats>
+		</ModelStats>
+		<Targets>
+			<Target field="salary" rescaleConstant="0.5"/>
+		</Targets>
+		<LocalTransformations>
+			<DerivedField name="lookup(home_state)" optype="categorical" dataType="string">
+				<MapValues outputColumn="data:output" dataType="string">
+					<FieldColumnPair field="home_state" column="data:input"/>
+					<InlineTable>
+						<row>
+							<data:input>Rhode Island</data:input>
+							<data:output>Other</data:output>
+						</row>
+						<row>
+							<data:input>Iowa</data:input>
+							<data:output>Other</data:output>
+						</row>
+						<row>
+							<data:input>Indiana</data:input>
+							<data:output>Other</data:output>
+						</row>
+						<row>
+							<data:input>Massachusetts</data:input>
+							<data:output>Other</data:output>
+						</row>
+						<row>
+							<data:input>Oklahoma</data:input>
+							<data:output>Other</data:output>
+						</row>
+						<row>
+							<data:input>Alaska</data:input>
+							<data:output>Other</data:output>
+						</row>
+						<row>
+							<data:input>Ohio</data:input>
+							<data:output>Other</data:output>
+						</row>
+						<row>
+							<data:input>Alabama</data:input>
+							<data:output>Other</data:output>
+						</row>
+						<row>
+							<data:input>Arkansas</data:input>
+							<data:output>Other</data:output>
+						</row>
+						<row>
+							<data:input>Idaho</data:input>
+							<data:output>Other</data:output>
+						</row>
+						<row>
+							<data:input>Pennsylvania</data:input>
+							<data:output>Other</data:output>
+						</row>
+					</InlineTable>
+				</MapValues>
+			</DerivedField>
+			<DerivedField name="filterLookup(home_state)" optype="categorical" dataType="string">
+				<Apply function="if">
+					<Apply function="isNotMissing">
+						<FieldRef field="lookup(home_state)"/>
+					</Apply>
+					<FieldRef field="lookup(home_state)"/>
+					<FieldRef field="home_state"/>
+				</Apply>
+			</DerivedField>
+			<DerivedField name="float(height_cm)" optype="continuous" dataType="float">
+				<FieldRef field="height_cm"/>
+			</DerivedField>
+		</LocalTransformations>
+		<Segmentation multipleModelMethod="sum">
+			<Segment id="1">
+				<True/>
+				<TreeModel functionName="regression" noTrueChildStrategy="returnLastPrediction" x-mathContext="float">
+					<MiningSchema>
+						<MiningField name="filterLookup(home_state)"/>
+					</MiningSchema>
+					<Node score="37515.074">
+						<True/>
+						<Node score="36882.0">
+							<SimplePredicate field="filterLookup(home_state)" operator="equal" value="Washington"/>
+						</Node>
+					</Node>
+				</TreeModel>
+			</Segment>
+			<Segment id="2">
+				<True/>
+				<TreeModel functionName="regression" noTrueChildStrategy="returnLastPrediction" x-mathContext="float">
+					<MiningSchema>
+						<MiningField name="filterLookup(home_state)"/>
+						<MiningField name="float(height_cm)"/>
+					</MiningSchema>
+					<Node score="26260.668">
+						<True/>
+						<Node score="7659.3755">
+							<SimplePredicate field="filterLookup(home_state)" operator="equal" value="Washington"/>
+							<Node score="11270.606">
+								<SimplePredicate field="float(height_cm)" operator="greaterOrEqual" value="164.33572"/>
+								<Node score="25346.78">
+									<SimplePredicate field="float(height_cm)" operator="greaterOrEqual" value="164.41785"/>
+								</Node>
+							</Node>
+							<Node score="26366.13">
+								<SimplePredicate field="float(height_cm)" operator="greaterOrEqual" value="88.60428"/>
+							</Node>
+						</Node>
+					</Node>
+				</TreeModel>
+			</Segment>
+			<Segment id="3">
+				<True/>
+				<TreeModel functionName="regression" noTrueChildStrategy="returnLastPrediction" x-mathContext="float">
+					<MiningSchema>
+						<MiningField name="filterLookup(home_state)"/>
+						<MiningField name="float(height_cm)"/>
+					</MiningSchema>
+					<Node score="18357.58">
+						<True/>
+						<Node score="18668.254">
+							<SimplePredicate field="filterLookup(home_state)" operator="equal" value="New York"/>
+							<Node score="2189.582">
+								<SimplePredicate field="float(height_cm)" operator="greaterOrEqual" value="214.51587"/>
+								<Node score="16798.504">
+									<SimplePredicate field="float(height_cm)" operator="greaterOrEqual" value="220.29047"/>
+								</Node>
+							</Node>
+							<Node score="20064.75">
+								<SimplePredicate field="float(height_cm)" operator="greaterOrEqual" value="179.38516"/>
+							</Node>
+						</Node>
+						<Node score="21156.756">
+							<SimplePredicate field="float(height_cm)" operator="greaterOrEqual" value="227.83032"/>
+							<Node score="3206.2517">
+								<SimplePredicate field="filterLookup(home_state)" operator="equal" value="Oregon"/>
+							</Node>
+						</Node>
+						<Node score="958.35156">
+							<SimplePredicate field="float(height_cm)" operator="greaterOrEqual" value="227.69609"/>
+						</Node>
+					</Node>
+				</TreeModel>
+			</Segment>
+			<Segment id="4">
+				<True/>
+				<TreeModel functionName="regression" noTrueChildStrategy="returnLastPrediction" x-mathContext="float">
+					<MiningSchema>
+						<MiningField name="filterLookup(home_state)"/>
+						<MiningField name="float(height_cm)"/>
+					</MiningSchema>
+					<Node score="15056.089">
+						<True/>
+						<Node score="9690.455">
+							<SimplePredicate field="float(height_cm)" operator="greaterOrEqual" value="108.32326"/>
+							<Node score="12733.64">
+								<SimplePredicate field="float(height_cm)" operator="greaterOrEqual" value="110.104675"/>
+								<Node score="12899.119">
+									<SimplePredicate field="float(height_cm)" operator="greaterOrEqual" value="151.12483"/>
+								</Node>
+							</Node>
+							<Node score="-3768.9106">
+								<SimplePredicate field="float(height_cm)" operator="greaterOrEqual" value="110.046005"/>
+							</Node>
+						</Node>
+						<Node score="-4947.4375">
+							<SimplePredicate field="filterLookup(home_state)" operator="equal" value="Connecticut"/>
+							<Node score="6723.8364">
+								<SimplePredicate field="float(height_cm)" operator="greaterOrEqual" value="101.57268"/>
+							</Node>
+						</Node>
+						<Node score="1255.6951">
+							<SimplePredicate field="filterLookup(home_state)" operator="equal" value="Minnesota"/>
+						</Node>
+					</Node>
+				</TreeModel>
+			</Segment>
+			<Segment id="5">
+				<True/>
+				<TreeModel functionName="regression" noTrueChildStrategy="returnLastPrediction" x-mathContext="float">
+					<MiningSchema>
+						<MiningField name="filterLookup(home_state)"/>
+						<MiningField name="float(height_cm)"/>
+					</MiningSchema>
+					<Node score="9046.316">
+						<True/>
+						<Node score="8266.532">
+							<SimplePredicate field="float(height_cm)" operator="greaterOrEqual" value="177.64682"/>
+							<Node score="8956.171">
+								<SimplePredicate field="float(height_cm)" operator="greaterOrEqual" value="179.82083"/>
+								<Node score="10353.445">
+									<SimplePredicate field="filterLookup(home_state)" operator="equal" value="Kansas"/>
+								</Node>
+							</Node>
+							<Node score="2567.0105">
+								<SimplePredicate field="float(height_cm)" operator="greaterOrEqual" value="179.79291"/>
+							</Node>
+						</Node>
+						<Node score="10383.143">
+							<SimplePredicate field="float(height_cm)" operator="greaterOrEqual" value="177.23624"/>
+							<Node score="2675.914">
+								<SimplePredicate field="filterLookup(home_state)" operator="equal" value="New York"/>
+							</Node>
+						</Node>
+						<Node score="8095.68">
+							<SimplePredicate field="filterLookup(home_state)" operator="equal" value="New Mexico"/>
+						</Node>
+					</Node>
+				</TreeModel>
+			</Segment>
+			<Segment id="6">
+				<True/>
+				<TreeModel functionName="regression" noTrueChildStrategy="returnLastPrediction" x-mathContext="float">
+					<MiningSchema>
+						<MiningField name="filterLookup(home_state)"/>
+						<MiningField name="float(height_cm)"/>
+					</MiningSchema>
+					<Node score="16547.688">
+						<True/>
+						<Node score="6310.508">
+							<SimplePredicate field="float(height_cm)" operator="greaterOrEqual" value="88.73601"/>
+							<Node score="5135.542">
+								<SimplePredicate field="filterLookup(home_state)" operator="equal" value="Virginia"/>
+								<Node score="6227.586">
+									<SimplePredicate field="float(height_cm)" operator="greaterOrEqual" value="153.88373"/>
+								</Node>
+							</Node>
+							<Node score="8283.071">
+								<SimplePredicate field="float(height_cm)" operator="greaterOrEqual" value="225.64175"/>
+							</Node>
+						</Node>
+						<Node score="580.91724">
+							<SimplePredicate field="filterLookup(home_state)" operator="equal" value="North Carolina"/>
+							<Node score="2566.0173">
+								<SimplePredicate field="float(height_cm)" operator="greaterOrEqual" value="84.9389"/>
+							</Node>
+						</Node>
+						<Node score="141.4711">
+							<SimplePredicate field="filterLookup(home_state)" operator="equal" value="Washington"/>
+						</Node>
+					</Node>
+				</TreeModel>
+			</Segment>
+			<Segment id="7">
+				<True/>
+				<TreeModel functionName="regression" noTrueChildStrategy="returnLastPrediction" x-mathContext="float">
+					<MiningSchema>
+						<MiningField name="filterLookup(home_state)"/>
+						<MiningField name="float(height_cm)"/>
+					</MiningSchema>
+					<Node score="4382.735">
+						<True/>
+						<Node score="4884.287">
+							<SimplePredicate field="filterLookup(home_state)" operator="equal" value="Missouri"/>
+							<Node score="-1067.1748">
+								<SimplePredicate field="float(height_cm)" operator="greaterOrEqual" value="154.99417"/>
+								<Node score="4691.147">
+									<SimplePredicate field="float(height_cm)" operator="greaterOrEqual" value="156.00983"/>
+								</Node>
+							</Node>
+							<Node score="7005.166">
+								<SimplePredicate field="float(height_cm)" operator="greaterOrEqual" value="142.98318"/>
+							</Node>
+						</Node>
+						<Node score="14850.79">
+							<SimplePredicate field="filterLookup(home_state)" operator="equal" value="New York"/>
+							<Node score="4825.012">
+								<SimplePredicate field="float(height_cm)" operator="greaterOrEqual" value="109.03262"/>
+							</Node>
+						</Node>
+						<Node score="4712.118">
+							<SimplePredicate field="filterLookup(home_state)" operator="equal" value="West Virginia"/>
+						</Node>
+					</Node>
+				</TreeModel>
+			</Segment>
+			<Segment id="8">
+				<True/>
+				<TreeModel functionName="regression" noTrueChildStrategy="returnLastPrediction" x-mathContext="float">
+					<MiningSchema>
+						<MiningField name="shirt_size"/>
+						<MiningField name="filterLookup(home_state)"/>
+						<MiningField name="float(height_cm)"/>
+					</MiningSchema>
+					<LocalTransformations>
+						<DerivedField name="encoder(shirt_size)" optype="categorical" dataType="double">
+							<MapValues outputColumn="data:output">
+								<FieldColumnPair field="shirt_size" column="data:input"/>
+								<InlineTable>
+									<row>
+										<data:input>large</data:input>
+										<data:output>0.0</data:output>
+									</row>
+									<row>
+										<data:input>medium</data:input>
+										<data:output>1.0</data:output>
+									</row>
+									<row>
+										<data:input>small</data:input>
+										<data:output>2.0</data:output>
+									</row>
+								</InlineTable>
+							</MapValues>
+						</DerivedField>
+						<DerivedField name="continuous(encoder(shirt_size))" optype="continuous" dataType="double">
+							<FieldRef field="encoder(shirt_size)"/>
+						</DerivedField>
+						<DerivedField name="float(continuous(encoder(shirt_size)))" optype="continuous" dataType="float">
+							<FieldRef field="continuous(encoder(shirt_size))"/>
+						</DerivedField>
+					</LocalTransformations>
+					<Node score="3087.9963">
+						<True/>
+						<Node score="-11705.121">
+							<SimplePredicate field="float(height_cm)" operator="greaterOrEqual" value="240.28354"/>
+							<Node score="-117.622665">
+								<SimplePredicate field="float(height_cm)" operator="greaterOrEqual" value="243.24452"/>
+								<Node score="9208.036">
+									<SimplePredicate field="filterLookup(home_state)" operator="equal" value="Other"/>
+								</Node>
+							</Node>
+							<Node score="393.73596">
+								<SimplePredicate field="filterLookup(home_state)" operator="equal" value="Maine"/>
+							</Node>
+						</Node>
+						<Node score="1767.0934">
+							<SimplePredicate field="float(height_cm)" operator="greaterOrEqual" value="230.33453"/>
+							<Node score="9083.231">
+								<SimplePredicate field="float(continuous(encoder(shirt_size)))" operator="greaterOrEqual" value="0.5"/>
+							</Node>
+						</Node>
+						<Node score="-2015.2498">
+							<SimplePredicate field="float(height_cm)" operator="greaterOrEqual" value="229.20029"/>
+						</Node>
+					</Node>
+				</TreeModel>
+			</Segment>
+			<Segment id="9">
+				<True/>
+				<TreeModel functionName="regression" noTrueChildStrategy="returnLastPrediction" x-mathContext="float">
+					<MiningSchema>
+						<MiningField name="filterLookup(home_state)"/>
+						<MiningField name="float(height_cm)"/>
+					</MiningSchema>
+					<Node score="2201.82">
+						<True/>
+						<Node score="2080.7524">
+							<SimplePredicate field="float(height_cm)" operator="greaterOrEqual" value="173.14511"/>
+							<Node score="-33.00922">
+								<SimplePredicate field="filterLookup(home_state)" operator="equal" value="New Jersey"/>
+								<Node score="1412.8956">
+									<SimplePredicate field="float(height_cm)" operator="greaterOrEqual" value="186.67532"/>
+								</Node>
+							</Node>
+							<Node score="3093.578">
+								<SimplePredicate field="filterLookup(home_state)" operator="equal" value="Texas"/>
+							</Node>
+						</Node>
+						<Node score="7960.2583">
+							<SimplePredicate field="float(height_cm)" operator="greaterOrEqual" value="173.1175"/>
+							<Node score="-8593.929">
+								<SimplePredicate field="filterLookup(home_state)" operator="equal" value="Virginia"/>
+							</Node>
+						</Node>
+						<Node score="-7205.374">
+							<SimplePredicate field="float(height_cm)" operator="greaterOrEqual" value="173.11005"/>
+						</Node>
+					</Node>
+				</TreeModel>
+			</Segment>
+			<Segment id="10">
+				<True/>
+				<TreeModel functionName="regression" noTrueChildStrategy="returnLastPrediction" x-mathContext="float">
+					<MiningSchema>
+						<MiningField name="filterLookup(home_state)"/>
+						<MiningField name="float(height_cm)"/>
+					</MiningSchema>
+					<Node score="1461.9941">
+						<True/>
+						<Node score="7069.489">
+							<SimplePredicate field="float(height_cm)" operator="greaterOrEqual" value="151.12483"/>
+							<Node score="-6724.915">
+								<SimplePredicate field="float(height_cm)" operator="greaterOrEqual" value="151.15048"/>
+								<Node score="1545.4823">
+									<SimplePredicate field="float(height_cm)" operator="greaterOrEqual" value="151.15353"/>
+								</Node>
+							</Node>
+							<Node score="-7890.9473">
+								<SimplePredicate field="filterLookup(home_state)" operator="equal" value="North Dakota"/>
+							</Node>
+						</Node>
+						<Node score="-1474.0763">
+							<SimplePredicate field="float(height_cm)" operator="greaterOrEqual" value="150.9725"/>
+							<Node score="-10772.299">
+								<SimplePredicate field="filterLookup(home_state)" operator="equal" value="Delaware"/>
+							</Node>
+						</Node>
+						<Node score="119.450615">
+							<SimplePredicate field="filterLookup(home_state)" operator="equal" value="Colorado"/>
+						</Node>
+					</Node>
+				</TreeModel>
+			</Segment>
+		</Segmentation>
+		<ModelVerification recordCount="15">
+			<VerificationFields>
+				<VerificationField field="shirt_size" column="data:shirt_size"/>
+				<VerificationField field="home_state" column="data:home_state"/>
+				<VerificationField field="height_cm" column="data:height_cm"/>
+				<VerificationField field="salary" column="data:salary" precision="1.0E-13" zeroThreshold="1.0E-13"/>
+			</VerificationFields>
+			<InlineTable>
+				<row>
+					<data:shirt_size>small</data:shirt_size>
+					<data:home_state>Arizona</data:home_state>
+					<data:height_cm>153.51778595963572</data:height_cm>
+					<data:salary>121607.8</data:salary>
+				</row>
+				<row>
+					<data:shirt_size>large</data:shirt_size>
+					<data:home_state>Nevada</data:home_state>
+					<data:height_cm>167.72360709665284</data:height_cm>
+					<data:salary>121607.8</data:salary>
+				</row>
+				<row>
+					<data:shirt_size>large</data:shirt_size>
+					<data:home_state>Mississippi</data:home_state>
+					<data:height_cm>179.71245842589352</data:height_cm>
+					<data:salary>120706.945</data:salary>
+				</row>
+				<row>
+					<data:shirt_size>small</data:shirt_size>
+					<data:home_state>North Carolina</data:home_state>
+					<data:height_cm>161.43244225446082</data:height_cm>
+					<data:salary>121607.8</data:salary>
+				</row>
+				<row>
+					<data:shirt_size>medium</data:shirt_size>
+					<data:home_state>Connecticut</data:home_state>
+					<data:height_cm>148.70015943524513</data:height_cm>
+					<data:salary>121358.836</data:salary>
+				</row>
+				<row>
+					<data:shirt_size>small</data:shirt_size>
+					<data:home_state>Georgia</data:home_state>
+					<data:height_cm>146.2146558740156</data:height_cm>
+					<data:salary>121358.836</data:salary>
+				</row>
+				<row>
+					<data:shirt_size>large</data:shirt_size>
+					<data:home_state>New Mexico</data:home_state>
+					<data:height_cm>154.81431174848382</data:height_cm>
+					<data:salary>120657.164</data:salary>
+				</row>
+				<row>
+					<data:shirt_size>small</data:shirt_size>
+					<data:home_state>Kansas</data:home_state>
+					<data:height_cm>135.6798639043462</data:height_cm>
+					<data:salary>121358.836</data:salary>
+				</row>
+				<row>
+					<data:shirt_size>medium</data:shirt_size>
+					<data:home_state>Rhode Island</data:home_state>
+					<data:height_cm>154.95576745435818</data:height_cm>
+					<data:salary>121607.8</data:salary>
+				</row>
+				<row>
+					<data:shirt_size>small</data:shirt_size>
+					<data:home_state>Georgia</data:home_state>
+					<data:height_cm>168.5623686323328</data:height_cm>
+					<data:salary>121607.8</data:salary>
+				</row>
+				<row>
+					<data:shirt_size>small</data:shirt_size>
+					<data:home_state>New Hampshire</data:home_state>
+					<data:height_cm>190.2142765850288</data:height_cm>
+					<data:salary>121396.586</data:salary>
+				</row>
+				<row>
+					<data:shirt_size>large</data:shirt_size>
+					<data:home_state>Virginia</data:home_state>
+					<data:height_cm>186.5760801743272</data:height_cm>
+					<data:salary>121313.664</data:salary>
+				</row>
+				<row>
+					<data:shirt_size>medium</data:shirt_size>
+					<data:home_state>West Virginia</data:home_state>
+					<data:height_cm>205.03782141519773</data:height_cm>
+					<data:salary>121725.97</data:salary>
+				</row>
+				<row>
+					<data:shirt_size>small</data:shirt_size>
+					<data:home_state>New Hampshire</data:home_state>
+					<data:height_cm>202.18626839909763</data:height_cm>
+					<data:salary>121396.586</data:salary>
+				</row>
+				<row>
+					<data:shirt_size>large</data:shirt_size>
+					<data:home_state>West Virginia</data:home_state>
+					<data:height_cm>139.8047285528081</data:height_cm>
+					<data:salary>121688.22</data:salary>
+				</row>
+			</InlineTable>
+		</ModelVerification>
+	</MiningModel>
+</PMML>

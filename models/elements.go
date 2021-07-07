@@ -2115,6 +2115,8 @@ func (*False) predicate() {}
   </xs:element>
 */
 type FieldColumnPair struct {
+	Column     string      `xml:"column,attr"`
+	Field      string      `xml:"field,attr"`
 	Extensions []Extension `xml:"Extension"`
 }
 
@@ -2417,6 +2419,10 @@ func (x *InlineTable) UnmarshalXML(decoder *xml.Decoder, start xml.StartElement)
 			if tok.Name.Local == "row" {
 				row := make(Row)
 				err = decoder.DecodeElement(&row, &tok)
+				if err != nil {
+					return err
+				}
+
 				x.Rows = append(x.Rows, row)
 			}
 
@@ -2764,11 +2770,50 @@ type Lower struct {
   </xs:element>
 */
 type MapValues struct {
-	Extensions []Extension `xml:"Extension"`
+	Extensions       []Extension       `xml:"Extension"`
+	DefaultValue     *string           `xml:"defaultValue,attr"`
+	MapMissingTo     *string           `xml:"mapMissingTo,attr"`
+	OutputColumn     string            `xml:"outputColumn,attr"`
+	DataType         DataType          `xml:"dataType,attr"`
+	FieldColumnPairs []FieldColumnPair `xml:"FieldColumnPair"`
+	InlineTables     []InlineTable     `xml:"InlineTable"`
 }
 
 func (*MapValues) expression() {}
 
+/*
+func (x *MapValues) UnmarshalXML(decoder *xml.Decoder, start xml.StartElement) error {
+	for _, attr := range start.Attr {
+		switch attr.Name.Local {
+		case "defaultChild":
+		}
+	}
+	for {
+		var token xml.Token
+
+		token, err := decoder.Token()
+		if err != nil {
+			return err
+		}
+
+		switch tok := token.(type) {
+		case xml.StartElement:
+			key := tok.Name.Local
+			var value string
+			err = decoder.DecodeElement(&value, &tok)
+			if err != nil {
+				return err
+			}
+			x[key] = value
+
+		case xml.EndElement:
+			return nil
+		}
+	}
+
+	return nil
+}
+*/
 /*
   <xs:element name="MatCell">
     <xs:complexType>
@@ -4707,6 +4752,7 @@ type SimplePredicate struct {
 }
 
 func (*SimplePredicate) predicate() {}
+
 /*
   <xs:element name="SimpleRule">
     <xs:complexType>
@@ -5934,7 +5980,7 @@ func (x Row) UnmarshalXML(decoder *xml.Decoder, start xml.StartElement) error {
 		switch tok := token.(type) {
 		case xml.StartElement:
 			key := tok.Name.Local
-			var value float64
+			var value string
 			err = decoder.DecodeElement(&value, &tok)
 			if err != nil {
 				return err

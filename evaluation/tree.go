@@ -1,7 +1,6 @@
 package evaluation
 
 import (
-	"errors"
 	"fmt"
 	"github.com/flukeish/pmml/models"
 	"strconv"
@@ -511,23 +510,6 @@ func newNode(m *TreeModel, modelNode models.Node) (node, error) {
 	}
 
 	return n, nil
-}
-
-func getRawValue(dt models.DataType, val string) (interface{}, error) {
-	switch dt {
-	case models.DataTypeBoolean:
-		return strconv.ParseBool(val)
-	case models.DataTypeDouble:
-		return strconv.ParseFloat(val, 64)
-	case models.DataTypeFloat:
-		return strconv.ParseFloat(val, 64)
-	case models.DataTypeInteger:
-		return strconv.ParseInt(val, 10, 64)
-	case models.DataTypeString:
-		return val, nil
-	}
-
-	return nil, errors.New("invalid data type")
 }
 
 //nolint:gocyclo

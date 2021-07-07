@@ -1,6 +1,9 @@
 package evaluation
 
-import "fmt"
+import (
+	"fmt"
+	"strconv"
+)
 
 type stringer interface {
 	String() string
@@ -39,7 +42,24 @@ func (v Value) Float64() float64 {
 		return float64(f)
 	}
 
+	if s, ok := v.val.(string); ok {
+		f, err := strconv.ParseFloat(s, 64)
+		if err != nil {
+			return 0.0
+		}
+		return f
+	}
+
 	return float64(v.Int64())
+}
+
+func (v Value) Bool() bool {
+	b, ok := v.val.(bool)
+	if !ok {
+		return false
+	}
+
+	return b
 }
 
 func (v Value) Int64() int64 {
