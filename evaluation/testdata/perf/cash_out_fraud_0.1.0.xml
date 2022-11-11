@@ -1,0 +1,2753 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<PMML xmlns="http://www.dmg.org/PMML-4_4" xmlns:data="http://jpmml.org/jpmml-model/InlineTable" version="4.4">
+	<Header>
+		<Application name="JPMML-SkLearn" version="1.6.18"/>
+		<Timestamp>2022-11-11T18:55:25Z</Timestamp>
+	</Header>
+	<MiningBuildTask>
+		<Extension>PMMLPipeline(steps=[('imputer', SimpleImputer()),
+       ('classifier', RandomForestClassifier(n_estimators=10))])</Extension>
+	</MiningBuildTask>
+	<DataDictionary>
+		<DataField name="is_fraud" optype="categorical" dataType="boolean">
+			<Value value="false"/>
+			<Value value="true"/>
+		</DataField>
+		<DataField name="amount" optype="continuous" dataType="double"/>
+		<DataField name="name_similarity" optype="continuous" dataType="double"/>
+		<DataField name="money_out_48h" optype="continuous" dataType="double"/>
+		<DataField name="past_pair_money_transferred" optype="continuous" dataType="double"/>
+		<DataField name="unique_senders_to_beneficiary" optype="continuous" dataType="double"/>
+		<DataField name="max_failed_logins" optype="continuous" dataType="double"/>
+		<DataField name="days_since_device_update" optype="continuous" dataType="double"/>
+	</DataDictionary>
+	<TransformationDictionary/>
+	<MiningModel functionName="classification" algorithmName="sklearn.ensemble._forest.RandomForestClassifier">
+		<MiningSchema>
+			<MiningField name="is_fraud" usageType="target"/>
+			<MiningField name="days_since_device_update" missingValueReplacement="9.744173192848683" missingValueTreatment="asMean"/>
+			<MiningField name="money_out_48h" missingValueReplacement="1355.7789962340669" missingValueTreatment="asMean"/>
+			<MiningField name="past_pair_money_transferred" missingValueReplacement="42.66579808806489" missingValueTreatment="asMean"/>
+			<MiningField name="unique_senders_to_beneficiary" missingValueReplacement="1.293018539976825" missingValueTreatment="asMean"/>
+			<MiningField name="max_failed_logins" missingValueReplacement="0.5435321569199358" missingValueTreatment="asMean"/>
+			<MiningField name="name_similarity" missingValueReplacement="0.6125205025452034" missingValueTreatment="asMean"/>
+			<MiningField name="amount" missingValueReplacement="1340.138237253766" missingValueTreatment="asMean"/>
+		</MiningSchema>
+		<Output>
+			<OutputField name="probability(false)" optype="continuous" dataType="double" feature="probability" value="false"/>
+			<OutputField name="probability(true)" optype="continuous" dataType="double" feature="probability" value="true"/>
+		</Output>
+		<LocalTransformations>
+			<DerivedField name="float(amount)" optype="continuous" dataType="float">
+				<FieldRef field="amount"/>
+			</DerivedField>
+			<DerivedField name="float(name_similarity)" optype="continuous" dataType="float">
+				<FieldRef field="name_similarity"/>
+			</DerivedField>
+			<DerivedField name="float(money_out_48h)" optype="continuous" dataType="float">
+				<FieldRef field="money_out_48h"/>
+			</DerivedField>
+			<DerivedField name="float(past_pair_money_transferred)" optype="continuous" dataType="float">
+				<FieldRef field="past_pair_money_transferred"/>
+			</DerivedField>
+			<DerivedField name="float(unique_senders_to_beneficiary)" optype="continuous" dataType="float">
+				<FieldRef field="unique_senders_to_beneficiary"/>
+			</DerivedField>
+			<DerivedField name="float(max_failed_logins)" optype="continuous" dataType="float">
+				<FieldRef field="max_failed_logins"/>
+			</DerivedField>
+			<DerivedField name="float(days_since_device_update)" optype="continuous" dataType="float">
+				<FieldRef field="days_since_device_update"/>
+			</DerivedField>
+			<DerivedField name="double(float(days_since_device_update))" optype="continuous" dataType="double">
+				<FieldRef field="float(days_since_device_update)"/>
+			</DerivedField>
+			<DerivedField name="double(float(money_out_48h))" optype="continuous" dataType="double">
+				<FieldRef field="float(money_out_48h)"/>
+			</DerivedField>
+			<DerivedField name="double(float(past_pair_money_transferred))" optype="continuous" dataType="double">
+				<FieldRef field="float(past_pair_money_transferred)"/>
+			</DerivedField>
+			<DerivedField name="double(float(unique_senders_to_beneficiary))" optype="continuous" dataType="double">
+				<FieldRef field="float(unique_senders_to_beneficiary)"/>
+			</DerivedField>
+			<DerivedField name="double(float(max_failed_logins))" optype="continuous" dataType="double">
+				<FieldRef field="float(max_failed_logins)"/>
+			</DerivedField>
+			<DerivedField name="double(float(name_similarity))" optype="continuous" dataType="double">
+				<FieldRef field="float(name_similarity)"/>
+			</DerivedField>
+			<DerivedField name="double(float(amount))" optype="continuous" dataType="double">
+				<FieldRef field="float(amount)"/>
+			</DerivedField>
+		</LocalTransformations>
+		<Segmentation multipleModelMethod="average">
+			<Segment id="1">
+				<True/>
+				<TreeModel functionName="classification" splitCharacteristic="binarySplit">
+					<MiningSchema>
+						<MiningField name="double(float(days_since_device_update))"/>
+						<MiningField name="double(float(money_out_48h))"/>
+						<MiningField name="double(float(past_pair_money_transferred))"/>
+						<MiningField name="double(float(unique_senders_to_beneficiary))"/>
+						<MiningField name="double(float(max_failed_logins))"/>
+						<MiningField name="double(float(name_similarity))"/>
+						<MiningField name="double(float(amount))"/>
+					</MiningSchema>
+					<Node id="0">
+						<True/>
+						<Node id="1" score="true" recordCount="189">
+							<SimplePredicate field="double(float(days_since_device_update))" operator="lessOrEqual" value="0.021075700409710407"/>
+							<ScoreDistribution value="false" recordCount="0"/>
+							<ScoreDistribution value="true" recordCount="189"/>
+						</Node>
+						<Node id="2">
+							<SimplePredicate field="double(float(days_since_device_update))" operator="greaterThan" value="0.021075700409710407"/>
+							<Node id="3">
+								<SimplePredicate field="double(float(money_out_48h))" operator="lessOrEqual" value="5965.7451171875"/>
+								<Node id="4">
+									<SimplePredicate field="double(float(past_pair_money_transferred))" operator="lessOrEqual" value="36.38999938964844"/>
+									<Node id="5">
+										<SimplePredicate field="double(float(unique_senders_to_beneficiary))" operator="lessOrEqual" value="2.5"/>
+										<Node id="6">
+											<SimplePredicate field="double(float(max_failed_logins))" operator="lessOrEqual" value="0.2717660665512085"/>
+											<Node id="7">
+												<SimplePredicate field="double(float(name_similarity))" operator="lessOrEqual" value="0.1778656169772148"/>
+												<Node id="8" score="false" recordCount="250">
+													<SimplePredicate field="double(float(amount))" operator="lessOrEqual" value="3843.9949951171875"/>
+													<ScoreDistribution value="false" recordCount="250"/>
+													<ScoreDistribution value="true" recordCount="0"/>
+												</Node>
+												<Node id="9" score="true" recordCount="5">
+													<SimplePredicate field="double(float(amount))" operator="greaterThan" value="3843.9949951171875"/>
+													<ScoreDistribution value="false" recordCount="0"/>
+													<ScoreDistribution value="true" recordCount="5"/>
+												</Node>
+											</Node>
+											<Node id="10">
+												<SimplePredicate field="double(float(name_similarity))" operator="greaterThan" value="0.1778656169772148"/>
+												<Node id="11" score="false" recordCount="3835">
+													<SimplePredicate field="double(float(money_out_48h))" operator="lessOrEqual" value="1999.0850219726562"/>
+													<ScoreDistribution value="false" recordCount="3835"/>
+													<ScoreDistribution value="true" recordCount="0"/>
+												</Node>
+												<Node id="12">
+													<SimplePredicate field="double(float(money_out_48h))" operator="greaterThan" value="1999.0850219726562"/>
+													<Node id="13" score="false" recordCount="694">
+														<SimplePredicate field="double(float(unique_senders_to_beneficiary))" operator="lessOrEqual" value="1.5"/>
+														<ScoreDistribution value="false" recordCount="694"/>
+														<ScoreDistribution value="true" recordCount="0"/>
+													</Node>
+													<Node id="14">
+														<SimplePredicate field="double(float(unique_senders_to_beneficiary))" operator="greaterThan" value="1.5"/>
+														<Node id="15">
+															<SimplePredicate field="double(float(name_similarity))" operator="lessOrEqual" value="0.4399999976158142"/>
+															<Node id="16" score="false" recordCount="9">
+																<SimplePredicate field="double(float(name_similarity))" operator="lessOrEqual" value="0.39230769872665405"/>
+																<ScoreDistribution value="false" recordCount="9"/>
+																<ScoreDistribution value="true" recordCount="0"/>
+															</Node>
+															<Node id="17">
+																<SimplePredicate field="double(float(name_similarity))" operator="greaterThan" value="0.39230769872665405"/>
+																<Node id="18" score="true" recordCount="2">
+																	<SimplePredicate field="double(float(money_out_48h))" operator="lessOrEqual" value="2027.4100341796875"/>
+																	<ScoreDistribution value="false" recordCount="0"/>
+																	<ScoreDistribution value="true" recordCount="2"/>
+																</Node>
+																<Node id="19" score="false" recordCount="1">
+																	<SimplePredicate field="double(float(money_out_48h))" operator="greaterThan" value="2027.4100341796875"/>
+																	<ScoreDistribution value="false" recordCount="1"/>
+																	<ScoreDistribution value="true" recordCount="0"/>
+																</Node>
+															</Node>
+														</Node>
+														<Node id="20" score="false" recordCount="34">
+															<SimplePredicate field="double(float(name_similarity))" operator="greaterThan" value="0.4399999976158142"/>
+															<ScoreDistribution value="false" recordCount="34"/>
+															<ScoreDistribution value="true" recordCount="0"/>
+														</Node>
+													</Node>
+												</Node>
+											</Node>
+										</Node>
+										<Node id="21">
+											<SimplePredicate field="double(float(max_failed_logins))" operator="greaterThan" value="0.2717660665512085"/>
+											<Node id="22" score="true" recordCount="1">
+												<SimplePredicate field="double(float(amount))" operator="lessOrEqual" value="30.070000648498535"/>
+												<ScoreDistribution value="false" recordCount="0"/>
+												<ScoreDistribution value="true" recordCount="1"/>
+											</Node>
+											<Node id="23">
+												<SimplePredicate field="double(float(amount))" operator="greaterThan" value="30.070000648498535"/>
+												<Node id="24" score="true" recordCount="34">
+													<SimplePredicate field="double(float(max_failed_logins))" operator="lessOrEqual" value="0.7717660665512085"/>
+													<ScoreDistribution value="false" recordCount="0"/>
+													<ScoreDistribution value="true" recordCount="34"/>
+												</Node>
+												<Node id="25" score="false" recordCount="1119">
+													<SimplePredicate field="double(float(max_failed_logins))" operator="greaterThan" value="0.7717660665512085"/>
+													<ScoreDistribution value="false" recordCount="1119"/>
+													<ScoreDistribution value="true" recordCount="0"/>
+												</Node>
+											</Node>
+										</Node>
+									</Node>
+									<Node id="26">
+										<SimplePredicate field="double(float(unique_senders_to_beneficiary))" operator="greaterThan" value="2.5"/>
+										<Node id="27">
+											<SimplePredicate field="double(float(unique_senders_to_beneficiary))" operator="lessOrEqual" value="4.5"/>
+											<Node id="28">
+												<SimplePredicate field="double(float(days_since_device_update))" operator="lessOrEqual" value="10.34827995300293"/>
+												<Node id="29">
+													<SimplePredicate field="double(float(max_failed_logins))" operator="lessOrEqual" value="0.2717660665512085"/>
+													<Node id="30" score="false" recordCount="198">
+														<SimplePredicate field="double(float(money_out_48h))" operator="lessOrEqual" value="3641.0"/>
+														<ScoreDistribution value="false" recordCount="198"/>
+														<ScoreDistribution value="true" recordCount="0"/>
+													</Node>
+													<Node id="31" score="true" recordCount="1">
+														<SimplePredicate field="double(float(money_out_48h))" operator="greaterThan" value="3641.0"/>
+														<ScoreDistribution value="false" recordCount="0"/>
+														<ScoreDistribution value="true" recordCount="1"/>
+													</Node>
+												</Node>
+												<Node id="32">
+													<SimplePredicate field="double(float(max_failed_logins))" operator="greaterThan" value="0.2717660665512085"/>
+													<Node id="33" score="true" recordCount="22">
+														<SimplePredicate field="double(float(max_failed_logins))" operator="lessOrEqual" value="0.7717660665512085"/>
+														<ScoreDistribution value="false" recordCount="0"/>
+														<ScoreDistribution value="true" recordCount="22"/>
+													</Node>
+													<Node id="34" score="false" recordCount="25">
+														<SimplePredicate field="double(float(max_failed_logins))" operator="greaterThan" value="0.7717660665512085"/>
+														<ScoreDistribution value="false" recordCount="25"/>
+														<ScoreDistribution value="true" recordCount="0"/>
+													</Node>
+												</Node>
+											</Node>
+											<Node id="35" score="false" recordCount="13">
+												<SimplePredicate field="double(float(days_since_device_update))" operator="greaterThan" value="10.34827995300293"/>
+												<ScoreDistribution value="false" recordCount="13"/>
+												<ScoreDistribution value="true" recordCount="0"/>
+											</Node>
+										</Node>
+										<Node id="36" score="false" recordCount="42">
+											<SimplePredicate field="double(float(unique_senders_to_beneficiary))" operator="greaterThan" value="4.5"/>
+											<ScoreDistribution value="false" recordCount="42"/>
+											<ScoreDistribution value="true" recordCount="0"/>
+										</Node>
+									</Node>
+								</Node>
+								<Node id="37" score="false" recordCount="323">
+									<SimplePredicate field="double(float(past_pair_money_transferred))" operator="greaterThan" value="36.38999938964844"/>
+									<ScoreDistribution value="false" recordCount="323"/>
+									<ScoreDistribution value="true" recordCount="0"/>
+								</Node>
+							</Node>
+							<Node id="38">
+								<SimplePredicate field="double(float(money_out_48h))" operator="greaterThan" value="5965.7451171875"/>
+								<Node id="39" score="false" recordCount="1">
+									<SimplePredicate field="double(float(amount))" operator="lessOrEqual" value="3816.8900146484375"/>
+									<ScoreDistribution value="false" recordCount="1"/>
+									<ScoreDistribution value="true" recordCount="0"/>
+								</Node>
+								<Node id="40">
+									<SimplePredicate field="double(float(amount))" operator="greaterThan" value="3816.8900146484375"/>
+									<Node id="41">
+										<SimplePredicate field="double(float(unique_senders_to_beneficiary))" operator="lessOrEqual" value="1.5"/>
+										<Node id="42">
+											<SimplePredicate field="double(float(amount))" operator="lessOrEqual" value="10009.199951171875"/>
+											<Node id="43" score="true" recordCount="2">
+												<SimplePredicate field="double(float(amount))" operator="lessOrEqual" value="7009.199951171875"/>
+												<ScoreDistribution value="false" recordCount="0"/>
+												<ScoreDistribution value="true" recordCount="2"/>
+											</Node>
+											<Node id="44" score="false" recordCount="1">
+												<SimplePredicate field="double(float(amount))" operator="greaterThan" value="7009.199951171875"/>
+												<ScoreDistribution value="false" recordCount="1"/>
+												<ScoreDistribution value="true" recordCount="0"/>
+											</Node>
+										</Node>
+										<Node id="45" score="true" recordCount="17">
+											<SimplePredicate field="double(float(amount))" operator="greaterThan" value="10009.199951171875"/>
+											<ScoreDistribution value="false" recordCount="0"/>
+											<ScoreDistribution value="true" recordCount="17"/>
+										</Node>
+									</Node>
+									<Node id="46" score="true" recordCount="86">
+										<SimplePredicate field="double(float(unique_senders_to_beneficiary))" operator="greaterThan" value="1.5"/>
+										<ScoreDistribution value="false" recordCount="0"/>
+										<ScoreDistribution value="true" recordCount="86"/>
+									</Node>
+								</Node>
+							</Node>
+						</Node>
+					</Node>
+				</TreeModel>
+			</Segment>
+			<Segment id="2">
+				<True/>
+				<TreeModel functionName="classification" splitCharacteristic="binarySplit">
+					<MiningSchema>
+						<MiningField name="double(float(days_since_device_update))"/>
+						<MiningField name="double(float(money_out_48h))"/>
+						<MiningField name="double(float(past_pair_money_transferred))"/>
+						<MiningField name="double(float(unique_senders_to_beneficiary))"/>
+						<MiningField name="double(float(max_failed_logins))"/>
+						<MiningField name="double(float(name_similarity))"/>
+						<MiningField name="double(float(amount))"/>
+					</MiningSchema>
+					<Node id="0">
+						<True/>
+						<Node id="1">
+							<SimplePredicate field="double(float(max_failed_logins))" operator="lessOrEqual" value="1.5"/>
+							<Node id="2">
+								<SimplePredicate field="double(float(name_similarity))" operator="lessOrEqual" value="0.5485893487930298"/>
+								<Node id="3">
+									<SimplePredicate field="double(float(amount))" operator="lessOrEqual" value="4843.719970703125"/>
+									<Node id="4">
+										<SimplePredicate field="double(float(name_similarity))" operator="lessOrEqual" value="0.5419580638408661"/>
+										<Node id="5" score="true" recordCount="54">
+											<SimplePredicate field="double(float(days_since_device_update))" operator="lessOrEqual" value="0.07644685660488904"/>
+											<ScoreDistribution value="false" recordCount="0"/>
+											<ScoreDistribution value="true" recordCount="54"/>
+										</Node>
+										<Node id="6">
+											<SimplePredicate field="double(float(days_since_device_update))" operator="greaterThan" value="0.07644685660488904"/>
+											<Node id="7">
+												<SimplePredicate field="double(float(max_failed_logins))" operator="lessOrEqual" value="0.2717660665512085"/>
+												<Node id="8">
+													<SimplePredicate field="double(float(name_similarity))" operator="lessOrEqual" value="0.393548384308815"/>
+													<Node id="9">
+														<SimplePredicate field="double(float(name_similarity))" operator="lessOrEqual" value="0.17519181966781616"/>
+														<Node id="10" score="false" recordCount="269">
+															<SimplePredicate field="double(float(money_out_48h))" operator="lessOrEqual" value="3843.9949951171875"/>
+															<ScoreDistribution value="false" recordCount="269"/>
+															<ScoreDistribution value="true" recordCount="0"/>
+														</Node>
+														<Node id="11" score="true" recordCount="2">
+															<SimplePredicate field="double(float(money_out_48h))" operator="greaterThan" value="3843.9949951171875"/>
+															<ScoreDistribution value="false" recordCount="0"/>
+															<ScoreDistribution value="true" recordCount="2"/>
+														</Node>
+													</Node>
+													<Node id="12">
+														<SimplePredicate field="double(float(name_similarity))" operator="greaterThan" value="0.17519181966781616"/>
+														<Node id="13">
+															<SimplePredicate field="double(float(name_similarity))" operator="lessOrEqual" value="0.23303167521953583"/>
+															<Node id="14" score="false" recordCount="350">
+																<SimplePredicate field="double(float(name_similarity))" operator="lessOrEqual" value="0.22967033088207245"/>
+																<ScoreDistribution value="false" recordCount="350"/>
+																<ScoreDistribution value="true" recordCount="0"/>
+															</Node>
+															<Node id="15">
+																<SimplePredicate field="double(float(name_similarity))" operator="greaterThan" value="0.22967033088207245"/>
+																<Node id="16" score="false" recordCount="102">
+																	<SimplePredicate field="double(float(amount))" operator="lessOrEqual" value="1975.875"/>
+																	<ScoreDistribution value="false" recordCount="102"/>
+																	<ScoreDistribution value="true" recordCount="0"/>
+																</Node>
+																<Node id="17">
+																	<SimplePredicate field="double(float(amount))" operator="greaterThan" value="1975.875"/>
+																	<Node id="18" score="true" recordCount="1">
+																		<SimplePredicate field="double(float(amount))" operator="lessOrEqual" value="2097.5550537109375"/>
+																		<ScoreDistribution value="false" recordCount="0"/>
+																		<ScoreDistribution value="true" recordCount="1"/>
+																	</Node>
+																	<Node id="19" score="false" recordCount="3">
+																		<SimplePredicate field="double(float(amount))" operator="greaterThan" value="2097.5550537109375"/>
+																		<ScoreDistribution value="false" recordCount="3"/>
+																		<ScoreDistribution value="true" recordCount="0"/>
+																	</Node>
+																</Node>
+															</Node>
+														</Node>
+														<Node id="20" score="false" recordCount="1710">
+															<SimplePredicate field="double(float(name_similarity))" operator="greaterThan" value="0.23303167521953583"/>
+															<ScoreDistribution value="false" recordCount="1710"/>
+															<ScoreDistribution value="true" recordCount="0"/>
+														</Node>
+													</Node>
+												</Node>
+												<Node id="21">
+													<SimplePredicate field="double(float(name_similarity))" operator="greaterThan" value="0.393548384308815"/>
+													<Node id="22" score="false" recordCount="165">
+														<SimplePredicate field="double(float(unique_senders_to_beneficiary))" operator="lessOrEqual" value="1.5"/>
+														<ScoreDistribution value="false" recordCount="165"/>
+														<ScoreDistribution value="true" recordCount="0"/>
+													</Node>
+													<Node id="23">
+														<SimplePredicate field="double(float(unique_senders_to_beneficiary))" operator="greaterThan" value="1.5"/>
+														<Node id="24">
+															<SimplePredicate field="double(float(unique_senders_to_beneficiary))" operator="lessOrEqual" value="2.5"/>
+															<Node id="25">
+																<SimplePredicate field="double(float(past_pair_money_transferred))" operator="lessOrEqual" value="50.78499984741211"/>
+																<Node id="26" score="false" recordCount="62">
+																	<SimplePredicate field="double(float(amount))" operator="lessOrEqual" value="1891.3250122070312"/>
+																	<ScoreDistribution value="false" recordCount="62"/>
+																	<ScoreDistribution value="true" recordCount="0"/>
+																</Node>
+																<Node id="27">
+																	<SimplePredicate field="double(float(amount))" operator="greaterThan" value="1891.3250122070312"/>
+																	<Node id="28" score="true" recordCount="2">
+																		<SimplePredicate field="double(float(amount))" operator="lessOrEqual" value="2027.4100341796875"/>
+																		<ScoreDistribution value="false" recordCount="0"/>
+																		<ScoreDistribution value="true" recordCount="2"/>
+																	</Node>
+																	<Node id="29" score="false" recordCount="6">
+																		<SimplePredicate field="double(float(amount))" operator="greaterThan" value="2027.4100341796875"/>
+																		<ScoreDistribution value="false" recordCount="6"/>
+																		<ScoreDistribution value="true" recordCount="0"/>
+																	</Node>
+																</Node>
+															</Node>
+															<Node id="30" score="false" recordCount="2">
+																<SimplePredicate field="double(float(past_pair_money_transferred))" operator="greaterThan" value="50.78499984741211"/>
+																<ScoreDistribution value="false" recordCount="2"/>
+																<ScoreDistribution value="true" recordCount="0"/>
+															</Node>
+														</Node>
+														<Node id="31">
+															<SimplePredicate field="double(float(unique_senders_to_beneficiary))" operator="greaterThan" value="2.5"/>
+															<Node id="32" score="false" recordCount="15">
+																<SimplePredicate field="double(float(name_similarity))" operator="lessOrEqual" value="0.4316770136356354"/>
+																<ScoreDistribution value="false" recordCount="15"/>
+																<ScoreDistribution value="true" recordCount="0"/>
+															</Node>
+															<Node id="33">
+																<SimplePredicate field="double(float(name_similarity))" operator="greaterThan" value="0.4316770136356354"/>
+																<Node id="34">
+																	<SimplePredicate field="double(float(name_similarity))" operator="lessOrEqual" value="0.4396135210990906"/>
+																	<Node id="35" score="true" recordCount="1">
+																		<SimplePredicate field="double(float(unique_senders_to_beneficiary))" operator="lessOrEqual" value="3.5"/>
+																		<ScoreDistribution value="false" recordCount="0"/>
+																		<ScoreDistribution value="true" recordCount="1"/>
+																	</Node>
+																	<Node id="36" score="false" recordCount="1">
+																		<SimplePredicate field="double(float(unique_senders_to_beneficiary))" operator="greaterThan" value="3.5"/>
+																		<ScoreDistribution value="false" recordCount="1"/>
+																		<ScoreDistribution value="true" recordCount="0"/>
+																	</Node>
+																</Node>
+																<Node id="37" score="false" recordCount="8">
+																	<SimplePredicate field="double(float(name_similarity))" operator="greaterThan" value="0.4396135210990906"/>
+																	<ScoreDistribution value="false" recordCount="8"/>
+																	<ScoreDistribution value="true" recordCount="0"/>
+																</Node>
+															</Node>
+														</Node>
+													</Node>
+												</Node>
+											</Node>
+											<Node id="38">
+												<SimplePredicate field="double(float(max_failed_logins))" operator="greaterThan" value="0.2717660665512085"/>
+												<Node id="39" score="true" recordCount="45">
+													<SimplePredicate field="double(float(max_failed_logins))" operator="lessOrEqual" value="0.7717660665512085"/>
+													<ScoreDistribution value="false" recordCount="0"/>
+													<ScoreDistribution value="true" recordCount="45"/>
+												</Node>
+												<Node id="40" score="false" recordCount="673">
+													<SimplePredicate field="double(float(max_failed_logins))" operator="greaterThan" value="0.7717660665512085"/>
+													<ScoreDistribution value="false" recordCount="673"/>
+													<ScoreDistribution value="true" recordCount="0"/>
+												</Node>
+											</Node>
+										</Node>
+									</Node>
+									<Node id="41">
+										<SimplePredicate field="double(float(name_similarity))" operator="greaterThan" value="0.5419580638408661"/>
+										<Node id="42" score="true" recordCount="4">
+											<SimplePredicate field="double(float(days_since_device_update))" operator="lessOrEqual" value="4.872989464784041"/>
+											<ScoreDistribution value="false" recordCount="0"/>
+											<ScoreDistribution value="true" recordCount="4"/>
+										</Node>
+										<Node id="43" score="false" recordCount="3">
+											<SimplePredicate field="double(float(days_since_device_update))" operator="greaterThan" value="4.872989464784041"/>
+											<ScoreDistribution value="false" recordCount="3"/>
+											<ScoreDistribution value="true" recordCount="0"/>
+										</Node>
+									</Node>
+								</Node>
+								<Node id="44" score="true" recordCount="106">
+									<SimplePredicate field="double(float(amount))" operator="greaterThan" value="4843.719970703125"/>
+									<ScoreDistribution value="false" recordCount="0"/>
+									<ScoreDistribution value="true" recordCount="106"/>
+								</Node>
+							</Node>
+							<Node id="45" score="false" recordCount="3191">
+								<SimplePredicate field="double(float(name_similarity))" operator="greaterThan" value="0.5485893487930298"/>
+								<ScoreDistribution value="false" recordCount="3191"/>
+								<ScoreDistribution value="true" recordCount="0"/>
+							</Node>
+						</Node>
+						<Node id="46">
+							<SimplePredicate field="double(float(max_failed_logins))" operator="greaterThan" value="1.5"/>
+							<Node id="47" score="true" recordCount="128">
+								<SimplePredicate field="double(float(days_since_device_update))" operator="lessOrEqual" value="5.280214270344004"/>
+								<ScoreDistribution value="false" recordCount="0"/>
+								<ScoreDistribution value="true" recordCount="128"/>
+							</Node>
+							<Node id="48" score="false" recordCount="1">
+								<SimplePredicate field="double(float(days_since_device_update))" operator="greaterThan" value="5.280214270344004"/>
+								<ScoreDistribution value="false" recordCount="1"/>
+								<ScoreDistribution value="true" recordCount="0"/>
+							</Node>
+						</Node>
+					</Node>
+				</TreeModel>
+			</Segment>
+			<Segment id="3">
+				<True/>
+				<TreeModel functionName="classification" splitCharacteristic="binarySplit">
+					<MiningSchema>
+						<MiningField name="double(float(days_since_device_update))"/>
+						<MiningField name="double(float(money_out_48h))"/>
+						<MiningField name="double(float(past_pair_money_transferred))"/>
+						<MiningField name="double(float(unique_senders_to_beneficiary))"/>
+						<MiningField name="double(float(max_failed_logins))"/>
+						<MiningField name="double(float(name_similarity))"/>
+						<MiningField name="double(float(amount))"/>
+					</MiningSchema>
+					<Node id="0">
+						<True/>
+						<Node id="1">
+							<SimplePredicate field="double(float(amount))" operator="lessOrEqual" value="5864.070068359375"/>
+							<Node id="2" score="true" recordCount="152">
+								<SimplePredicate field="double(float(days_since_device_update))" operator="lessOrEqual" value="0.0068330669309943914"/>
+								<ScoreDistribution value="false" recordCount="0"/>
+								<ScoreDistribution value="true" recordCount="152"/>
+							</Node>
+							<Node id="3">
+								<SimplePredicate field="double(float(days_since_device_update))" operator="greaterThan" value="0.0068330669309943914"/>
+								<Node id="4">
+									<SimplePredicate field="double(float(money_out_48h))" operator="lessOrEqual" value="30.040000915527344"/>
+									<Node id="5" score="true" recordCount="1">
+										<SimplePredicate field="double(float(name_similarity))" operator="lessOrEqual" value="0.5869565233588219"/>
+										<ScoreDistribution value="false" recordCount="0"/>
+										<ScoreDistribution value="true" recordCount="1"/>
+									</Node>
+									<Node id="6" score="false" recordCount="1">
+										<SimplePredicate field="double(float(name_similarity))" operator="greaterThan" value="0.5869565233588219"/>
+										<ScoreDistribution value="false" recordCount="1"/>
+										<ScoreDistribution value="true" recordCount="0"/>
+									</Node>
+								</Node>
+								<Node id="7">
+									<SimplePredicate field="double(float(money_out_48h))" operator="greaterThan" value="30.040000915527344"/>
+									<Node id="8">
+										<SimplePredicate field="double(float(max_failed_logins))" operator="lessOrEqual" value="0.2717660665512085"/>
+										<Node id="9">
+											<SimplePredicate field="double(float(unique_senders_to_beneficiary))" operator="lessOrEqual" value="3.5"/>
+											<Node id="10">
+												<SimplePredicate field="double(float(amount))" operator="lessOrEqual" value="3972.3900146484375"/>
+												<Node id="11" score="false" recordCount="4332">
+													<SimplePredicate field="double(float(unique_senders_to_beneficiary))" operator="lessOrEqual" value="1.5"/>
+													<ScoreDistribution value="false" recordCount="4332"/>
+													<ScoreDistribution value="true" recordCount="0"/>
+												</Node>
+												<Node id="12">
+													<SimplePredicate field="double(float(unique_senders_to_beneficiary))" operator="greaterThan" value="1.5"/>
+													<Node id="13">
+														<SimplePredicate field="double(float(past_pair_money_transferred))" operator="lessOrEqual" value="47.619998931884766"/>
+														<Node id="14" score="false" recordCount="759">
+															<SimplePredicate field="double(float(amount))" operator="lessOrEqual" value="1986.64501953125"/>
+															<ScoreDistribution value="false" recordCount="759"/>
+															<ScoreDistribution value="true" recordCount="0"/>
+														</Node>
+														<Node id="15">
+															<SimplePredicate field="double(float(amount))" operator="greaterThan" value="1986.64501953125"/>
+															<Node id="16">
+																<SimplePredicate field="double(float(name_similarity))" operator="lessOrEqual" value="0.24038461595773697"/>
+																<Node id="17" score="false" recordCount="3">
+																	<SimplePredicate field="double(float(name_similarity))" operator="lessOrEqual" value="0.2062937095761299"/>
+																	<ScoreDistribution value="false" recordCount="3"/>
+																	<ScoreDistribution value="true" recordCount="0"/>
+																</Node>
+																<Node id="18" score="true" recordCount="1">
+																	<SimplePredicate field="double(float(name_similarity))" operator="greaterThan" value="0.2062937095761299"/>
+																	<ScoreDistribution value="false" recordCount="0"/>
+																	<ScoreDistribution value="true" recordCount="1"/>
+																</Node>
+															</Node>
+															<Node id="19">
+																<SimplePredicate field="double(float(name_similarity))" operator="greaterThan" value="0.24038461595773697"/>
+																<Node id="20" score="true" recordCount="1">
+																	<SimplePredicate field="double(float(money_out_48h))" operator="lessOrEqual" value="2001.6199951171875"/>
+																	<ScoreDistribution value="false" recordCount="0"/>
+																	<ScoreDistribution value="true" recordCount="1"/>
+																</Node>
+																<Node id="21" score="false" recordCount="47">
+																	<SimplePredicate field="double(float(money_out_48h))" operator="greaterThan" value="2001.6199951171875"/>
+																	<ScoreDistribution value="false" recordCount="47"/>
+																	<ScoreDistribution value="true" recordCount="0"/>
+																</Node>
+															</Node>
+														</Node>
+													</Node>
+													<Node id="22" score="false" recordCount="36">
+														<SimplePredicate field="double(float(past_pair_money_transferred))" operator="greaterThan" value="47.619998931884766"/>
+														<ScoreDistribution value="false" recordCount="36"/>
+														<ScoreDistribution value="true" recordCount="0"/>
+													</Node>
+												</Node>
+											</Node>
+											<Node id="23">
+												<SimplePredicate field="double(float(amount))" operator="greaterThan" value="3972.3900146484375"/>
+												<Node id="24">
+													<SimplePredicate field="double(float(unique_senders_to_beneficiary))" operator="lessOrEqual" value="1.5"/>
+													<Node id="25" score="true" recordCount="1">
+														<SimplePredicate field="double(float(name_similarity))" operator="lessOrEqual" value="0.186956524848938"/>
+														<ScoreDistribution value="false" recordCount="0"/>
+														<ScoreDistribution value="true" recordCount="1"/>
+													</Node>
+													<Node id="26" score="false" recordCount="32">
+														<SimplePredicate field="double(float(name_similarity))" operator="greaterThan" value="0.186956524848938"/>
+														<ScoreDistribution value="false" recordCount="32"/>
+														<ScoreDistribution value="true" recordCount="0"/>
+													</Node>
+												</Node>
+												<Node id="27" score="false" recordCount="2">
+													<SimplePredicate field="double(float(unique_senders_to_beneficiary))" operator="greaterThan" value="1.5"/>
+													<ScoreDistribution value="false" recordCount="2"/>
+													<ScoreDistribution value="true" recordCount="0"/>
+												</Node>
+											</Node>
+										</Node>
+										<Node id="28">
+											<SimplePredicate field="double(float(unique_senders_to_beneficiary))" operator="greaterThan" value="3.5"/>
+											<Node id="29">
+												<SimplePredicate field="double(float(unique_senders_to_beneficiary))" operator="lessOrEqual" value="4.5"/>
+												<Node id="30">
+													<SimplePredicate field="double(float(past_pair_money_transferred))" operator="lessOrEqual" value="46.69499969482422"/>
+													<Node id="31" score="false" recordCount="44">
+														<SimplePredicate field="double(float(money_out_48h))" operator="lessOrEqual" value="3859.6949462890625"/>
+														<ScoreDistribution value="false" recordCount="44"/>
+														<ScoreDistribution value="true" recordCount="0"/>
+													</Node>
+													<Node id="32" score="true" recordCount="1">
+														<SimplePredicate field="double(float(money_out_48h))" operator="greaterThan" value="3859.6949462890625"/>
+														<ScoreDistribution value="false" recordCount="0"/>
+														<ScoreDistribution value="true" recordCount="1"/>
+													</Node>
+												</Node>
+												<Node id="33" score="false" recordCount="6">
+													<SimplePredicate field="double(float(past_pair_money_transferred))" operator="greaterThan" value="46.69499969482422"/>
+													<ScoreDistribution value="false" recordCount="6"/>
+													<ScoreDistribution value="true" recordCount="0"/>
+												</Node>
+											</Node>
+											<Node id="34" score="false" recordCount="34">
+												<SimplePredicate field="double(float(unique_senders_to_beneficiary))" operator="greaterThan" value="4.5"/>
+												<ScoreDistribution value="false" recordCount="34"/>
+												<ScoreDistribution value="true" recordCount="0"/>
+											</Node>
+										</Node>
+									</Node>
+									<Node id="35">
+										<SimplePredicate field="double(float(max_failed_logins))" operator="greaterThan" value="0.2717660665512085"/>
+										<Node id="36" score="true" recordCount="47">
+											<SimplePredicate field="double(float(max_failed_logins))" operator="lessOrEqual" value="0.7717660665512085"/>
+											<ScoreDistribution value="false" recordCount="0"/>
+											<ScoreDistribution value="true" recordCount="47"/>
+										</Node>
+										<Node id="37" score="false" recordCount="1292">
+											<SimplePredicate field="double(float(max_failed_logins))" operator="greaterThan" value="0.7717660665512085"/>
+											<ScoreDistribution value="false" recordCount="1292"/>
+											<ScoreDistribution value="true" recordCount="0"/>
+										</Node>
+									</Node>
+								</Node>
+							</Node>
+						</Node>
+						<Node id="38">
+							<SimplePredicate field="double(float(amount))" operator="greaterThan" value="5864.070068359375"/>
+							<Node id="39">
+								<SimplePredicate field="double(float(amount))" operator="lessOrEqual" value="7618.534912109375"/>
+								<Node id="40">
+									<SimplePredicate field="double(float(amount))" operator="lessOrEqual" value="7009.199951171875"/>
+									<Node id="41">
+										<SimplePredicate field="double(float(unique_senders_to_beneficiary))" operator="lessOrEqual" value="1.5"/>
+										<Node id="42" score="false" recordCount="1">
+											<SimplePredicate field="double(float(money_out_48h))" operator="lessOrEqual" value="6783.554931640625"/>
+											<ScoreDistribution value="false" recordCount="1"/>
+											<ScoreDistribution value="true" recordCount="0"/>
+										</Node>
+										<Node id="43" score="true" recordCount="5">
+											<SimplePredicate field="double(float(money_out_48h))" operator="greaterThan" value="6783.554931640625"/>
+											<ScoreDistribution value="false" recordCount="0"/>
+											<ScoreDistribution value="true" recordCount="5"/>
+										</Node>
+									</Node>
+									<Node id="44" score="true" recordCount="9">
+										<SimplePredicate field="double(float(unique_senders_to_beneficiary))" operator="greaterThan" value="1.5"/>
+										<ScoreDistribution value="false" recordCount="0"/>
+										<ScoreDistribution value="true" recordCount="9"/>
+									</Node>
+								</Node>
+								<Node id="45" score="false" recordCount="4">
+									<SimplePredicate field="double(float(amount))" operator="greaterThan" value="7009.199951171875"/>
+									<ScoreDistribution value="false" recordCount="4"/>
+									<ScoreDistribution value="true" recordCount="0"/>
+								</Node>
+							</Node>
+							<Node id="46" score="true" recordCount="93">
+								<SimplePredicate field="double(float(amount))" operator="greaterThan" value="7618.534912109375"/>
+								<ScoreDistribution value="false" recordCount="0"/>
+								<ScoreDistribution value="true" recordCount="93"/>
+							</Node>
+						</Node>
+					</Node>
+				</TreeModel>
+			</Segment>
+			<Segment id="4">
+				<True/>
+				<TreeModel functionName="classification" splitCharacteristic="binarySplit">
+					<MiningSchema>
+						<MiningField name="double(float(days_since_device_update))"/>
+						<MiningField name="double(float(money_out_48h))"/>
+						<MiningField name="double(float(unique_senders_to_beneficiary))"/>
+						<MiningField name="double(float(max_failed_logins))"/>
+						<MiningField name="double(float(name_similarity))"/>
+						<MiningField name="double(float(amount))"/>
+					</MiningSchema>
+					<Node id="0">
+						<True/>
+						<Node id="1" score="true" recordCount="163">
+							<SimplePredicate field="double(float(days_since_device_update))" operator="lessOrEqual" value="0.019022401655092835"/>
+							<ScoreDistribution value="false" recordCount="0"/>
+							<ScoreDistribution value="true" recordCount="163"/>
+						</Node>
+						<Node id="2">
+							<SimplePredicate field="double(float(days_since_device_update))" operator="greaterThan" value="0.019022401655092835"/>
+							<Node id="3">
+								<SimplePredicate field="double(float(money_out_48h))" operator="lessOrEqual" value="5965.7451171875"/>
+								<Node id="4">
+									<SimplePredicate field="double(float(max_failed_logins))" operator="lessOrEqual" value="0.2717660665512085"/>
+									<Node id="5">
+										<SimplePredicate field="double(float(unique_senders_to_beneficiary))" operator="lessOrEqual" value="3.5"/>
+										<Node id="6">
+											<SimplePredicate field="double(float(days_since_device_update))" operator="lessOrEqual" value="9.832141876220703"/>
+											<Node id="7">
+												<SimplePredicate field="double(float(unique_senders_to_beneficiary))" operator="lessOrEqual" value="2.5"/>
+												<Node id="8" score="false" recordCount="4150">
+													<SimplePredicate field="double(float(amount))" operator="lessOrEqual" value="1998.5"/>
+													<ScoreDistribution value="false" recordCount="4150"/>
+													<ScoreDistribution value="true" recordCount="0"/>
+												</Node>
+												<Node id="9">
+													<SimplePredicate field="double(float(amount))" operator="greaterThan" value="1998.5"/>
+													<Node id="10">
+														<SimplePredicate field="double(float(money_out_48h))" operator="lessOrEqual" value="2001.0900268554688"/>
+														<Node id="11" score="true" recordCount="2">
+															<SimplePredicate field="double(float(name_similarity))" operator="lessOrEqual" value="0.7000000029802322"/>
+															<ScoreDistribution value="false" recordCount="0"/>
+															<ScoreDistribution value="true" recordCount="2"/>
+														</Node>
+														<Node id="12" score="false" recordCount="2">
+															<SimplePredicate field="double(float(name_similarity))" operator="greaterThan" value="0.7000000029802322"/>
+															<ScoreDistribution value="false" recordCount="2"/>
+															<ScoreDistribution value="true" recordCount="0"/>
+														</Node>
+													</Node>
+													<Node id="13" score="false" recordCount="752">
+														<SimplePredicate field="double(float(money_out_48h))" operator="greaterThan" value="2001.0900268554688"/>
+														<ScoreDistribution value="false" recordCount="752"/>
+														<ScoreDistribution value="true" recordCount="0"/>
+													</Node>
+												</Node>
+											</Node>
+											<Node id="14">
+												<SimplePredicate field="double(float(unique_senders_to_beneficiary))" operator="greaterThan" value="2.5"/>
+												<Node id="15" score="false" recordCount="138">
+													<SimplePredicate field="double(float(name_similarity))" operator="lessOrEqual" value="0.4316770136356354"/>
+													<ScoreDistribution value="false" recordCount="138"/>
+													<ScoreDistribution value="true" recordCount="0"/>
+												</Node>
+												<Node id="16">
+													<SimplePredicate field="double(float(name_similarity))" operator="greaterThan" value="0.4316770136356354"/>
+													<Node id="17" score="false" recordCount="13">
+														<SimplePredicate field="double(float(money_out_48h))" operator="lessOrEqual" value="3641.0"/>
+														<ScoreDistribution value="false" recordCount="13"/>
+														<ScoreDistribution value="true" recordCount="0"/>
+													</Node>
+													<Node id="18" score="true" recordCount="2">
+														<SimplePredicate field="double(float(money_out_48h))" operator="greaterThan" value="3641.0"/>
+														<ScoreDistribution value="false" recordCount="0"/>
+														<ScoreDistribution value="true" recordCount="2"/>
+													</Node>
+												</Node>
+											</Node>
+										</Node>
+										<Node id="19" score="false" recordCount="199">
+											<SimplePredicate field="double(float(days_since_device_update))" operator="greaterThan" value="9.832141876220703"/>
+											<ScoreDistribution value="false" recordCount="199"/>
+											<ScoreDistribution value="true" recordCount="0"/>
+										</Node>
+									</Node>
+									<Node id="20">
+										<SimplePredicate field="double(float(unique_senders_to_beneficiary))" operator="greaterThan" value="3.5"/>
+										<Node id="21">
+											<SimplePredicate field="double(float(unique_senders_to_beneficiary))" operator="lessOrEqual" value="5.5"/>
+											<Node id="22" score="false" recordCount="59">
+												<SimplePredicate field="double(float(money_out_48h))" operator="lessOrEqual" value="3597.5550537109375"/>
+												<ScoreDistribution value="false" recordCount="59"/>
+												<ScoreDistribution value="true" recordCount="0"/>
+											</Node>
+											<Node id="23" score="true" recordCount="3">
+												<SimplePredicate field="double(float(money_out_48h))" operator="greaterThan" value="3597.5550537109375"/>
+												<ScoreDistribution value="false" recordCount="0"/>
+												<ScoreDistribution value="true" recordCount="3"/>
+											</Node>
+										</Node>
+										<Node id="24" score="false" recordCount="26">
+											<SimplePredicate field="double(float(unique_senders_to_beneficiary))" operator="greaterThan" value="5.5"/>
+											<ScoreDistribution value="false" recordCount="26"/>
+											<ScoreDistribution value="true" recordCount="0"/>
+										</Node>
+									</Node>
+								</Node>
+								<Node id="25">
+									<SimplePredicate field="double(float(max_failed_logins))" operator="greaterThan" value="0.2717660665512085"/>
+									<Node id="26" score="true" recordCount="3">
+										<SimplePredicate field="double(float(money_out_48h))" operator="lessOrEqual" value="55.02000045776367"/>
+										<ScoreDistribution value="false" recordCount="0"/>
+										<ScoreDistribution value="true" recordCount="3"/>
+									</Node>
+									<Node id="27">
+										<SimplePredicate field="double(float(money_out_48h))" operator="greaterThan" value="55.02000045776367"/>
+										<Node id="28" score="true" recordCount="48">
+											<SimplePredicate field="double(float(max_failed_logins))" operator="lessOrEqual" value="0.7717660665512085"/>
+											<ScoreDistribution value="false" recordCount="0"/>
+											<ScoreDistribution value="true" recordCount="48"/>
+										</Node>
+										<Node id="29" score="false" recordCount="1222">
+											<SimplePredicate field="double(float(max_failed_logins))" operator="greaterThan" value="0.7717660665512085"/>
+											<ScoreDistribution value="false" recordCount="1222"/>
+											<ScoreDistribution value="true" recordCount="0"/>
+										</Node>
+									</Node>
+								</Node>
+							</Node>
+							<Node id="30">
+								<SimplePredicate field="double(float(money_out_48h))" operator="greaterThan" value="5965.7451171875"/>
+								<Node id="31">
+									<SimplePredicate field="double(float(money_out_48h))" operator="lessOrEqual" value="6660.610107421875"/>
+									<Node id="32" score="true" recordCount="7">
+										<SimplePredicate field="double(float(money_out_48h))" operator="lessOrEqual" value="6160.610107421875"/>
+										<ScoreDistribution value="false" recordCount="0"/>
+										<ScoreDistribution value="true" recordCount="7"/>
+									</Node>
+									<Node id="33" score="false" recordCount="2">
+										<SimplePredicate field="double(float(money_out_48h))" operator="greaterThan" value="6160.610107421875"/>
+										<ScoreDistribution value="false" recordCount="2"/>
+										<ScoreDistribution value="true" recordCount="0"/>
+									</Node>
+								</Node>
+								<Node id="34" score="true" recordCount="113">
+									<SimplePredicate field="double(float(money_out_48h))" operator="greaterThan" value="6660.610107421875"/>
+									<ScoreDistribution value="false" recordCount="0"/>
+									<ScoreDistribution value="true" recordCount="113"/>
+								</Node>
+							</Node>
+						</Node>
+					</Node>
+				</TreeModel>
+			</Segment>
+			<Segment id="5">
+				<True/>
+				<TreeModel functionName="classification" splitCharacteristic="binarySplit">
+					<MiningSchema>
+						<MiningField name="double(float(days_since_device_update))"/>
+						<MiningField name="double(float(money_out_48h))"/>
+						<MiningField name="double(float(past_pair_money_transferred))"/>
+						<MiningField name="double(float(unique_senders_to_beneficiary))"/>
+						<MiningField name="double(float(max_failed_logins))"/>
+						<MiningField name="double(float(name_similarity))"/>
+						<MiningField name="double(float(amount))"/>
+					</MiningSchema>
+					<Node id="0">
+						<True/>
+						<Node id="1">
+							<SimplePredicate field="double(float(money_out_48h))" operator="lessOrEqual" value="5864.070068359375"/>
+							<Node id="2" score="true" recordCount="171">
+								<SimplePredicate field="double(float(days_since_device_update))" operator="lessOrEqual" value="0.007102870149537921"/>
+								<ScoreDistribution value="false" recordCount="0"/>
+								<ScoreDistribution value="true" recordCount="171"/>
+							</Node>
+							<Node id="3">
+								<SimplePredicate field="double(float(days_since_device_update))" operator="greaterThan" value="0.007102870149537921"/>
+								<Node id="4">
+									<SimplePredicate field="double(float(days_since_device_update))" operator="lessOrEqual" value="0.04550908599048853"/>
+									<Node id="5" score="false" recordCount="2">
+										<SimplePredicate field="double(float(money_out_48h))" operator="lessOrEqual" value="315.00999450683594"/>
+										<ScoreDistribution value="false" recordCount="2"/>
+										<ScoreDistribution value="true" recordCount="0"/>
+									</Node>
+									<Node id="6" score="true" recordCount="1">
+										<SimplePredicate field="double(float(money_out_48h))" operator="greaterThan" value="315.00999450683594"/>
+										<ScoreDistribution value="false" recordCount="0"/>
+										<ScoreDistribution value="true" recordCount="1"/>
+									</Node>
+								</Node>
+								<Node id="7">
+									<SimplePredicate field="double(float(days_since_device_update))" operator="greaterThan" value="0.04550908599048853"/>
+									<Node id="8">
+										<SimplePredicate field="double(float(unique_senders_to_beneficiary))" operator="lessOrEqual" value="2.5"/>
+										<Node id="9">
+											<SimplePredicate field="double(float(name_similarity))" operator="lessOrEqual" value="0.44802866876125336"/>
+											<Node id="10" score="false" recordCount="2454">
+												<SimplePredicate field="double(float(max_failed_logins))" operator="lessOrEqual" value="0.2717660665512085"/>
+												<ScoreDistribution value="false" recordCount="2454"/>
+												<ScoreDistribution value="true" recordCount="0"/>
+											</Node>
+											<Node id="11">
+												<SimplePredicate field="double(float(max_failed_logins))" operator="greaterThan" value="0.2717660665512085"/>
+												<Node id="12" score="true" recordCount="32">
+													<SimplePredicate field="double(float(max_failed_logins))" operator="lessOrEqual" value="0.7717660665512085"/>
+													<ScoreDistribution value="false" recordCount="0"/>
+													<ScoreDistribution value="true" recordCount="32"/>
+												</Node>
+												<Node id="13" score="false" recordCount="611">
+													<SimplePredicate field="double(float(max_failed_logins))" operator="greaterThan" value="0.7717660665512085"/>
+													<ScoreDistribution value="false" recordCount="611"/>
+													<ScoreDistribution value="true" recordCount="0"/>
+												</Node>
+											</Node>
+										</Node>
+										<Node id="14" score="false" recordCount="3253">
+											<SimplePredicate field="double(float(name_similarity))" operator="greaterThan" value="0.44802866876125336"/>
+											<ScoreDistribution value="false" recordCount="3253"/>
+											<ScoreDistribution value="true" recordCount="0"/>
+										</Node>
+									</Node>
+									<Node id="15">
+										<SimplePredicate field="double(float(unique_senders_to_beneficiary))" operator="greaterThan" value="2.5"/>
+										<Node id="16">
+											<SimplePredicate field="double(float(money_out_48h))" operator="lessOrEqual" value="4141.0"/>
+											<Node id="17">
+												<SimplePredicate field="double(float(money_out_48h))" operator="lessOrEqual" value="285.760009765625"/>
+												<Node id="18" score="false" recordCount="85">
+													<SimplePredicate field="double(float(max_failed_logins))" operator="lessOrEqual" value="0.2717660665512085"/>
+													<ScoreDistribution value="false" recordCount="85"/>
+													<ScoreDistribution value="true" recordCount="0"/>
+												</Node>
+												<Node id="19">
+													<SimplePredicate field="double(float(max_failed_logins))" operator="greaterThan" value="0.2717660665512085"/>
+													<Node id="20" score="false" recordCount="11">
+														<SimplePredicate field="double(float(name_similarity))" operator="lessOrEqual" value="0.34518517553806305"/>
+														<ScoreDistribution value="false" recordCount="11"/>
+														<ScoreDistribution value="true" recordCount="0"/>
+													</Node>
+													<Node id="21">
+														<SimplePredicate field="double(float(name_similarity))" operator="greaterThan" value="0.34518517553806305"/>
+														<Node id="22" score="true" recordCount="1">
+															<SimplePredicate field="double(float(name_similarity))" operator="lessOrEqual" value="0.37268517911434174"/>
+															<ScoreDistribution value="false" recordCount="0"/>
+															<ScoreDistribution value="true" recordCount="1"/>
+														</Node>
+														<Node id="23" score="false" recordCount="5">
+															<SimplePredicate field="double(float(name_similarity))" operator="greaterThan" value="0.37268517911434174"/>
+															<ScoreDistribution value="false" recordCount="5"/>
+															<ScoreDistribution value="true" recordCount="0"/>
+														</Node>
+													</Node>
+												</Node>
+											</Node>
+											<Node id="24">
+												<SimplePredicate field="double(float(money_out_48h))" operator="greaterThan" value="285.760009765625"/>
+												<Node id="25" score="true" recordCount="2">
+													<SimplePredicate field="double(float(money_out_48h))" operator="lessOrEqual" value="288.3249969482422"/>
+													<ScoreDistribution value="false" recordCount="0"/>
+													<ScoreDistribution value="true" recordCount="2"/>
+												</Node>
+												<Node id="26">
+													<SimplePredicate field="double(float(money_out_48h))" operator="greaterThan" value="288.3249969482422"/>
+													<Node id="27">
+														<SimplePredicate field="double(float(name_similarity))" operator="lessOrEqual" value="0.3266666680574417"/>
+														<Node id="28">
+															<SimplePredicate field="double(float(money_out_48h))" operator="lessOrEqual" value="303.63499450683594"/>
+															<Node id="29" score="true" recordCount="1">
+																<SimplePredicate field="double(float(unique_senders_to_beneficiary))" operator="lessOrEqual" value="3.5"/>
+																<ScoreDistribution value="false" recordCount="0"/>
+																<ScoreDistribution value="true" recordCount="1"/>
+															</Node>
+															<Node id="30" score="false" recordCount="1">
+																<SimplePredicate field="double(float(unique_senders_to_beneficiary))" operator="greaterThan" value="3.5"/>
+																<ScoreDistribution value="false" recordCount="1"/>
+																<ScoreDistribution value="true" recordCount="0"/>
+															</Node>
+														</Node>
+														<Node id="31">
+															<SimplePredicate field="double(float(money_out_48h))" operator="greaterThan" value="303.63499450683594"/>
+															<Node id="32">
+																<SimplePredicate field="double(float(money_out_48h))" operator="lessOrEqual" value="687.3650207519531"/>
+																<Node id="33">
+																	<SimplePredicate field="double(float(money_out_48h))" operator="lessOrEqual" value="468.1750030517578"/>
+																	<Node id="34">
+																		<SimplePredicate field="double(float(amount))" operator="lessOrEqual" value="450.3000030517578"/>
+																		<Node id="35" score="false" recordCount="38">
+																			<SimplePredicate field="double(float(name_similarity))" operator="lessOrEqual" value="0.30199430882930756"/>
+																			<ScoreDistribution value="false" recordCount="38"/>
+																			<ScoreDistribution value="true" recordCount="0"/>
+																		</Node>
+																		<Node id="36">
+																			<SimplePredicate field="double(float(name_similarity))" operator="greaterThan" value="0.30199430882930756"/>
+																			<Node id="37">
+																				<SimplePredicate field="double(float(money_out_48h))" operator="lessOrEqual" value="357.77500915527344"/>
+																				<Node id="38" score="false" recordCount="1">
+																					<SimplePredicate field="double(float(money_out_48h))" operator="lessOrEqual" value="327.36500549316406"/>
+																					<ScoreDistribution value="false" recordCount="1"/>
+																					<ScoreDistribution value="true" recordCount="0"/>
+																				</Node>
+																				<Node id="39" score="true" recordCount="1">
+																					<SimplePredicate field="double(float(money_out_48h))" operator="greaterThan" value="327.36500549316406"/>
+																					<ScoreDistribution value="false" recordCount="0"/>
+																					<ScoreDistribution value="true" recordCount="1"/>
+																				</Node>
+																			</Node>
+																			<Node id="40" score="false" recordCount="3">
+																				<SimplePredicate field="double(float(money_out_48h))" operator="greaterThan" value="357.77500915527344"/>
+																				<ScoreDistribution value="false" recordCount="3"/>
+																				<ScoreDistribution value="true" recordCount="0"/>
+																			</Node>
+																		</Node>
+																	</Node>
+																	<Node id="41" score="true" recordCount="1">
+																		<SimplePredicate field="double(float(amount))" operator="greaterThan" value="450.3000030517578"/>
+																		<ScoreDistribution value="false" recordCount="0"/>
+																		<ScoreDistribution value="true" recordCount="1"/>
+																	</Node>
+																</Node>
+																<Node id="42" score="false" recordCount="24">
+																	<SimplePredicate field="double(float(money_out_48h))" operator="greaterThan" value="468.1750030517578"/>
+																	<ScoreDistribution value="false" recordCount="24"/>
+																	<ScoreDistribution value="true" recordCount="0"/>
+																</Node>
+															</Node>
+															<Node id="43">
+																<SimplePredicate field="double(float(money_out_48h))" operator="greaterThan" value="687.3650207519531"/>
+																<Node id="44">
+																	<SimplePredicate field="double(float(past_pair_money_transferred))" operator="lessOrEqual" value="175.72000122070312"/>
+																	<Node id="45" score="false" recordCount="6">
+																		<SimplePredicate field="double(float(name_similarity))" operator="lessOrEqual" value="0.19805195182561874"/>
+																		<ScoreDistribution value="false" recordCount="6"/>
+																		<ScoreDistribution value="true" recordCount="0"/>
+																	</Node>
+																	<Node id="46">
+																		<SimplePredicate field="double(float(name_similarity))" operator="greaterThan" value="0.19805195182561874"/>
+																		<Node id="47" score="true" recordCount="1">
+																			<SimplePredicate field="double(float(amount))" operator="lessOrEqual" value="231.89999389648438"/>
+																			<ScoreDistribution value="false" recordCount="0"/>
+																			<ScoreDistribution value="true" recordCount="1"/>
+																		</Node>
+																		<Node id="48">
+																			<SimplePredicate field="double(float(amount))" operator="greaterThan" value="231.89999389648438"/>
+																			<Node id="49">
+																				<SimplePredicate field="double(float(money_out_48h))" operator="lessOrEqual" value="1123.1749877929688"/>
+																				<Node id="50" score="true" recordCount="2">
+																					<SimplePredicate field="double(float(name_similarity))" operator="lessOrEqual" value="0.22252747416496277"/>
+																					<ScoreDistribution value="false" recordCount="0"/>
+																					<ScoreDistribution value="true" recordCount="2"/>
+																				</Node>
+																				<Node id="51">
+																					<SimplePredicate field="double(float(name_similarity))" operator="greaterThan" value="0.22252747416496277"/>
+																					<Node id="52">
+																						<SimplePredicate field="double(float(amount))" operator="lessOrEqual" value="863.3450012207031"/>
+																						<Node id="53">
+																							<SimplePredicate field="double(float(unique_senders_to_beneficiary))" operator="lessOrEqual" value="5.0"/>
+																							<Node id="54" score="false" recordCount="3">
+																								<SimplePredicate field="double(float(max_failed_logins))" operator="lessOrEqual" value="0.2717660665512085"/>
+																								<ScoreDistribution value="false" recordCount="3"/>
+																								<ScoreDistribution value="true" recordCount="0"/>
+																							</Node>
+																							<Node id="55" score="true" recordCount="1">
+																								<SimplePredicate field="double(float(max_failed_logins))" operator="greaterThan" value="0.2717660665512085"/>
+																								<ScoreDistribution value="false" recordCount="0"/>
+																								<ScoreDistribution value="true" recordCount="1"/>
+																							</Node>
+																						</Node>
+																						<Node id="56" score="false" recordCount="1">
+																							<SimplePredicate field="double(float(unique_senders_to_beneficiary))" operator="greaterThan" value="5.0"/>
+																							<ScoreDistribution value="false" recordCount="1"/>
+																							<ScoreDistribution value="true" recordCount="0"/>
+																						</Node>
+																					</Node>
+																					<Node id="57" score="false" recordCount="5">
+																						<SimplePredicate field="double(float(amount))" operator="greaterThan" value="863.3450012207031"/>
+																						<ScoreDistribution value="false" recordCount="5"/>
+																						<ScoreDistribution value="true" recordCount="0"/>
+																					</Node>
+																				</Node>
+																			</Node>
+																			<Node id="58" score="false" recordCount="7">
+																				<SimplePredicate field="double(float(money_out_48h))" operator="greaterThan" value="1123.1749877929688"/>
+																				<ScoreDistribution value="false" recordCount="7"/>
+																				<ScoreDistribution value="true" recordCount="0"/>
+																			</Node>
+																		</Node>
+																	</Node>
+																</Node>
+																<Node id="59" score="false" recordCount="5">
+																	<SimplePredicate field="double(float(past_pair_money_transferred))" operator="greaterThan" value="175.72000122070312"/>
+																	<ScoreDistribution value="false" recordCount="5"/>
+																	<ScoreDistribution value="true" recordCount="0"/>
+																</Node>
+															</Node>
+														</Node>
+													</Node>
+													<Node id="60" score="false" recordCount="45">
+														<SimplePredicate field="double(float(name_similarity))" operator="greaterThan" value="0.3266666680574417"/>
+														<ScoreDistribution value="false" recordCount="45"/>
+														<ScoreDistribution value="true" recordCount="0"/>
+													</Node>
+												</Node>
+											</Node>
+										</Node>
+										<Node id="61" score="true" recordCount="2">
+											<SimplePredicate field="double(float(money_out_48h))" operator="greaterThan" value="4141.0"/>
+											<ScoreDistribution value="false" recordCount="0"/>
+											<ScoreDistribution value="true" recordCount="2"/>
+										</Node>
+									</Node>
+								</Node>
+							</Node>
+						</Node>
+						<Node id="62">
+							<SimplePredicate field="double(float(money_out_48h))" operator="greaterThan" value="5864.070068359375"/>
+							<Node id="63">
+								<SimplePredicate field="double(float(amount))" operator="lessOrEqual" value="7509.199951171875"/>
+								<Node id="64" score="true" recordCount="10">
+									<SimplePredicate field="double(float(name_similarity))" operator="lessOrEqual" value="0.6785714328289032"/>
+									<ScoreDistribution value="false" recordCount="0"/>
+									<ScoreDistribution value="true" recordCount="10"/>
+								</Node>
+								<Node id="65" score="false" recordCount="1">
+									<SimplePredicate field="double(float(name_similarity))" operator="greaterThan" value="0.6785714328289032"/>
+									<ScoreDistribution value="false" recordCount="1"/>
+									<ScoreDistribution value="true" recordCount="0"/>
+								</Node>
+							</Node>
+							<Node id="66" score="true" recordCount="117">
+								<SimplePredicate field="double(float(amount))" operator="greaterThan" value="7509.199951171875"/>
+								<ScoreDistribution value="false" recordCount="0"/>
+								<ScoreDistribution value="true" recordCount="117"/>
+							</Node>
+						</Node>
+					</Node>
+				</TreeModel>
+			</Segment>
+			<Segment id="6">
+				<True/>
+				<TreeModel functionName="classification" splitCharacteristic="binarySplit">
+					<MiningSchema>
+						<MiningField name="double(float(days_since_device_update))"/>
+						<MiningField name="double(float(money_out_48h))"/>
+						<MiningField name="double(float(past_pair_money_transferred))"/>
+						<MiningField name="double(float(unique_senders_to_beneficiary))"/>
+						<MiningField name="double(float(max_failed_logins))"/>
+						<MiningField name="double(float(name_similarity))"/>
+						<MiningField name="double(float(amount))"/>
+					</MiningSchema>
+					<Node id="0">
+						<True/>
+						<Node id="1" score="true" recordCount="191">
+							<SimplePredicate field="double(float(days_since_device_update))" operator="lessOrEqual" value="0.019292204873636365"/>
+							<ScoreDistribution value="false" recordCount="0"/>
+							<ScoreDistribution value="true" recordCount="191"/>
+						</Node>
+						<Node id="2">
+							<SimplePredicate field="double(float(days_since_device_update))" operator="greaterThan" value="0.019292204873636365"/>
+							<Node id="3">
+								<SimplePredicate field="double(float(max_failed_logins))" operator="lessOrEqual" value="0.7717660665512085"/>
+								<Node id="4">
+									<SimplePredicate field="double(float(money_out_48h))" operator="lessOrEqual" value="5864.070068359375"/>
+									<Node id="5">
+										<SimplePredicate field="double(float(money_out_48h))" operator="lessOrEqual" value="93.75"/>
+										<Node id="6">
+											<SimplePredicate field="double(float(money_out_48h))" operator="lessOrEqual" value="93.54000091552734"/>
+											<Node id="7">
+												<SimplePredicate field="double(float(money_out_48h))" operator="lessOrEqual" value="30.040000915527344"/>
+												<Node id="8" score="false" recordCount="5">
+													<SimplePredicate field="double(float(max_failed_logins))" operator="lessOrEqual" value="0.2717660665512085"/>
+													<ScoreDistribution value="false" recordCount="5"/>
+													<ScoreDistribution value="true" recordCount="0"/>
+												</Node>
+												<Node id="9" score="true" recordCount="1">
+													<SimplePredicate field="double(float(max_failed_logins))" operator="greaterThan" value="0.2717660665512085"/>
+													<ScoreDistribution value="false" recordCount="0"/>
+													<ScoreDistribution value="true" recordCount="1"/>
+												</Node>
+											</Node>
+											<Node id="10" score="false" recordCount="20">
+												<SimplePredicate field="double(float(money_out_48h))" operator="greaterThan" value="30.040000915527344"/>
+												<ScoreDistribution value="false" recordCount="20"/>
+												<ScoreDistribution value="true" recordCount="0"/>
+											</Node>
+										</Node>
+										<Node id="11" score="true" recordCount="3">
+											<SimplePredicate field="double(float(money_out_48h))" operator="greaterThan" value="93.54000091552734"/>
+											<ScoreDistribution value="false" recordCount="0"/>
+											<ScoreDistribution value="true" recordCount="3"/>
+										</Node>
+									</Node>
+									<Node id="12">
+										<SimplePredicate field="double(float(money_out_48h))" operator="greaterThan" value="93.75"/>
+										<Node id="13">
+											<SimplePredicate field="double(float(unique_senders_to_beneficiary))" operator="lessOrEqual" value="1.5"/>
+											<Node id="14">
+												<SimplePredicate field="double(float(max_failed_logins))" operator="lessOrEqual" value="0.2717660665512085"/>
+												<Node id="15">
+													<SimplePredicate field="double(float(past_pair_money_transferred))" operator="lessOrEqual" value="35.20500183105469"/>
+													<Node id="16" score="false" recordCount="4087">
+														<SimplePredicate field="double(float(amount))" operator="lessOrEqual" value="3982.030029296875"/>
+														<ScoreDistribution value="false" recordCount="4087"/>
+														<ScoreDistribution value="true" recordCount="0"/>
+													</Node>
+													<Node id="17">
+														<SimplePredicate field="double(float(amount))" operator="greaterThan" value="3982.030029296875"/>
+														<Node id="18">
+															<SimplePredicate field="double(float(days_since_device_update))" operator="lessOrEqual" value="13.182336807250977"/>
+															<Node id="19" score="true" recordCount="1">
+																<SimplePredicate field="double(float(amount))" operator="lessOrEqual" value="4032.7950439453125"/>
+																<ScoreDistribution value="false" recordCount="0"/>
+																<ScoreDistribution value="true" recordCount="1"/>
+															</Node>
+															<Node id="20" score="false" recordCount="28">
+																<SimplePredicate field="double(float(amount))" operator="greaterThan" value="4032.7950439453125"/>
+																<ScoreDistribution value="false" recordCount="28"/>
+																<ScoreDistribution value="true" recordCount="0"/>
+															</Node>
+														</Node>
+														<Node id="21" score="false" recordCount="5">
+															<SimplePredicate field="double(float(days_since_device_update))" operator="greaterThan" value="13.182336807250977"/>
+															<ScoreDistribution value="false" recordCount="5"/>
+															<ScoreDistribution value="true" recordCount="0"/>
+														</Node>
+													</Node>
+												</Node>
+												<Node id="22" score="false" recordCount="207">
+													<SimplePredicate field="double(float(past_pair_money_transferred))" operator="greaterThan" value="35.20500183105469"/>
+													<ScoreDistribution value="false" recordCount="207"/>
+													<ScoreDistribution value="true" recordCount="0"/>
+												</Node>
+											</Node>
+											<Node id="23" score="true" recordCount="20">
+												<SimplePredicate field="double(float(max_failed_logins))" operator="greaterThan" value="0.2717660665512085"/>
+												<ScoreDistribution value="false" recordCount="0"/>
+												<ScoreDistribution value="true" recordCount="20"/>
+											</Node>
+										</Node>
+										<Node id="24">
+											<SimplePredicate field="double(float(unique_senders_to_beneficiary))" operator="greaterThan" value="1.5"/>
+											<Node id="25">
+												<SimplePredicate field="double(float(amount))" operator="lessOrEqual" value="288.19000244140625"/>
+												<Node id="26" score="false" recordCount="349">
+													<SimplePredicate field="double(float(max_failed_logins))" operator="lessOrEqual" value="0.2717660665512085"/>
+													<ScoreDistribution value="false" recordCount="349"/>
+													<ScoreDistribution value="true" recordCount="0"/>
+												</Node>
+												<Node id="27" score="true" recordCount="7">
+													<SimplePredicate field="double(float(max_failed_logins))" operator="greaterThan" value="0.2717660665512085"/>
+													<ScoreDistribution value="false" recordCount="0"/>
+													<ScoreDistribution value="true" recordCount="7"/>
+												</Node>
+											</Node>
+											<Node id="28">
+												<SimplePredicate field="double(float(amount))" operator="greaterThan" value="288.19000244140625"/>
+												<Node id="29" score="true" recordCount="2">
+													<SimplePredicate field="double(float(money_out_48h))" operator="lessOrEqual" value="289.8999938964844"/>
+													<ScoreDistribution value="false" recordCount="0"/>
+													<ScoreDistribution value="true" recordCount="2"/>
+												</Node>
+												<Node id="30">
+													<SimplePredicate field="double(float(money_out_48h))" operator="greaterThan" value="289.8999938964844"/>
+													<Node id="31">
+														<SimplePredicate field="double(float(max_failed_logins))" operator="lessOrEqual" value="0.2717660665512085"/>
+														<Node id="32">
+															<SimplePredicate field="double(float(money_out_48h))" operator="lessOrEqual" value="3960.050048828125"/>
+															<Node id="33" score="false" recordCount="536">
+																<SimplePredicate field="double(float(money_out_48h))" operator="lessOrEqual" value="1996.0349731445312"/>
+																<ScoreDistribution value="false" recordCount="536"/>
+																<ScoreDistribution value="true" recordCount="0"/>
+															</Node>
+															<Node id="34">
+																<SimplePredicate field="double(float(money_out_48h))" operator="greaterThan" value="1996.0349731445312"/>
+																<Node id="35">
+																	<SimplePredicate field="double(float(amount))" operator="lessOrEqual" value="2001.6199951171875"/>
+																	<Node id="36" score="false" recordCount="5">
+																		<SimplePredicate field="double(float(amount))" operator="lessOrEqual" value="1529.0399780273438"/>
+																		<ScoreDistribution value="false" recordCount="5"/>
+																		<ScoreDistribution value="true" recordCount="0"/>
+																	</Node>
+																	<Node id="37" score="true" recordCount="2">
+																		<SimplePredicate field="double(float(amount))" operator="greaterThan" value="1529.0399780273438"/>
+																		<ScoreDistribution value="false" recordCount="0"/>
+																		<ScoreDistribution value="true" recordCount="2"/>
+																	</Node>
+																</Node>
+																<Node id="38" score="false" recordCount="52">
+																	<SimplePredicate field="double(float(amount))" operator="greaterThan" value="2001.6199951171875"/>
+																	<ScoreDistribution value="false" recordCount="52"/>
+																	<ScoreDistribution value="true" recordCount="0"/>
+																</Node>
+															</Node>
+														</Node>
+														<Node id="39">
+															<SimplePredicate field="double(float(money_out_48h))" operator="greaterThan" value="3960.050048828125"/>
+															<Node id="40" score="false" recordCount="6">
+																<SimplePredicate field="double(float(unique_senders_to_beneficiary))" operator="lessOrEqual" value="2.5"/>
+																<ScoreDistribution value="false" recordCount="6"/>
+																<ScoreDistribution value="true" recordCount="0"/>
+															</Node>
+															<Node id="41" score="true" recordCount="1">
+																<SimplePredicate field="double(float(unique_senders_to_beneficiary))" operator="greaterThan" value="2.5"/>
+																<ScoreDistribution value="false" recordCount="0"/>
+																<ScoreDistribution value="true" recordCount="1"/>
+															</Node>
+														</Node>
+													</Node>
+													<Node id="42" score="true" recordCount="21">
+														<SimplePredicate field="double(float(max_failed_logins))" operator="greaterThan" value="0.2717660665512085"/>
+														<ScoreDistribution value="false" recordCount="0"/>
+														<ScoreDistribution value="true" recordCount="21"/>
+													</Node>
+												</Node>
+											</Node>
+										</Node>
+									</Node>
+								</Node>
+								<Node id="43">
+									<SimplePredicate field="double(float(money_out_48h))" operator="greaterThan" value="5864.070068359375"/>
+									<Node id="44">
+										<SimplePredicate field="double(float(money_out_48h))" operator="lessOrEqual" value="7509.199951171875"/>
+										<Node id="45">
+											<SimplePredicate field="double(float(money_out_48h))" operator="lessOrEqual" value="7009.199951171875"/>
+											<Node id="46" score="true" recordCount="5">
+												<SimplePredicate field="double(float(money_out_48h))" operator="lessOrEqual" value="6283.554931640625"/>
+												<ScoreDistribution value="false" recordCount="0"/>
+												<ScoreDistribution value="true" recordCount="5"/>
+											</Node>
+											<Node id="47">
+												<SimplePredicate field="double(float(money_out_48h))" operator="greaterThan" value="6283.554931640625"/>
+												<Node id="48" score="true" recordCount="3">
+													<SimplePredicate field="double(float(name_similarity))" operator="lessOrEqual" value="0.661290317773819"/>
+													<ScoreDistribution value="false" recordCount="0"/>
+													<ScoreDistribution value="true" recordCount="3"/>
+												</Node>
+												<Node id="49" score="false" recordCount="1">
+													<SimplePredicate field="double(float(name_similarity))" operator="greaterThan" value="0.661290317773819"/>
+													<ScoreDistribution value="false" recordCount="1"/>
+													<ScoreDistribution value="true" recordCount="0"/>
+												</Node>
+											</Node>
+										</Node>
+										<Node id="50" score="false" recordCount="2">
+											<SimplePredicate field="double(float(money_out_48h))" operator="greaterThan" value="7009.199951171875"/>
+											<ScoreDistribution value="false" recordCount="2"/>
+											<ScoreDistribution value="true" recordCount="0"/>
+										</Node>
+									</Node>
+									<Node id="51" score="true" recordCount="110">
+										<SimplePredicate field="double(float(money_out_48h))" operator="greaterThan" value="7509.199951171875"/>
+										<ScoreDistribution value="false" recordCount="0"/>
+										<ScoreDistribution value="true" recordCount="110"/>
+									</Node>
+								</Node>
+							</Node>
+							<Node id="52" score="false" recordCount="1234">
+								<SimplePredicate field="double(float(max_failed_logins))" operator="greaterThan" value="0.7717660665512085"/>
+								<ScoreDistribution value="false" recordCount="1234"/>
+								<ScoreDistribution value="true" recordCount="0"/>
+							</Node>
+						</Node>
+					</Node>
+				</TreeModel>
+			</Segment>
+			<Segment id="7">
+				<True/>
+				<TreeModel functionName="classification" splitCharacteristic="binarySplit">
+					<MiningSchema>
+						<MiningField name="double(float(days_since_device_update))"/>
+						<MiningField name="double(float(money_out_48h))"/>
+						<MiningField name="double(float(past_pair_money_transferred))"/>
+						<MiningField name="double(float(unique_senders_to_beneficiary))"/>
+						<MiningField name="double(float(max_failed_logins))"/>
+						<MiningField name="double(float(name_similarity))"/>
+						<MiningField name="double(float(amount))"/>
+					</MiningSchema>
+					<Node id="0">
+						<True/>
+						<Node id="1">
+							<SimplePredicate field="double(float(name_similarity))" operator="lessOrEqual" value="0.464102566242218"/>
+							<Node id="2" score="true" recordCount="157">
+								<SimplePredicate field="double(float(days_since_device_update))" operator="lessOrEqual" value="0.07823035214096308"/>
+								<ScoreDistribution value="false" recordCount="0"/>
+								<ScoreDistribution value="true" recordCount="157"/>
+							</Node>
+							<Node id="3">
+								<SimplePredicate field="double(float(days_since_device_update))" operator="greaterThan" value="0.07823035214096308"/>
+								<Node id="4">
+									<SimplePredicate field="double(float(unique_senders_to_beneficiary))" operator="lessOrEqual" value="2.5"/>
+									<Node id="5">
+										<SimplePredicate field="double(float(amount))" operator="lessOrEqual" value="5343.719970703125"/>
+										<Node id="6" score="true" recordCount="2">
+											<SimplePredicate field="double(float(amount))" operator="lessOrEqual" value="80.83499908447266"/>
+											<ScoreDistribution value="false" recordCount="0"/>
+											<ScoreDistribution value="true" recordCount="2"/>
+										</Node>
+										<Node id="7">
+											<SimplePredicate field="double(float(amount))" operator="greaterThan" value="80.83499908447266"/>
+											<Node id="8">
+												<SimplePredicate field="double(float(unique_senders_to_beneficiary))" operator="lessOrEqual" value="1.5"/>
+												<Node id="9">
+													<SimplePredicate field="double(float(days_since_device_update))" operator="lessOrEqual" value="9.907042026519775"/>
+													<Node id="10">
+														<SimplePredicate field="double(float(amount))" operator="lessOrEqual" value="3982.030029296875"/>
+														<Node id="11">
+															<SimplePredicate field="double(float(name_similarity))" operator="lessOrEqual" value="0.3827838897705078"/>
+															<Node id="12" score="false" recordCount="562">
+																<SimplePredicate field="double(float(name_similarity))" operator="lessOrEqual" value="0.22967033088207245"/>
+																<ScoreDistribution value="false" recordCount="562"/>
+																<ScoreDistribution value="true" recordCount="0"/>
+															</Node>
+															<Node id="13">
+																<SimplePredicate field="double(float(name_similarity))" operator="greaterThan" value="0.22967033088207245"/>
+																<Node id="14" score="false" recordCount="588">
+																	<SimplePredicate field="double(float(money_out_48h))" operator="lessOrEqual" value="302.44000244140625"/>
+																	<ScoreDistribution value="false" recordCount="588"/>
+																	<ScoreDistribution value="true" recordCount="0"/>
+																</Node>
+																<Node id="15">
+																	<SimplePredicate field="double(float(money_out_48h))" operator="greaterThan" value="302.44000244140625"/>
+																	<Node id="16" score="false" recordCount="33">
+																		<SimplePredicate field="double(float(days_since_device_update))" operator="lessOrEqual" value="9.526430606842041"/>
+																		<ScoreDistribution value="false" recordCount="33"/>
+																		<ScoreDistribution value="true" recordCount="0"/>
+																	</Node>
+																	<Node id="17">
+																		<SimplePredicate field="double(float(days_since_device_update))" operator="greaterThan" value="9.526430606842041"/>
+																		<Node id="18" score="false" recordCount="640">
+																			<SimplePredicate field="double(float(max_failed_logins))" operator="lessOrEqual" value="0.2717660665512085"/>
+																			<ScoreDistribution value="false" recordCount="640"/>
+																			<ScoreDistribution value="true" recordCount="0"/>
+																		</Node>
+																		<Node id="19">
+																			<SimplePredicate field="double(float(max_failed_logins))" operator="greaterThan" value="0.2717660665512085"/>
+																			<Node id="20">
+																				<SimplePredicate field="double(float(past_pair_money_transferred))" operator="lessOrEqual" value="83.01000213623047"/>
+																				<Node id="21" score="true" recordCount="2">
+																					<SimplePredicate field="double(float(money_out_48h))" operator="lessOrEqual" value="308.6000061035156"/>
+																					<ScoreDistribution value="false" recordCount="0"/>
+																					<ScoreDistribution value="true" recordCount="2"/>
+																				</Node>
+																				<Node id="22">
+																					<SimplePredicate field="double(float(money_out_48h))" operator="greaterThan" value="308.6000061035156"/>
+																					<Node id="23" score="false" recordCount="35">
+																						<SimplePredicate field="double(float(name_similarity))" operator="lessOrEqual" value="0.24621212482452393"/>
+																						<ScoreDistribution value="false" recordCount="35"/>
+																						<ScoreDistribution value="true" recordCount="0"/>
+																					</Node>
+																					<Node id="24">
+																						<SimplePredicate field="double(float(name_similarity))" operator="greaterThan" value="0.24621212482452393"/>
+																						<Node id="25">
+																							<SimplePredicate field="double(float(amount))" operator="lessOrEqual" value="666.2650146484375"/>
+																							<Node id="26">
+																								<SimplePredicate field="double(float(amount))" operator="lessOrEqual" value="371.5350036621094"/>
+																								<Node id="27" score="true" recordCount="3">
+																									<SimplePredicate field="double(float(max_failed_logins))" operator="lessOrEqual" value="0.7717660665512085"/>
+																									<ScoreDistribution value="false" recordCount="0"/>
+																									<ScoreDistribution value="true" recordCount="3"/>
+																								</Node>
+																								<Node id="28" score="false" recordCount="25">
+																									<SimplePredicate field="double(float(max_failed_logins))" operator="greaterThan" value="0.7717660665512085"/>
+																									<ScoreDistribution value="false" recordCount="25"/>
+																									<ScoreDistribution value="true" recordCount="0"/>
+																								</Node>
+																							</Node>
+																							<Node id="29" score="false" recordCount="79">
+																								<SimplePredicate field="double(float(amount))" operator="greaterThan" value="371.5350036621094"/>
+																								<ScoreDistribution value="false" recordCount="79"/>
+																								<ScoreDistribution value="true" recordCount="0"/>
+																							</Node>
+																						</Node>
+																						<Node id="30">
+																							<SimplePredicate field="double(float(amount))" operator="greaterThan" value="666.2650146484375"/>
+																							<Node id="31">
+																								<SimplePredicate field="double(float(amount))" operator="lessOrEqual" value="976.010009765625"/>
+																								<Node id="32" score="true" recordCount="5">
+																									<SimplePredicate field="double(float(max_failed_logins))" operator="lessOrEqual" value="0.7717660665512085"/>
+																									<ScoreDistribution value="false" recordCount="0"/>
+																									<ScoreDistribution value="true" recordCount="5"/>
+																								</Node>
+																								<Node id="33" score="false" recordCount="6">
+																									<SimplePredicate field="double(float(max_failed_logins))" operator="greaterThan" value="0.7717660665512085"/>
+																									<ScoreDistribution value="false" recordCount="6"/>
+																									<ScoreDistribution value="true" recordCount="0"/>
+																								</Node>
+																							</Node>
+																							<Node id="34" score="false" recordCount="29">
+																								<SimplePredicate field="double(float(amount))" operator="greaterThan" value="976.010009765625"/>
+																								<ScoreDistribution value="false" recordCount="29"/>
+																								<ScoreDistribution value="true" recordCount="0"/>
+																							</Node>
+																						</Node>
+																					</Node>
+																				</Node>
+																			</Node>
+																			<Node id="35" score="false" recordCount="6">
+																				<SimplePredicate field="double(float(past_pair_money_transferred))" operator="greaterThan" value="83.01000213623047"/>
+																				<ScoreDistribution value="false" recordCount="6"/>
+																				<ScoreDistribution value="true" recordCount="0"/>
+																			</Node>
+																		</Node>
+																	</Node>
+																</Node>
+															</Node>
+														</Node>
+														<Node id="36">
+															<SimplePredicate field="double(float(name_similarity))" operator="greaterThan" value="0.3827838897705078"/>
+															<Node id="37">
+																<SimplePredicate field="double(float(past_pair_money_transferred))" operator="lessOrEqual" value="183.01499938964844"/>
+																<Node id="38">
+																	<SimplePredicate field="double(float(amount))" operator="lessOrEqual" value="97.61999893188477"/>
+																	<Node id="39" score="false" recordCount="2">
+																		<SimplePredicate field="double(float(name_similarity))" operator="lessOrEqual" value="0.4291187822818756"/>
+																		<ScoreDistribution value="false" recordCount="2"/>
+																		<ScoreDistribution value="true" recordCount="0"/>
+																	</Node>
+																	<Node id="40" score="true" recordCount="1">
+																		<SimplePredicate field="double(float(name_similarity))" operator="greaterThan" value="0.4291187822818756"/>
+																		<ScoreDistribution value="false" recordCount="0"/>
+																		<ScoreDistribution value="true" recordCount="1"/>
+																	</Node>
+																</Node>
+																<Node id="41">
+																	<SimplePredicate field="double(float(amount))" operator="greaterThan" value="97.61999893188477"/>
+																	<Node id="42" score="false" recordCount="86">
+																		<SimplePredicate field="double(float(amount))" operator="lessOrEqual" value="270.5249938964844"/>
+																		<ScoreDistribution value="false" recordCount="86"/>
+																		<ScoreDistribution value="true" recordCount="0"/>
+																	</Node>
+																	<Node id="43">
+																		<SimplePredicate field="double(float(amount))" operator="greaterThan" value="270.5249938964844"/>
+																		<Node id="44" score="false" recordCount="122">
+																			<SimplePredicate field="double(float(max_failed_logins))" operator="lessOrEqual" value="0.2717660665512085"/>
+																			<ScoreDistribution value="false" recordCount="122"/>
+																			<ScoreDistribution value="true" recordCount="0"/>
+																		</Node>
+																		<Node id="45">
+																			<SimplePredicate field="double(float(max_failed_logins))" operator="greaterThan" value="0.2717660665512085"/>
+																			<Node id="46">
+																				<SimplePredicate field="double(float(name_similarity))" operator="lessOrEqual" value="0.4257246255874634"/>
+																				<Node id="47" score="true" recordCount="3">
+																					<SimplePredicate field="double(float(money_out_48h))" operator="lessOrEqual" value="340.43499755859375"/>
+																					<ScoreDistribution value="false" recordCount="0"/>
+																					<ScoreDistribution value="true" recordCount="3"/>
+																				</Node>
+																				<Node id="48">
+																					<SimplePredicate field="double(float(money_out_48h))" operator="greaterThan" value="340.43499755859375"/>
+																					<Node id="49" score="true" recordCount="2">
+																						<SimplePredicate field="double(float(max_failed_logins))" operator="lessOrEqual" value="0.7717660665512085"/>
+																						<ScoreDistribution value="false" recordCount="0"/>
+																						<ScoreDistribution value="true" recordCount="2"/>
+																					</Node>
+																					<Node id="50" score="false" recordCount="15">
+																						<SimplePredicate field="double(float(max_failed_logins))" operator="greaterThan" value="0.7717660665512085"/>
+																						<ScoreDistribution value="false" recordCount="15"/>
+																						<ScoreDistribution value="true" recordCount="0"/>
+																					</Node>
+																				</Node>
+																			</Node>
+																			<Node id="51">
+																				<SimplePredicate field="double(float(name_similarity))" operator="greaterThan" value="0.4257246255874634"/>
+																				<Node id="52">
+																					<SimplePredicate field="double(float(amount))" operator="lessOrEqual" value="490.5350036621094"/>
+																					<Node id="53" score="false" recordCount="6">
+																						<SimplePredicate field="double(float(amount))" operator="lessOrEqual" value="443.4700012207031"/>
+																						<ScoreDistribution value="false" recordCount="6"/>
+																						<ScoreDistribution value="true" recordCount="0"/>
+																					</Node>
+																					<Node id="54" score="true" recordCount="1">
+																						<SimplePredicate field="double(float(amount))" operator="greaterThan" value="443.4700012207031"/>
+																						<ScoreDistribution value="false" recordCount="0"/>
+																						<ScoreDistribution value="true" recordCount="1"/>
+																					</Node>
+																				</Node>
+																				<Node id="55" score="false" recordCount="10">
+																					<SimplePredicate field="double(float(amount))" operator="greaterThan" value="490.5350036621094"/>
+																					<ScoreDistribution value="false" recordCount="10"/>
+																					<ScoreDistribution value="true" recordCount="0"/>
+																				</Node>
+																			</Node>
+																		</Node>
+																	</Node>
+																</Node>
+															</Node>
+															<Node id="56" score="false" recordCount="3">
+																<SimplePredicate field="double(float(past_pair_money_transferred))" operator="greaterThan" value="183.01499938964844"/>
+																<ScoreDistribution value="false" recordCount="3"/>
+																<ScoreDistribution value="true" recordCount="0"/>
+															</Node>
+														</Node>
+													</Node>
+													<Node id="57">
+														<SimplePredicate field="double(float(amount))" operator="greaterThan" value="3982.030029296875"/>
+														<Node id="58" score="true" recordCount="1">
+															<SimplePredicate field="double(float(name_similarity))" operator="lessOrEqual" value="0.186956524848938"/>
+															<ScoreDistribution value="false" recordCount="0"/>
+															<ScoreDistribution value="true" recordCount="1"/>
+														</Node>
+														<Node id="59" score="false" recordCount="5">
+															<SimplePredicate field="double(float(name_similarity))" operator="greaterThan" value="0.186956524848938"/>
+															<ScoreDistribution value="false" recordCount="5"/>
+															<ScoreDistribution value="true" recordCount="0"/>
+														</Node>
+													</Node>
+												</Node>
+												<Node id="60" score="false" recordCount="104">
+													<SimplePredicate field="double(float(days_since_device_update))" operator="greaterThan" value="9.907042026519775"/>
+													<ScoreDistribution value="false" recordCount="104"/>
+													<ScoreDistribution value="true" recordCount="0"/>
+												</Node>
+											</Node>
+											<Node id="61">
+												<SimplePredicate field="double(float(unique_senders_to_beneficiary))" operator="greaterThan" value="1.5"/>
+												<Node id="62">
+													<SimplePredicate field="double(float(max_failed_logins))" operator="lessOrEqual" value="0.2717660665512085"/>
+													<Node id="63" score="false" recordCount="577">
+														<SimplePredicate field="double(float(money_out_48h))" operator="lessOrEqual" value="1996.0349731445312"/>
+														<ScoreDistribution value="false" recordCount="577"/>
+														<ScoreDistribution value="true" recordCount="0"/>
+													</Node>
+													<Node id="64">
+														<SimplePredicate field="double(float(money_out_48h))" operator="greaterThan" value="1996.0349731445312"/>
+														<Node id="65" score="true" recordCount="2">
+															<SimplePredicate field="double(float(money_out_48h))" operator="lessOrEqual" value="2090.0999755859375"/>
+															<ScoreDistribution value="false" recordCount="0"/>
+															<ScoreDistribution value="true" recordCount="2"/>
+														</Node>
+														<Node id="66" score="false" recordCount="16">
+															<SimplePredicate field="double(float(money_out_48h))" operator="greaterThan" value="2090.0999755859375"/>
+															<ScoreDistribution value="false" recordCount="16"/>
+															<ScoreDistribution value="true" recordCount="0"/>
+														</Node>
+													</Node>
+												</Node>
+												<Node id="67">
+													<SimplePredicate field="double(float(max_failed_logins))" operator="greaterThan" value="0.2717660665512085"/>
+													<Node id="68" score="true" recordCount="20">
+														<SimplePredicate field="double(float(max_failed_logins))" operator="lessOrEqual" value="0.7717660665512085"/>
+														<ScoreDistribution value="false" recordCount="0"/>
+														<ScoreDistribution value="true" recordCount="20"/>
+													</Node>
+													<Node id="69" score="false" recordCount="127">
+														<SimplePredicate field="double(float(max_failed_logins))" operator="greaterThan" value="0.7717660665512085"/>
+														<ScoreDistribution value="false" recordCount="127"/>
+														<ScoreDistribution value="true" recordCount="0"/>
+													</Node>
+												</Node>
+											</Node>
+										</Node>
+									</Node>
+									<Node id="70" score="true" recordCount="48">
+										<SimplePredicate field="double(float(amount))" operator="greaterThan" value="5343.719970703125"/>
+										<ScoreDistribution value="false" recordCount="0"/>
+										<ScoreDistribution value="true" recordCount="48"/>
+									</Node>
+								</Node>
+								<Node id="71">
+									<SimplePredicate field="double(float(unique_senders_to_beneficiary))" operator="greaterThan" value="2.5"/>
+									<Node id="72">
+										<SimplePredicate field="double(float(max_failed_logins))" operator="lessOrEqual" value="0.7717660665512085"/>
+										<Node id="73">
+											<SimplePredicate field="double(float(max_failed_logins))" operator="lessOrEqual" value="0.2717660665512085"/>
+											<Node id="74" score="false" recordCount="215">
+												<SimplePredicate field="double(float(amount))" operator="lessOrEqual" value="3289.02001953125"/>
+												<ScoreDistribution value="false" recordCount="215"/>
+												<ScoreDistribution value="true" recordCount="0"/>
+											</Node>
+											<Node id="75" score="true" recordCount="69">
+												<SimplePredicate field="double(float(amount))" operator="greaterThan" value="3289.02001953125"/>
+												<ScoreDistribution value="false" recordCount="0"/>
+												<ScoreDistribution value="true" recordCount="69"/>
+											</Node>
+										</Node>
+										<Node id="76" score="true" recordCount="13">
+											<SimplePredicate field="double(float(max_failed_logins))" operator="greaterThan" value="0.2717660665512085"/>
+											<ScoreDistribution value="false" recordCount="0"/>
+											<ScoreDistribution value="true" recordCount="13"/>
+										</Node>
+									</Node>
+									<Node id="77" score="false" recordCount="36">
+										<SimplePredicate field="double(float(max_failed_logins))" operator="greaterThan" value="0.7717660665512085"/>
+										<ScoreDistribution value="false" recordCount="36"/>
+										<ScoreDistribution value="true" recordCount="0"/>
+									</Node>
+								</Node>
+							</Node>
+						</Node>
+						<Node id="78">
+							<SimplePredicate field="double(float(name_similarity))" operator="greaterThan" value="0.464102566242218"/>
+							<Node id="79">
+								<SimplePredicate field="double(float(amount))" operator="lessOrEqual" value="9118.534912109375"/>
+								<Node id="80">
+									<SimplePredicate field="double(float(name_similarity))" operator="lessOrEqual" value="0.5080645084381104"/>
+									<Node id="81" score="true" recordCount="1">
+										<SimplePredicate field="double(float(days_since_device_update))" operator="lessOrEqual" value="4.872174320102204"/>
+										<ScoreDistribution value="false" recordCount="0"/>
+										<ScoreDistribution value="true" recordCount="1"/>
+									</Node>
+									<Node id="82" score="false" recordCount="53">
+										<SimplePredicate field="double(float(days_since_device_update))" operator="greaterThan" value="4.872174320102204"/>
+										<ScoreDistribution value="false" recordCount="53"/>
+										<ScoreDistribution value="true" recordCount="0"/>
+									</Node>
+								</Node>
+								<Node id="83" score="false" recordCount="3192">
+									<SimplePredicate field="double(float(name_similarity))" operator="greaterThan" value="0.5080645084381104"/>
+									<ScoreDistribution value="false" recordCount="3192"/>
+									<ScoreDistribution value="true" recordCount="0"/>
+								</Node>
+							</Node>
+							<Node id="84" score="true" recordCount="2">
+								<SimplePredicate field="double(float(amount))" operator="greaterThan" value="9118.534912109375"/>
+								<ScoreDistribution value="false" recordCount="0"/>
+								<ScoreDistribution value="true" recordCount="2"/>
+							</Node>
+						</Node>
+					</Node>
+				</TreeModel>
+			</Segment>
+			<Segment id="8">
+				<True/>
+				<TreeModel functionName="classification" splitCharacteristic="binarySplit">
+					<MiningSchema>
+						<MiningField name="double(float(days_since_device_update))"/>
+						<MiningField name="double(float(money_out_48h))"/>
+						<MiningField name="double(float(past_pair_money_transferred))"/>
+						<MiningField name="double(float(unique_senders_to_beneficiary))"/>
+						<MiningField name="double(float(max_failed_logins))"/>
+						<MiningField name="double(float(name_similarity))"/>
+						<MiningField name="double(float(amount))"/>
+					</MiningSchema>
+					<Node id="0">
+						<True/>
+						<Node id="1">
+							<SimplePredicate field="double(float(money_out_48h))" operator="lessOrEqual" value="5965.7451171875"/>
+							<Node id="2">
+								<SimplePredicate field="double(float(unique_senders_to_beneficiary))" operator="lessOrEqual" value="2.5"/>
+								<Node id="3">
+									<SimplePredicate field="double(float(max_failed_logins))" operator="lessOrEqual" value="1.5"/>
+									<Node id="4">
+										<SimplePredicate field="double(float(max_failed_logins))" operator="lessOrEqual" value="0.2717660665512085"/>
+										<Node id="5" score="true" recordCount="35">
+											<SimplePredicate field="double(float(days_since_device_update))" operator="lessOrEqual" value="0.007102870149537921"/>
+											<ScoreDistribution value="false" recordCount="0"/>
+											<ScoreDistribution value="true" recordCount="35"/>
+										</Node>
+										<Node id="6">
+											<SimplePredicate field="double(float(days_since_device_update))" operator="greaterThan" value="0.007102870149537921"/>
+											<Node id="7">
+												<SimplePredicate field="double(float(name_similarity))" operator="lessOrEqual" value="0.17519181966781616"/>
+												<Node id="8">
+													<SimplePredicate field="double(float(unique_senders_to_beneficiary))" operator="lessOrEqual" value="1.5"/>
+													<Node id="9">
+														<SimplePredicate field="double(float(past_pair_money_transferred))" operator="lessOrEqual" value="55.75"/>
+														<Node id="10" score="false" recordCount="7">
+															<SimplePredicate field="double(float(days_since_device_update))" operator="lessOrEqual" value="9.42019510269165"/>
+															<ScoreDistribution value="false" recordCount="7"/>
+															<ScoreDistribution value="true" recordCount="0"/>
+														</Node>
+														<Node id="11">
+															<SimplePredicate field="double(float(days_since_device_update))" operator="greaterThan" value="9.42019510269165"/>
+															<Node id="12" score="false" recordCount="198">
+																<SimplePredicate field="double(float(amount))" operator="lessOrEqual" value="3535.1650390625"/>
+																<ScoreDistribution value="false" recordCount="198"/>
+																<ScoreDistribution value="true" recordCount="0"/>
+															</Node>
+															<Node id="13" score="true" recordCount="2">
+																<SimplePredicate field="double(float(amount))" operator="greaterThan" value="3535.1650390625"/>
+																<ScoreDistribution value="false" recordCount="0"/>
+																<ScoreDistribution value="true" recordCount="2"/>
+															</Node>
+														</Node>
+													</Node>
+													<Node id="14" score="false" recordCount="12">
+														<SimplePredicate field="double(float(past_pair_money_transferred))" operator="greaterThan" value="55.75"/>
+														<ScoreDistribution value="false" recordCount="12"/>
+														<ScoreDistribution value="true" recordCount="0"/>
+													</Node>
+												</Node>
+												<Node id="15" score="false" recordCount="72">
+													<SimplePredicate field="double(float(unique_senders_to_beneficiary))" operator="greaterThan" value="1.5"/>
+													<ScoreDistribution value="false" recordCount="72"/>
+													<ScoreDistribution value="true" recordCount="0"/>
+												</Node>
+											</Node>
+											<Node id="16">
+												<SimplePredicate field="double(float(name_similarity))" operator="greaterThan" value="0.17519181966781616"/>
+												<Node id="17" score="false" recordCount="4080">
+													<SimplePredicate field="double(float(amount))" operator="lessOrEqual" value="1997.7249755859375"/>
+													<ScoreDistribution value="false" recordCount="4080"/>
+													<ScoreDistribution value="true" recordCount="0"/>
+												</Node>
+												<Node id="18">
+													<SimplePredicate field="double(float(amount))" operator="greaterThan" value="1997.7249755859375"/>
+													<Node id="19" score="true" recordCount="1">
+														<SimplePredicate field="double(float(amount))" operator="lessOrEqual" value="2001.0900268554688"/>
+														<ScoreDistribution value="false" recordCount="0"/>
+														<ScoreDistribution value="true" recordCount="1"/>
+													</Node>
+													<Node id="20" score="false" recordCount="755">
+														<SimplePredicate field="double(float(amount))" operator="greaterThan" value="2001.0900268554688"/>
+														<ScoreDistribution value="false" recordCount="755"/>
+														<ScoreDistribution value="true" recordCount="0"/>
+													</Node>
+												</Node>
+											</Node>
+										</Node>
+									</Node>
+									<Node id="21">
+										<SimplePredicate field="double(float(max_failed_logins))" operator="greaterThan" value="0.2717660665512085"/>
+										<Node id="22">
+											<SimplePredicate field="double(float(money_out_48h))" operator="lessOrEqual" value="1171.864990234375"/>
+											<Node id="23" score="true" recordCount="28">
+												<SimplePredicate field="double(float(max_failed_logins))" operator="lessOrEqual" value="0.7717660665512085"/>
+												<ScoreDistribution value="false" recordCount="0"/>
+												<ScoreDistribution value="true" recordCount="28"/>
+											</Node>
+											<Node id="24">
+												<SimplePredicate field="double(float(max_failed_logins))" operator="greaterThan" value="0.7717660665512085"/>
+												<Node id="25">
+													<SimplePredicate field="double(float(name_similarity))" operator="lessOrEqual" value="0.11964285746216774"/>
+													<Node id="26" score="false" recordCount="10">
+														<SimplePredicate field="double(float(name_similarity))" operator="lessOrEqual" value="0.10977443680167198"/>
+														<ScoreDistribution value="false" recordCount="10"/>
+														<ScoreDistribution value="true" recordCount="0"/>
+													</Node>
+													<Node id="27" score="true" recordCount="2">
+														<SimplePredicate field="double(float(name_similarity))" operator="greaterThan" value="0.10977443680167198"/>
+														<ScoreDistribution value="false" recordCount="0"/>
+														<ScoreDistribution value="true" recordCount="2"/>
+													</Node>
+												</Node>
+												<Node id="28">
+													<SimplePredicate field="double(float(name_similarity))" operator="greaterThan" value="0.11964285746216774"/>
+													<Node id="29">
+														<SimplePredicate field="double(float(name_similarity))" operator="lessOrEqual" value="0.32795698940753937"/>
+														<Node id="30">
+															<SimplePredicate field="double(float(name_similarity))" operator="lessOrEqual" value="0.23538461327552795"/>
+															<Node id="31" score="false" recordCount="83">
+																<SimplePredicate field="double(float(amount))" operator="lessOrEqual" value="367.7149963378906"/>
+																<ScoreDistribution value="false" recordCount="83"/>
+																<ScoreDistribution value="true" recordCount="0"/>
+															</Node>
+															<Node id="32">
+																<SimplePredicate field="double(float(amount))" operator="greaterThan" value="367.7149963378906"/>
+																<Node id="33" score="false" recordCount="52">
+																	<SimplePredicate field="double(float(name_similarity))" operator="lessOrEqual" value="0.22967033088207245"/>
+																	<ScoreDistribution value="false" recordCount="52"/>
+																	<ScoreDistribution value="true" recordCount="0"/>
+																</Node>
+																<Node id="34">
+																	<SimplePredicate field="double(float(name_similarity))" operator="greaterThan" value="0.22967033088207245"/>
+																	<Node id="35" score="true" recordCount="1">
+																		<SimplePredicate field="double(float(days_since_device_update))" operator="lessOrEqual" value="4.872142184685799"/>
+																		<ScoreDistribution value="false" recordCount="0"/>
+																		<ScoreDistribution value="true" recordCount="1"/>
+																	</Node>
+																	<Node id="36" score="false" recordCount="14">
+																		<SimplePredicate field="double(float(days_since_device_update))" operator="greaterThan" value="4.872142184685799"/>
+																		<ScoreDistribution value="false" recordCount="14"/>
+																		<ScoreDistribution value="true" recordCount="0"/>
+																	</Node>
+																</Node>
+															</Node>
+														</Node>
+														<Node id="37" score="false" recordCount="217">
+															<SimplePredicate field="double(float(name_similarity))" operator="greaterThan" value="0.23538461327552795"/>
+															<ScoreDistribution value="false" recordCount="217"/>
+															<ScoreDistribution value="true" recordCount="0"/>
+														</Node>
+													</Node>
+													<Node id="38">
+														<SimplePredicate field="double(float(name_similarity))" operator="greaterThan" value="0.32795698940753937"/>
+														<Node id="39">
+															<SimplePredicate field="double(float(amount))" operator="lessOrEqual" value="1159.8800048828125"/>
+															<Node id="40">
+																<SimplePredicate field="double(float(amount))" operator="lessOrEqual" value="81.51000213623047"/>
+																<Node id="41" score="false" recordCount="3">
+																	<SimplePredicate field="double(float(money_out_48h))" operator="lessOrEqual" value="63.72500228881836"/>
+																	<ScoreDistribution value="false" recordCount="3"/>
+																	<ScoreDistribution value="true" recordCount="0"/>
+																</Node>
+																<Node id="42" score="true" recordCount="2">
+																	<SimplePredicate field="double(float(money_out_48h))" operator="greaterThan" value="63.72500228881836"/>
+																	<ScoreDistribution value="false" recordCount="0"/>
+																	<ScoreDistribution value="true" recordCount="2"/>
+																</Node>
+															</Node>
+															<Node id="43">
+																<SimplePredicate field="double(float(amount))" operator="greaterThan" value="81.51000213623047"/>
+																<Node id="44" score="true" recordCount="6">
+																	<SimplePredicate field="double(float(days_since_device_update))" operator="lessOrEqual" value="1.15142344776541"/>
+																	<ScoreDistribution value="false" recordCount="0"/>
+																	<ScoreDistribution value="true" recordCount="6"/>
+																</Node>
+																<Node id="45" score="false" recordCount="299">
+																	<SimplePredicate field="double(float(days_since_device_update))" operator="greaterThan" value="1.15142344776541"/>
+																	<ScoreDistribution value="false" recordCount="299"/>
+																	<ScoreDistribution value="true" recordCount="0"/>
+																</Node>
+															</Node>
+														</Node>
+														<Node id="46">
+															<SimplePredicate field="double(float(amount))" operator="greaterThan" value="1159.8800048828125"/>
+															<Node id="47" score="true" recordCount="3">
+																<SimplePredicate field="double(float(amount))" operator="lessOrEqual" value="1162.7849731445312"/>
+																<ScoreDistribution value="false" recordCount="0"/>
+																<ScoreDistribution value="true" recordCount="3"/>
+															</Node>
+															<Node id="48" score="false" recordCount="6">
+																<SimplePredicate field="double(float(amount))" operator="greaterThan" value="1162.7849731445312"/>
+																<ScoreDistribution value="false" recordCount="6"/>
+																<ScoreDistribution value="true" recordCount="0"/>
+															</Node>
+														</Node>
+													</Node>
+												</Node>
+											</Node>
+										</Node>
+										<Node id="49">
+											<SimplePredicate field="double(float(money_out_48h))" operator="greaterThan" value="1171.864990234375"/>
+											<Node id="50" score="true" recordCount="1">
+												<SimplePredicate field="double(float(max_failed_logins))" operator="lessOrEqual" value="0.7717660665512085"/>
+												<ScoreDistribution value="false" recordCount="0"/>
+												<ScoreDistribution value="true" recordCount="1"/>
+											</Node>
+											<Node id="51" score="false" recordCount="491">
+												<SimplePredicate field="double(float(max_failed_logins))" operator="greaterThan" value="0.7717660665512085"/>
+												<ScoreDistribution value="false" recordCount="491"/>
+												<ScoreDistribution value="true" recordCount="0"/>
+											</Node>
+										</Node>
+									</Node>
+								</Node>
+								<Node id="52">
+									<SimplePredicate field="double(float(max_failed_logins))" operator="greaterThan" value="1.5"/>
+									<Node id="53" score="true" recordCount="36">
+										<SimplePredicate field="double(float(name_similarity))" operator="lessOrEqual" value="0.2807881832122803"/>
+										<ScoreDistribution value="false" recordCount="0"/>
+										<ScoreDistribution value="true" recordCount="36"/>
+									</Node>
+									<Node id="54">
+										<SimplePredicate field="double(float(name_similarity))" operator="greaterThan" value="0.2807881832122803"/>
+										<Node id="55" score="true" recordCount="28">
+											<SimplePredicate field="double(float(amount))" operator="lessOrEqual" value="713.4599914550781"/>
+											<ScoreDistribution value="false" recordCount="0"/>
+											<ScoreDistribution value="true" recordCount="28"/>
+										</Node>
+										<Node id="56">
+											<SimplePredicate field="double(float(amount))" operator="greaterThan" value="713.4599914550781"/>
+											<Node id="57">
+												<SimplePredicate field="double(float(unique_senders_to_beneficiary))" operator="lessOrEqual" value="1.5"/>
+												<Node id="58" score="false" recordCount="1">
+													<SimplePredicate field="double(float(amount))" operator="lessOrEqual" value="1208.4599914550781"/>
+													<ScoreDistribution value="false" recordCount="1"/>
+													<ScoreDistribution value="true" recordCount="0"/>
+												</Node>
+												<Node id="59" score="true" recordCount="1">
+													<SimplePredicate field="double(float(amount))" operator="greaterThan" value="1208.4599914550781"/>
+													<ScoreDistribution value="false" recordCount="0"/>
+													<ScoreDistribution value="true" recordCount="1"/>
+												</Node>
+											</Node>
+											<Node id="60" score="true" recordCount="4">
+												<SimplePredicate field="double(float(unique_senders_to_beneficiary))" operator="greaterThan" value="1.5"/>
+												<ScoreDistribution value="false" recordCount="0"/>
+												<ScoreDistribution value="true" recordCount="4"/>
+											</Node>
+										</Node>
+									</Node>
+								</Node>
+							</Node>
+							<Node id="61">
+								<SimplePredicate field="double(float(unique_senders_to_beneficiary))" operator="greaterThan" value="2.5"/>
+								<Node id="62" score="true" recordCount="46">
+									<SimplePredicate field="double(float(days_since_device_update))" operator="lessOrEqual" value="0.7422707329969853"/>
+									<ScoreDistribution value="false" recordCount="0"/>
+									<ScoreDistribution value="true" recordCount="46"/>
+								</Node>
+								<Node id="63">
+									<SimplePredicate field="double(float(days_since_device_update))" operator="greaterThan" value="0.7422707329969853"/>
+									<Node id="64">
+										<SimplePredicate field="double(float(money_out_48h))" operator="lessOrEqual" value="3641.0"/>
+										<Node id="65">
+											<SimplePredicate field="double(float(unique_senders_to_beneficiary))" operator="lessOrEqual" value="3.5"/>
+											<Node id="66">
+												<SimplePredicate field="double(float(amount))" operator="lessOrEqual" value="340.11000061035156"/>
+												<Node id="67" score="false" recordCount="84">
+													<SimplePredicate field="double(float(max_failed_logins))" operator="lessOrEqual" value="0.2717660665512085"/>
+													<ScoreDistribution value="false" recordCount="84"/>
+													<ScoreDistribution value="true" recordCount="0"/>
+												</Node>
+												<Node id="68">
+													<SimplePredicate field="double(float(max_failed_logins))" operator="greaterThan" value="0.2717660665512085"/>
+													<Node id="69">
+														<SimplePredicate field="double(float(days_since_device_update))" operator="lessOrEqual" value="10.34827995300293"/>
+														<Node id="70" score="false" recordCount="16">
+															<SimplePredicate field="double(float(amount))" operator="lessOrEqual" value="232.00999450683594"/>
+															<ScoreDistribution value="false" recordCount="16"/>
+															<ScoreDistribution value="true" recordCount="0"/>
+														</Node>
+														<Node id="71">
+															<SimplePredicate field="double(float(amount))" operator="greaterThan" value="232.00999450683594"/>
+															<Node id="72" score="true" recordCount="2">
+																<SimplePredicate field="double(float(amount))" operator="lessOrEqual" value="246.0199966430664"/>
+																<ScoreDistribution value="false" recordCount="0"/>
+																<ScoreDistribution value="true" recordCount="2"/>
+															</Node>
+															<Node id="73" score="false" recordCount="6">
+																<SimplePredicate field="double(float(amount))" operator="greaterThan" value="246.0199966430664"/>
+																<ScoreDistribution value="false" recordCount="6"/>
+																<ScoreDistribution value="true" recordCount="0"/>
+															</Node>
+														</Node>
+													</Node>
+													<Node id="74" score="false" recordCount="1">
+														<SimplePredicate field="double(float(days_since_device_update))" operator="greaterThan" value="10.34827995300293"/>
+														<ScoreDistribution value="false" recordCount="1"/>
+														<ScoreDistribution value="true" recordCount="0"/>
+													</Node>
+												</Node>
+											</Node>
+											<Node id="75">
+												<SimplePredicate field="double(float(amount))" operator="greaterThan" value="340.11000061035156"/>
+												<Node id="76" score="false" recordCount="61">
+													<SimplePredicate field="double(float(max_failed_logins))" operator="lessOrEqual" value="0.2717660665512085"/>
+													<ScoreDistribution value="false" recordCount="61"/>
+													<ScoreDistribution value="true" recordCount="0"/>
+												</Node>
+												<Node id="77">
+													<SimplePredicate field="double(float(max_failed_logins))" operator="greaterThan" value="0.2717660665512085"/>
+													<Node id="78">
+														<SimplePredicate field="double(float(name_similarity))" operator="lessOrEqual" value="0.35098522901535034"/>
+														<Node id="79">
+															<SimplePredicate field="double(float(amount))" operator="lessOrEqual" value="512.0200042724609"/>
+															<Node id="80">
+																<SimplePredicate field="double(float(money_out_48h))" operator="lessOrEqual" value="407.77500915527344"/>
+																<Node id="81" score="false" recordCount="1">
+																	<SimplePredicate field="double(float(name_similarity))" operator="lessOrEqual" value="0.24080268293619156"/>
+																	<ScoreDistribution value="false" recordCount="1"/>
+																	<ScoreDistribution value="true" recordCount="0"/>
+																</Node>
+																<Node id="82" score="true" recordCount="1">
+																	<SimplePredicate field="double(float(name_similarity))" operator="greaterThan" value="0.24080268293619156"/>
+																	<ScoreDistribution value="false" recordCount="0"/>
+																	<ScoreDistribution value="true" recordCount="1"/>
+																</Node>
+															</Node>
+															<Node id="83" score="true" recordCount="4">
+																<SimplePredicate field="double(float(money_out_48h))" operator="greaterThan" value="407.77500915527344"/>
+																<ScoreDistribution value="false" recordCount="0"/>
+																<ScoreDistribution value="true" recordCount="4"/>
+															</Node>
+														</Node>
+														<Node id="84">
+															<SimplePredicate field="double(float(amount))" operator="greaterThan" value="512.0200042724609"/>
+															<Node id="85" score="true" recordCount="5">
+																<SimplePredicate field="double(float(max_failed_logins))" operator="lessOrEqual" value="0.7717660665512085"/>
+																<ScoreDistribution value="false" recordCount="0"/>
+																<ScoreDistribution value="true" recordCount="5"/>
+															</Node>
+															<Node id="86" score="false" recordCount="3">
+																<SimplePredicate field="double(float(max_failed_logins))" operator="greaterThan" value="0.7717660665512085"/>
+																<ScoreDistribution value="false" recordCount="3"/>
+																<ScoreDistribution value="true" recordCount="0"/>
+															</Node>
+														</Node>
+													</Node>
+													<Node id="87">
+														<SimplePredicate field="double(float(name_similarity))" operator="greaterThan" value="0.35098522901535034"/>
+														<Node id="88" score="false" recordCount="3">
+															<SimplePredicate field="double(float(name_similarity))" operator="lessOrEqual" value="0.36375661194324493"/>
+															<ScoreDistribution value="false" recordCount="3"/>
+															<ScoreDistribution value="true" recordCount="0"/>
+														</Node>
+														<Node id="89">
+															<SimplePredicate field="double(float(name_similarity))" operator="greaterThan" value="0.36375661194324493"/>
+															<Node id="90" score="true" recordCount="1">
+																<SimplePredicate field="double(float(max_failed_logins))" operator="lessOrEqual" value="0.7717660665512085"/>
+																<ScoreDistribution value="false" recordCount="0"/>
+																<ScoreDistribution value="true" recordCount="1"/>
+															</Node>
+															<Node id="91" score="false" recordCount="1">
+																<SimplePredicate field="double(float(max_failed_logins))" operator="greaterThan" value="0.7717660665512085"/>
+																<ScoreDistribution value="false" recordCount="1"/>
+																<ScoreDistribution value="true" recordCount="0"/>
+															</Node>
+														</Node>
+													</Node>
+												</Node>
+											</Node>
+										</Node>
+										<Node id="92" score="false" recordCount="94">
+											<SimplePredicate field="double(float(unique_senders_to_beneficiary))" operator="greaterThan" value="3.5"/>
+											<ScoreDistribution value="false" recordCount="94"/>
+											<ScoreDistribution value="true" recordCount="0"/>
+										</Node>
+									</Node>
+									<Node id="93" score="true" recordCount="2">
+										<SimplePredicate field="double(float(money_out_48h))" operator="greaterThan" value="3641.0"/>
+										<ScoreDistribution value="false" recordCount="0"/>
+										<ScoreDistribution value="true" recordCount="2"/>
+									</Node>
+								</Node>
+							</Node>
+						</Node>
+						<Node id="94">
+							<SimplePredicate field="double(float(money_out_48h))" operator="greaterThan" value="5965.7451171875"/>
+							<Node id="95" score="false" recordCount="2">
+								<SimplePredicate field="double(float(amount))" operator="lessOrEqual" value="3816.8900146484375"/>
+								<ScoreDistribution value="false" recordCount="2"/>
+								<ScoreDistribution value="true" recordCount="0"/>
+							</Node>
+							<Node id="96">
+								<SimplePredicate field="double(float(amount))" operator="greaterThan" value="3816.8900146484375"/>
+								<Node id="97">
+									<SimplePredicate field="double(float(amount))" operator="lessOrEqual" value="7618.534912109375"/>
+									<Node id="98" score="true" recordCount="13">
+										<SimplePredicate field="double(float(amount))" operator="lessOrEqual" value="7009.199951171875"/>
+										<ScoreDistribution value="false" recordCount="0"/>
+										<ScoreDistribution value="true" recordCount="13"/>
+									</Node>
+									<Node id="99" score="false" recordCount="3">
+										<SimplePredicate field="double(float(amount))" operator="greaterThan" value="7009.199951171875"/>
+										<ScoreDistribution value="false" recordCount="3"/>
+										<ScoreDistribution value="true" recordCount="0"/>
+									</Node>
+								</Node>
+								<Node id="100" score="true" recordCount="105">
+									<SimplePredicate field="double(float(amount))" operator="greaterThan" value="7618.534912109375"/>
+									<ScoreDistribution value="false" recordCount="0"/>
+									<ScoreDistribution value="true" recordCount="105"/>
+								</Node>
+							</Node>
+						</Node>
+					</Node>
+				</TreeModel>
+			</Segment>
+			<Segment id="9">
+				<True/>
+				<TreeModel functionName="classification" splitCharacteristic="binarySplit">
+					<MiningSchema>
+						<MiningField name="double(float(days_since_device_update))"/>
+						<MiningField name="double(float(money_out_48h))"/>
+						<MiningField name="double(float(past_pair_money_transferred))"/>
+						<MiningField name="double(float(unique_senders_to_beneficiary))"/>
+						<MiningField name="double(float(max_failed_logins))"/>
+						<MiningField name="double(float(name_similarity))"/>
+						<MiningField name="double(float(amount))"/>
+					</MiningSchema>
+					<Node id="0">
+						<True/>
+						<Node id="1">
+							<SimplePredicate field="double(float(money_out_48h))" operator="lessOrEqual" value="5965.7451171875"/>
+							<Node id="2">
+								<SimplePredicate field="double(float(max_failed_logins))" operator="lessOrEqual" value="1.5"/>
+								<Node id="3">
+									<SimplePredicate field="double(float(amount))" operator="lessOrEqual" value="72.38000106811523"/>
+									<Node id="4">
+										<SimplePredicate field="double(float(unique_senders_to_beneficiary))" operator="lessOrEqual" value="1.5"/>
+										<Node id="5" score="true" recordCount="2">
+											<SimplePredicate field="double(float(name_similarity))" operator="lessOrEqual" value="0.615384615957737"/>
+											<ScoreDistribution value="false" recordCount="0"/>
+											<ScoreDistribution value="true" recordCount="2"/>
+										</Node>
+										<Node id="6" score="false" recordCount="10">
+											<SimplePredicate field="double(float(name_similarity))" operator="greaterThan" value="0.615384615957737"/>
+											<ScoreDistribution value="false" recordCount="10"/>
+											<ScoreDistribution value="true" recordCount="0"/>
+										</Node>
+									</Node>
+									<Node id="7" score="true" recordCount="6">
+										<SimplePredicate field="double(float(unique_senders_to_beneficiary))" operator="greaterThan" value="1.5"/>
+										<ScoreDistribution value="false" recordCount="0"/>
+										<ScoreDistribution value="true" recordCount="6"/>
+									</Node>
+								</Node>
+								<Node id="8">
+									<SimplePredicate field="double(float(amount))" operator="greaterThan" value="72.38000106811523"/>
+									<Node id="9">
+										<SimplePredicate field="double(float(name_similarity))" operator="lessOrEqual" value="0.5527272820472717"/>
+										<Node id="10">
+											<SimplePredicate field="double(float(max_failed_logins))" operator="lessOrEqual" value="0.2717660665512085"/>
+											<Node id="11">
+												<SimplePredicate field="double(float(money_out_48h))" operator="lessOrEqual" value="3991.64501953125"/>
+												<Node id="12" score="true" recordCount="39">
+													<SimplePredicate field="double(float(days_since_device_update))" operator="lessOrEqual" value="0.007102870149537921"/>
+													<ScoreDistribution value="false" recordCount="0"/>
+													<ScoreDistribution value="true" recordCount="39"/>
+												</Node>
+												<Node id="13">
+													<SimplePredicate field="double(float(days_since_device_update))" operator="greaterThan" value="0.007102870149537921"/>
+													<Node id="14" score="false" recordCount="2541">
+														<SimplePredicate field="double(float(amount))" operator="lessOrEqual" value="1993.3350219726562"/>
+														<ScoreDistribution value="false" recordCount="2541"/>
+														<ScoreDistribution value="true" recordCount="0"/>
+													</Node>
+													<Node id="15">
+														<SimplePredicate field="double(float(amount))" operator="greaterThan" value="1993.3350219726562"/>
+														<Node id="16" score="true" recordCount="2">
+															<SimplePredicate field="double(float(amount))" operator="lessOrEqual" value="2005.89501953125"/>
+															<ScoreDistribution value="false" recordCount="0"/>
+															<ScoreDistribution value="true" recordCount="2"/>
+														</Node>
+														<Node id="17" score="false" recordCount="84">
+															<SimplePredicate field="double(float(amount))" operator="greaterThan" value="2005.89501953125"/>
+															<ScoreDistribution value="false" recordCount="84"/>
+															<ScoreDistribution value="true" recordCount="0"/>
+														</Node>
+													</Node>
+												</Node>
+											</Node>
+											<Node id="18">
+												<SimplePredicate field="double(float(money_out_48h))" operator="greaterThan" value="3991.64501953125"/>
+												<Node id="19">
+													<SimplePredicate field="double(float(amount))" operator="lessOrEqual" value="4843.719970703125"/>
+													<Node id="20" score="true" recordCount="1">
+														<SimplePredicate field="double(float(name_similarity))" operator="lessOrEqual" value="0.21739130467176437"/>
+														<ScoreDistribution value="false" recordCount="0"/>
+														<ScoreDistribution value="true" recordCount="1"/>
+													</Node>
+													<Node id="21" score="false" recordCount="1">
+														<SimplePredicate field="double(float(name_similarity))" operator="greaterThan" value="0.21739130467176437"/>
+														<ScoreDistribution value="false" recordCount="1"/>
+														<ScoreDistribution value="true" recordCount="0"/>
+													</Node>
+												</Node>
+												<Node id="22" score="true" recordCount="2">
+													<SimplePredicate field="double(float(amount))" operator="greaterThan" value="4843.719970703125"/>
+													<ScoreDistribution value="false" recordCount="0"/>
+													<ScoreDistribution value="true" recordCount="2"/>
+												</Node>
+											</Node>
+										</Node>
+										<Node id="23">
+											<SimplePredicate field="double(float(max_failed_logins))" operator="greaterThan" value="0.2717660665512085"/>
+											<Node id="24" score="true" recordCount="41">
+												<SimplePredicate field="double(float(max_failed_logins))" operator="lessOrEqual" value="0.7717660665512085"/>
+												<ScoreDistribution value="false" recordCount="0"/>
+												<ScoreDistribution value="true" recordCount="41"/>
+											</Node>
+											<Node id="25">
+												<SimplePredicate field="double(float(max_failed_logins))" operator="greaterThan" value="0.7717660665512085"/>
+												<Node id="26">
+													<SimplePredicate field="double(float(name_similarity))" operator="lessOrEqual" value="0.32795698940753937"/>
+													<Node id="27">
+														<SimplePredicate field="double(float(past_pair_money_transferred))" operator="lessOrEqual" value="46.86000061035156"/>
+														<Node id="28">
+															<SimplePredicate field="double(float(amount))" operator="lessOrEqual" value="1563.0750122070312"/>
+															<Node id="29" score="false" recordCount="246">
+																<SimplePredicate field="double(float(money_out_48h))" operator="lessOrEqual" value="367.4250030517578"/>
+																<ScoreDistribution value="false" recordCount="246"/>
+																<ScoreDistribution value="true" recordCount="0"/>
+															</Node>
+															<Node id="30">
+																<SimplePredicate field="double(float(money_out_48h))" operator="greaterThan" value="367.4250030517578"/>
+																<Node id="31" score="true" recordCount="3">
+																	<SimplePredicate field="double(float(days_since_device_update))" operator="lessOrEqual" value="0.23582144470128696"/>
+																	<ScoreDistribution value="false" recordCount="0"/>
+																	<ScoreDistribution value="true" recordCount="3"/>
+																</Node>
+																<Node id="32" score="false" recordCount="200">
+																	<SimplePredicate field="double(float(days_since_device_update))" operator="greaterThan" value="0.23582144470128696"/>
+																	<ScoreDistribution value="false" recordCount="200"/>
+																	<ScoreDistribution value="true" recordCount="0"/>
+																</Node>
+															</Node>
+														</Node>
+														<Node id="33">
+															<SimplePredicate field="double(float(amount))" operator="greaterThan" value="1563.0750122070312"/>
+															<Node id="34" score="false" recordCount="14">
+																<SimplePredicate field="double(float(unique_senders_to_beneficiary))" operator="lessOrEqual" value="3.0"/>
+																<ScoreDistribution value="false" recordCount="14"/>
+																<ScoreDistribution value="true" recordCount="0"/>
+															</Node>
+															<Node id="35" score="true" recordCount="1">
+																<SimplePredicate field="double(float(unique_senders_to_beneficiary))" operator="greaterThan" value="3.0"/>
+																<ScoreDistribution value="false" recordCount="0"/>
+																<ScoreDistribution value="true" recordCount="1"/>
+															</Node>
+														</Node>
+													</Node>
+													<Node id="36" score="false" recordCount="23">
+														<SimplePredicate field="double(float(past_pair_money_transferred))" operator="greaterThan" value="46.86000061035156"/>
+														<ScoreDistribution value="false" recordCount="23"/>
+														<ScoreDistribution value="true" recordCount="0"/>
+													</Node>
+												</Node>
+												<Node id="37">
+													<SimplePredicate field="double(float(name_similarity))" operator="greaterThan" value="0.32795698940753937"/>
+													<Node id="38">
+														<SimplePredicate field="double(float(unique_senders_to_beneficiary))" operator="lessOrEqual" value="2.5"/>
+														<Node id="39" score="true" recordCount="5">
+															<SimplePredicate field="double(float(days_since_device_update))" operator="lessOrEqual" value="1.15142344776541"/>
+															<ScoreDistribution value="false" recordCount="0"/>
+															<ScoreDistribution value="true" recordCount="5"/>
+														</Node>
+														<Node id="40" score="false" recordCount="165">
+															<SimplePredicate field="double(float(days_since_device_update))" operator="greaterThan" value="1.15142344776541"/>
+															<ScoreDistribution value="false" recordCount="165"/>
+															<ScoreDistribution value="true" recordCount="0"/>
+														</Node>
+													</Node>
+													<Node id="41">
+														<SimplePredicate field="double(float(unique_senders_to_beneficiary))" operator="greaterThan" value="2.5"/>
+														<Node id="42" score="true" recordCount="2">
+															<SimplePredicate field="double(float(name_similarity))" operator="lessOrEqual" value="0.3452381044626236"/>
+															<ScoreDistribution value="false" recordCount="0"/>
+															<ScoreDistribution value="true" recordCount="2"/>
+														</Node>
+														<Node id="43" score="false" recordCount="17">
+															<SimplePredicate field="double(float(name_similarity))" operator="greaterThan" value="0.3452381044626236"/>
+															<ScoreDistribution value="false" recordCount="17"/>
+															<ScoreDistribution value="true" recordCount="0"/>
+														</Node>
+													</Node>
+												</Node>
+											</Node>
+										</Node>
+									</Node>
+									<Node id="44" score="false" recordCount="3256">
+										<SimplePredicate field="double(float(name_similarity))" operator="greaterThan" value="0.5527272820472717"/>
+										<ScoreDistribution value="false" recordCount="3256"/>
+										<ScoreDistribution value="true" recordCount="0"/>
+									</Node>
+								</Node>
+							</Node>
+							<Node id="45">
+								<SimplePredicate field="double(float(max_failed_logins))" operator="greaterThan" value="1.5"/>
+								<Node id="46">
+									<SimplePredicate field="double(float(amount))" operator="lessOrEqual" value="1187.6400146484375"/>
+									<Node id="47" score="true" recordCount="89">
+										<SimplePredicate field="double(float(amount))" operator="lessOrEqual" value="718.72998046875"/>
+										<ScoreDistribution value="false" recordCount="0"/>
+										<ScoreDistribution value="true" recordCount="89"/>
+									</Node>
+									<Node id="48">
+										<SimplePredicate field="double(float(amount))" operator="greaterThan" value="718.72998046875"/>
+										<Node id="49" score="true" recordCount="19">
+											<SimplePredicate field="double(float(days_since_device_update))" operator="lessOrEqual" value="5.279485028469935"/>
+											<ScoreDistribution value="false" recordCount="0"/>
+											<ScoreDistribution value="true" recordCount="19"/>
+										</Node>
+										<Node id="50" score="false" recordCount="3">
+											<SimplePredicate field="double(float(days_since_device_update))" operator="greaterThan" value="5.279485028469935"/>
+											<ScoreDistribution value="false" recordCount="3"/>
+											<ScoreDistribution value="true" recordCount="0"/>
+										</Node>
+									</Node>
+								</Node>
+								<Node id="51">
+									<SimplePredicate field="double(float(amount))" operator="greaterThan" value="1187.6400146484375"/>
+									<Node id="52" score="true" recordCount="7">
+										<SimplePredicate field="double(float(days_since_device_update))" operator="lessOrEqual" value="3.9530226942151785"/>
+										<ScoreDistribution value="false" recordCount="0"/>
+										<ScoreDistribution value="true" recordCount="7"/>
+									</Node>
+									<Node id="53" score="false" recordCount="4">
+										<SimplePredicate field="double(float(days_since_device_update))" operator="greaterThan" value="3.9530226942151785"/>
+										<ScoreDistribution value="false" recordCount="4"/>
+										<ScoreDistribution value="true" recordCount="0"/>
+									</Node>
+								</Node>
+							</Node>
+						</Node>
+						<Node id="54">
+							<SimplePredicate field="double(float(money_out_48h))" operator="greaterThan" value="5965.7451171875"/>
+							<Node id="55" score="false" recordCount="3">
+								<SimplePredicate field="double(float(amount))" operator="lessOrEqual" value="3816.8900146484375"/>
+								<ScoreDistribution value="false" recordCount="3"/>
+								<ScoreDistribution value="true" recordCount="0"/>
+							</Node>
+							<Node id="56">
+								<SimplePredicate field="double(float(amount))" operator="greaterThan" value="3816.8900146484375"/>
+								<Node id="57" score="true" recordCount="117">
+									<SimplePredicate field="double(float(name_similarity))" operator="lessOrEqual" value="0.7666666805744171"/>
+									<ScoreDistribution value="false" recordCount="0"/>
+									<ScoreDistribution value="true" recordCount="117"/>
+								</Node>
+								<Node id="58" score="false" recordCount="1">
+									<SimplePredicate field="double(float(name_similarity))" operator="greaterThan" value="0.7666666805744171"/>
+									<ScoreDistribution value="false" recordCount="1"/>
+									<ScoreDistribution value="true" recordCount="0"/>
+								</Node>
+							</Node>
+						</Node>
+					</Node>
+				</TreeModel>
+			</Segment>
+			<Segment id="10">
+				<True/>
+				<TreeModel functionName="classification" splitCharacteristic="binarySplit">
+					<MiningSchema>
+						<MiningField name="double(float(days_since_device_update))"/>
+						<MiningField name="double(float(money_out_48h))"/>
+						<MiningField name="double(float(past_pair_money_transferred))"/>
+						<MiningField name="double(float(unique_senders_to_beneficiary))"/>
+						<MiningField name="double(float(max_failed_logins))"/>
+						<MiningField name="double(float(name_similarity))"/>
+						<MiningField name="double(float(amount))"/>
+					</MiningSchema>
+					<Node id="0">
+						<True/>
+						<Node id="1">
+							<SimplePredicate field="double(float(amount))" operator="lessOrEqual" value="5965.7451171875"/>
+							<Node id="2">
+								<SimplePredicate field="double(float(money_out_48h))" operator="lessOrEqual" value="72.38000106811523"/>
+								<Node id="3">
+									<SimplePredicate field="double(float(max_failed_logins))" operator="lessOrEqual" value="1.5"/>
+									<Node id="4" score="true" recordCount="9">
+										<SimplePredicate field="double(float(name_similarity))" operator="lessOrEqual" value="0.6923076957464218"/>
+										<ScoreDistribution value="false" recordCount="0"/>
+										<ScoreDistribution value="true" recordCount="9"/>
+									</Node>
+									<Node id="5" score="false" recordCount="12">
+										<SimplePredicate field="double(float(name_similarity))" operator="greaterThan" value="0.6923076957464218"/>
+										<ScoreDistribution value="false" recordCount="12"/>
+										<ScoreDistribution value="true" recordCount="0"/>
+									</Node>
+								</Node>
+								<Node id="6" score="true" recordCount="19">
+									<SimplePredicate field="double(float(max_failed_logins))" operator="greaterThan" value="1.5"/>
+									<ScoreDistribution value="false" recordCount="0"/>
+									<ScoreDistribution value="true" recordCount="19"/>
+								</Node>
+							</Node>
+							<Node id="7">
+								<SimplePredicate field="double(float(money_out_48h))" operator="greaterThan" value="72.38000106811523"/>
+								<Node id="8">
+									<SimplePredicate field="double(float(name_similarity))" operator="lessOrEqual" value="0.44802866876125336"/>
+									<Node id="9">
+										<SimplePredicate field="double(float(amount))" operator="lessOrEqual" value="3748.324951171875"/>
+										<Node id="10" score="true" recordCount="152">
+											<SimplePredicate field="double(float(days_since_device_update))" operator="lessOrEqual" value="0.006735682720318437"/>
+											<ScoreDistribution value="false" recordCount="0"/>
+											<ScoreDistribution value="true" recordCount="152"/>
+										</Node>
+										<Node id="11">
+											<SimplePredicate field="double(float(days_since_device_update))" operator="greaterThan" value="0.006735682720318437"/>
+											<Node id="12">
+												<SimplePredicate field="double(float(max_failed_logins))" operator="lessOrEqual" value="0.2717660665512085"/>
+												<Node id="13">
+													<SimplePredicate field="double(float(name_similarity))" operator="lessOrEqual" value="0.39444445073604584"/>
+													<Node id="14">
+														<SimplePredicate field="double(float(past_pair_money_transferred))" operator="lessOrEqual" value="46.69499969482422"/>
+														<Node id="15">
+															<SimplePredicate field="double(float(days_since_device_update))" operator="lessOrEqual" value="9.983293056488037"/>
+															<Node id="16" score="false" recordCount="69">
+																<SimplePredicate field="double(float(days_since_device_update))" operator="lessOrEqual" value="9.631589412689209"/>
+																<ScoreDistribution value="false" recordCount="69"/>
+																<ScoreDistribution value="true" recordCount="0"/>
+															</Node>
+															<Node id="17">
+																<SimplePredicate field="double(float(days_since_device_update))" operator="greaterThan" value="9.631589412689209"/>
+																<Node id="18" score="false" recordCount="2114">
+																	<SimplePredicate field="double(float(amount))" operator="lessOrEqual" value="1993.3350219726562"/>
+																	<ScoreDistribution value="false" recordCount="2114"/>
+																	<ScoreDistribution value="true" recordCount="0"/>
+																</Node>
+																<Node id="19">
+																	<SimplePredicate field="double(float(amount))" operator="greaterThan" value="1993.3350219726562"/>
+																	<Node id="20" score="false" recordCount="41">
+																		<SimplePredicate field="double(float(unique_senders_to_beneficiary))" operator="lessOrEqual" value="1.5"/>
+																		<ScoreDistribution value="false" recordCount="41"/>
+																		<ScoreDistribution value="true" recordCount="0"/>
+																	</Node>
+																	<Node id="21">
+																		<SimplePredicate field="double(float(unique_senders_to_beneficiary))" operator="greaterThan" value="1.5"/>
+																		<Node id="22" score="true" recordCount="1">
+																			<SimplePredicate field="double(float(amount))" operator="lessOrEqual" value="2090.0999755859375"/>
+																			<ScoreDistribution value="false" recordCount="0"/>
+																			<ScoreDistribution value="true" recordCount="1"/>
+																		</Node>
+																		<Node id="23" score="false" recordCount="14">
+																			<SimplePredicate field="double(float(amount))" operator="greaterThan" value="2090.0999755859375"/>
+																			<ScoreDistribution value="false" recordCount="14"/>
+																			<ScoreDistribution value="true" recordCount="0"/>
+																		</Node>
+																	</Node>
+																</Node>
+															</Node>
+														</Node>
+														<Node id="24" score="false" recordCount="94">
+															<SimplePredicate field="double(float(days_since_device_update))" operator="greaterThan" value="9.983293056488037"/>
+															<ScoreDistribution value="false" recordCount="94"/>
+															<ScoreDistribution value="true" recordCount="0"/>
+														</Node>
+													</Node>
+													<Node id="25" score="false" recordCount="95">
+														<SimplePredicate field="double(float(past_pair_money_transferred))" operator="greaterThan" value="46.69499969482422"/>
+														<ScoreDistribution value="false" recordCount="95"/>
+														<ScoreDistribution value="true" recordCount="0"/>
+													</Node>
+												</Node>
+												<Node id="26">
+													<SimplePredicate field="double(float(name_similarity))" operator="greaterThan" value="0.39444445073604584"/>
+													<Node id="27">
+														<SimplePredicate field="double(float(past_pair_money_transferred))" operator="lessOrEqual" value="50.78499984741211"/>
+														<Node id="28" score="false" recordCount="186">
+															<SimplePredicate field="double(float(money_out_48h))" operator="lessOrEqual" value="1945.5800170898438"/>
+															<ScoreDistribution value="false" recordCount="186"/>
+															<ScoreDistribution value="true" recordCount="0"/>
+														</Node>
+														<Node id="29">
+															<SimplePredicate field="double(float(money_out_48h))" operator="greaterThan" value="1945.5800170898438"/>
+															<Node id="30" score="true" recordCount="1">
+																<SimplePredicate field="double(float(money_out_48h))" operator="lessOrEqual" value="2027.4100341796875"/>
+																<ScoreDistribution value="false" recordCount="0"/>
+																<ScoreDistribution value="true" recordCount="1"/>
+															</Node>
+															<Node id="31" score="false" recordCount="9">
+																<SimplePredicate field="double(float(money_out_48h))" operator="greaterThan" value="2027.4100341796875"/>
+																<ScoreDistribution value="false" recordCount="9"/>
+																<ScoreDistribution value="true" recordCount="0"/>
+															</Node>
+														</Node>
+													</Node>
+													<Node id="32" score="false" recordCount="10">
+														<SimplePredicate field="double(float(past_pair_money_transferred))" operator="greaterThan" value="50.78499984741211"/>
+														<ScoreDistribution value="false" recordCount="10"/>
+														<ScoreDistribution value="true" recordCount="0"/>
+													</Node>
+												</Node>
+											</Node>
+											<Node id="33">
+												<SimplePredicate field="double(float(max_failed_logins))" operator="greaterThan" value="0.2717660665512085"/>
+												<Node id="34" score="true" recordCount="47">
+													<SimplePredicate field="double(float(max_failed_logins))" operator="lessOrEqual" value="0.7717660665512085"/>
+													<ScoreDistribution value="false" recordCount="0"/>
+													<ScoreDistribution value="true" recordCount="47"/>
+												</Node>
+												<Node id="35" score="false" recordCount="632">
+													<SimplePredicate field="double(float(max_failed_logins))" operator="greaterThan" value="0.7717660665512085"/>
+													<ScoreDistribution value="false" recordCount="632"/>
+													<ScoreDistribution value="true" recordCount="0"/>
+												</Node>
+											</Node>
+										</Node>
+									</Node>
+									<Node id="36">
+										<SimplePredicate field="double(float(amount))" operator="greaterThan" value="3748.324951171875"/>
+										<Node id="37" score="false" recordCount="4">
+											<SimplePredicate field="double(float(unique_senders_to_beneficiary))" operator="lessOrEqual" value="1.5"/>
+											<ScoreDistribution value="false" recordCount="4"/>
+											<ScoreDistribution value="true" recordCount="0"/>
+										</Node>
+										<Node id="38">
+											<SimplePredicate field="double(float(unique_senders_to_beneficiary))" operator="greaterThan" value="1.5"/>
+											<Node id="39">
+												<SimplePredicate field="double(float(unique_senders_to_beneficiary))" operator="lessOrEqual" value="2.5"/>
+												<Node id="40" score="true" recordCount="3">
+													<SimplePredicate field="double(float(days_since_device_update))" operator="lessOrEqual" value="4.872143949731253"/>
+													<ScoreDistribution value="false" recordCount="0"/>
+													<ScoreDistribution value="true" recordCount="3"/>
+												</Node>
+												<Node id="41" score="false" recordCount="2">
+													<SimplePredicate field="double(float(days_since_device_update))" operator="greaterThan" value="4.872143949731253"/>
+													<ScoreDistribution value="false" recordCount="2"/>
+													<ScoreDistribution value="true" recordCount="0"/>
+												</Node>
+											</Node>
+											<Node id="42" score="true" recordCount="8">
+												<SimplePredicate field="double(float(unique_senders_to_beneficiary))" operator="greaterThan" value="2.5"/>
+												<ScoreDistribution value="false" recordCount="0"/>
+												<ScoreDistribution value="true" recordCount="8"/>
+											</Node>
+										</Node>
+									</Node>
+								</Node>
+								<Node id="43" score="false" recordCount="3270">
+									<SimplePredicate field="double(float(name_similarity))" operator="greaterThan" value="0.44802866876125336"/>
+									<ScoreDistribution value="false" recordCount="3270"/>
+									<ScoreDistribution value="true" recordCount="0"/>
+								</Node>
+							</Node>
+						</Node>
+						<Node id="44" score="true" recordCount="112">
+							<SimplePredicate field="double(float(amount))" operator="greaterThan" value="5965.7451171875"/>
+							<ScoreDistribution value="false" recordCount="0"/>
+							<ScoreDistribution value="true" recordCount="112"/>
+						</Node>
+					</Node>
+				</TreeModel>
+			</Segment>
+		</Segmentation>
+		<ModelVerification recordCount="15">
+			<VerificationFields>
+				<VerificationField field="amount" column="data:amount"/>
+				<VerificationField field="name_similarity" column="data:name_similarity"/>
+				<VerificationField field="money_out_48h" column="data:money_out_48h"/>
+				<VerificationField field="past_pair_money_transferred" column="data:past_pair_money_transferred"/>
+				<VerificationField field="unique_senders_to_beneficiary" column="data:unique_senders_to_beneficiary"/>
+				<VerificationField field="max_failed_logins" column="data:max_failed_logins"/>
+				<VerificationField field="days_since_device_update" column="data:days_since_device_update"/>
+				<VerificationField field="probability(false)" column="data:probability_false" precision="1.0E-13" zeroThreshold="1.0E-13"/>
+				<VerificationField field="probability(true)" column="data:probability_true" precision="1.0E-13" zeroThreshold="1.0E-13"/>
+			</VerificationFields>
+			<InlineTable>
+				<row>
+					<data:amount>680.09</data:amount>
+					<data:name_similarity>0.25</data:name_similarity>
+					<data:money_out_48h>680.09</data:money_out_48h>
+					<data:past_pair_money_transferred>0.0</data:past_pair_money_transferred>
+					<data:unique_senders_to_beneficiary>1</data:unique_senders_to_beneficiary>
+					<data:max_failed_logins>0.0</data:max_failed_logins>
+					<data:probability_false>1.0</data:probability_false>
+					<data:probability_true>0.0</data:probability_true>
+				</row>
+				<row>
+					<data:amount>1847.0</data:amount>
+					<data:name_similarity>1.0</data:name_similarity>
+					<data:money_out_48h>1847.0</data:money_out_48h>
+					<data:past_pair_money_transferred>0.0</data:past_pair_money_transferred>
+					<data:unique_senders_to_beneficiary>1</data:unique_senders_to_beneficiary>
+					<data:max_failed_logins>0.0</data:max_failed_logins>
+					<data:probability_false>1.0</data:probability_false>
+					<data:probability_true>0.0</data:probability_true>
+				</row>
+				<row>
+					<data:amount>831.99</data:amount>
+					<data:name_similarity>0.38461538461538464</data:name_similarity>
+					<data:money_out_48h>831.99</data:money_out_48h>
+					<data:past_pair_money_transferred>0.0</data:past_pair_money_transferred>
+					<data:unique_senders_to_beneficiary>1</data:unique_senders_to_beneficiary>
+					<data:max_failed_logins>0.0</data:max_failed_logins>
+					<data:probability_false>1.0</data:probability_false>
+					<data:probability_true>0.0</data:probability_true>
+				</row>
+				<row>
+					<data:amount>887.6</data:amount>
+					<data:name_similarity>1.0</data:name_similarity>
+					<data:money_out_48h>887.6</data:money_out_48h>
+					<data:past_pair_money_transferred>0.0</data:past_pair_money_transferred>
+					<data:unique_senders_to_beneficiary>1</data:unique_senders_to_beneficiary>
+					<data:max_failed_logins>0.0</data:max_failed_logins>
+					<data:probability_false>1.0</data:probability_false>
+					<data:probability_true>0.0</data:probability_true>
+				</row>
+				<row>
+					<data:amount>1088.08</data:amount>
+					<data:name_similarity>1.0</data:name_similarity>
+					<data:money_out_48h>1088.08</data:money_out_48h>
+					<data:past_pair_money_transferred>0.0</data:past_pair_money_transferred>
+					<data:unique_senders_to_beneficiary>1</data:unique_senders_to_beneficiary>
+					<data:max_failed_logins>0.0</data:max_failed_logins>
+					<data:probability_false>1.0</data:probability_false>
+					<data:probability_true>0.0</data:probability_true>
+				</row>
+				<row>
+					<data:amount>842.03</data:amount>
+					<data:name_similarity>0.25</data:name_similarity>
+					<data:money_out_48h>842.03</data:money_out_48h>
+					<data:past_pair_money_transferred>0.0</data:past_pair_money_transferred>
+					<data:unique_senders_to_beneficiary>1</data:unique_senders_to_beneficiary>
+					<data:max_failed_logins>1.0</data:max_failed_logins>
+					<data:probability_false>1.0</data:probability_false>
+					<data:probability_true>0.0</data:probability_true>
+				</row>
+				<row>
+					<data:amount>1052.18</data:amount>
+					<data:name_similarity>1.0</data:name_similarity>
+					<data:money_out_48h>1052.18</data:money_out_48h>
+					<data:past_pair_money_transferred>0.0</data:past_pair_money_transferred>
+					<data:unique_senders_to_beneficiary>1</data:unique_senders_to_beneficiary>
+					<data:max_failed_logins>1.0</data:max_failed_logins>
+					<data:probability_false>1.0</data:probability_false>
+					<data:probability_true>0.0</data:probability_true>
+				</row>
+				<row>
+					<data:amount>3091.4</data:amount>
+					<data:name_similarity>1.0</data:name_similarity>
+					<data:money_out_48h>3091.4</data:money_out_48h>
+					<data:past_pair_money_transferred>0.0</data:past_pair_money_transferred>
+					<data:unique_senders_to_beneficiary>1</data:unique_senders_to_beneficiary>
+					<data:max_failed_logins>0.0</data:max_failed_logins>
+					<data:probability_false>1.0</data:probability_false>
+					<data:probability_true>0.0</data:probability_true>
+				</row>
+				<row>
+					<data:amount>1178.65</data:amount>
+					<data:name_similarity>1.0</data:name_similarity>
+					<data:money_out_48h>1178.65</data:money_out_48h>
+					<data:past_pair_money_transferred>0.0</data:past_pair_money_transferred>
+					<data:unique_senders_to_beneficiary>1</data:unique_senders_to_beneficiary>
+					<data:max_failed_logins>0.0</data:max_failed_logins>
+					<data:probability_false>1.0</data:probability_false>
+					<data:probability_true>0.0</data:probability_true>
+				</row>
+				<row>
+					<data:amount>183.55</data:amount>
+					<data:name_similarity>0.2857142857142857</data:name_similarity>
+					<data:money_out_48h>183.55</data:money_out_48h>
+					<data:past_pair_money_transferred>0.0</data:past_pair_money_transferred>
+					<data:unique_senders_to_beneficiary>1</data:unique_senders_to_beneficiary>
+					<data:max_failed_logins>0.0</data:max_failed_logins>
+					<data:probability_false>1.0</data:probability_false>
+					<data:probability_true>0.0</data:probability_true>
+				</row>
+				<row>
+					<data:amount>1110.58</data:amount>
+					<data:name_similarity>1.0</data:name_similarity>
+					<data:money_out_48h>1110.58</data:money_out_48h>
+					<data:past_pair_money_transferred>0.0</data:past_pair_money_transferred>
+					<data:unique_senders_to_beneficiary>1</data:unique_senders_to_beneficiary>
+					<data:max_failed_logins>0.0</data:max_failed_logins>
+					<data:probability_false>1.0</data:probability_false>
+					<data:probability_true>0.0</data:probability_true>
+				</row>
+				<row>
+					<data:amount>120.86</data:amount>
+					<data:name_similarity>0.20689655172413793</data:name_similarity>
+					<data:money_out_48h>120.86</data:money_out_48h>
+					<data:past_pair_money_transferred>0.0</data:past_pair_money_transferred>
+					<data:unique_senders_to_beneficiary>1</data:unique_senders_to_beneficiary>
+					<data:max_failed_logins>0.0</data:max_failed_logins>
+					<data:probability_false>1.0</data:probability_false>
+					<data:probability_true>0.0</data:probability_true>
+				</row>
+				<row>
+					<data:amount>691.91</data:amount>
+					<data:name_similarity>0.2857142857142857</data:name_similarity>
+					<data:money_out_48h>691.91</data:money_out_48h>
+					<data:past_pair_money_transferred>0.0</data:past_pair_money_transferred>
+					<data:unique_senders_to_beneficiary>1</data:unique_senders_to_beneficiary>
+					<data:max_failed_logins>0.0</data:max_failed_logins>
+					<data:probability_false>1.0</data:probability_false>
+					<data:probability_true>0.0</data:probability_true>
+				</row>
+				<row>
+					<data:amount>244.71</data:amount>
+					<data:name_similarity>0.08</data:name_similarity>
+					<data:money_out_48h>244.71</data:money_out_48h>
+					<data:past_pair_money_transferred>0.0</data:past_pair_money_transferred>
+					<data:unique_senders_to_beneficiary>2</data:unique_senders_to_beneficiary>
+					<data:max_failed_logins>0.0</data:max_failed_logins>
+					<data:probability_false>1.0</data:probability_false>
+					<data:probability_true>0.0</data:probability_true>
+				</row>
+				<row>
+					<data:amount>405.65</data:amount>
+					<data:name_similarity>0.24</data:name_similarity>
+					<data:money_out_48h>405.65</data:money_out_48h>
+					<data:past_pair_money_transferred>0.0</data:past_pair_money_transferred>
+					<data:unique_senders_to_beneficiary>1</data:unique_senders_to_beneficiary>
+					<data:max_failed_logins>1.0</data:max_failed_logins>
+					<data:probability_false>1.0</data:probability_false>
+					<data:probability_true>0.0</data:probability_true>
+				</row>
+			</InlineTable>
+		</ModelVerification>
+	</MiningModel>
+</PMML>
