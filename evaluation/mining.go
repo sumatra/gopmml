@@ -16,10 +16,11 @@ type MiningModel struct {
 
 	segmodels []Model
 
-	fieldTypes   map[models.FieldName]models.DataType
-	targetField  models.FieldName
-	outputFields []models.OutputField
-	targets      []models.Target
+	defaultValues map[string]Value
+	fieldTypes    map[models.FieldName]models.DataType
+	targetField   models.FieldName
+	outputFields  []models.OutputField
+	targets       []models.Target
 }
 
 func NewMiningModel(dd *models.DataDictionary, td *models.TransformationDictionary, model *models.MiningModel) (*MiningModel, error) {
@@ -70,9 +71,14 @@ func (m *MiningModel) Compile() error {
 	m.outputFields = m.model.Output.Fields
 	m.targets = m.model.Targets.Targets
 
+	m.defaultValues = make(map[string]Value)
 	for _, f := range m.model.MiningSchema.MiningFields {
 		if f.UsageType == models.FieldUsageTypeTarget {
 			m.targetField = f.Name
+		}
+
+		if f.MissingValueReplacement != nil {
+			m.defaultValues[string(f.Name)] = NewValue(*f.MissingValueReplacement)
 		}
 	}
 
@@ -183,7 +189,6 @@ func (m *MiningModel) evaluateMultipleModelSum(input DataRow) (DataRow, error) {
 		}
 	}
 
-
 	out := make(DataRow)
 	for k, v := range scoreMap {
 		out[string(k)] = NewValue(v)
@@ -205,6 +210,17 @@ func (m *MiningModel) evaluateMultipleModelAverage(input DataRow) (DataRow, erro
 	return out, nil
 }
 
+func (m *MiningModel) imputeMissingValues(input DataRow) (DataRow, error) {
+	for fld, defaultValue := range m.defaultValues {
+		inputVal, ok := input[fld]
+		if !ok || inputVal.Raw() == nil {
+			input[fld] = defaultValue
+		}
+	}
+
+	return input, nil
+}
+
 func (m *MiningModel) Evaluate(input DataRow) (DataRow, error) {
 	var err error
 
@@ -214,6 +230,11 @@ func (m *MiningModel) Evaluate(input DataRow) (DataRow, error) {
 
 	if !m.compiled {
 		return nil, ErrNotCompiled
+	}
+
+	input, err = m.imputeMissingValues(input)
+	if err != nil {
+		return nil, err
 	}
 
 	input, err = HandleInput(input, m.dd, m.td, &m.model.LocalTransformations, &m.model.MiningSchema)

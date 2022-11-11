@@ -2906,7 +2906,7 @@ type MiningField struct {
 	Importance              ProbNumber                  `xml:"importance,attr"`
 	InvalidValueTreatment   InvalidValueTreatmentMethod `xml:"invalidValueTreatment,attr"`
 	LowValue                Number                      `xml:"lowValue,attr"`
-	MissingValueReplacement string                      `xml:"missingValueReplacement"`
+	MissingValueReplacement *string                     `xml:"missingValueReplacement,attr"`
 	MissingValueTreatment   MissingValueTreatmentMethod `xml:"missingValueTreatment,attr"`
 	Name                    FieldName                   `xml:"name,attr"`
 	OpType                  OpType                      `xml:"optype,attr"`
